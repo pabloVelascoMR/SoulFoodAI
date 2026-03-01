@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "C4H46LCZ4mw=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\pablo\\Desktop\\SoulFoodAI\\src\\backend\\SoulFoodAiBack\\SoulFoodAiBack\\SoulFoodAiBack.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\pablo\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.13\\microsoft.aspnetcore.openapi.9.0.13.nupkg.sha512",
+    "C:\\Users\\pablo\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
