@@ -1,0 +1,6 @@
+@SoulFoodAiBack_HostAddress = http://localhost:5114
+
+GET {{SoulFoodAiBack_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
