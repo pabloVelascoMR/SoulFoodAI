@@ -1,6 +1,6 @@
 ﻿namespace SoulFoodAiBack.Data
 {
-    public class BDContenxt
+    public class DBContenxt
     {
     }
 }
