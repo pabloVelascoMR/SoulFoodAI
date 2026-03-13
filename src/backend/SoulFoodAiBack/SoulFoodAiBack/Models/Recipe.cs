@@ -1,6 +1,6 @@
 ﻿namespace SoulFoodAiBack.Models
 {
-    public class Recepie
+    public class Recipe
     {
     }
 }
