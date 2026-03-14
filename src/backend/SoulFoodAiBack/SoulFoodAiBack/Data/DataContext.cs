@@ -12,6 +12,7 @@ namespace SoulFoodAiBack.Data
         public DbSet<FoodPlanMeal> FoodPlanMeals { get; set; }
         public DbSet<Goal> Goals { get; set; }
         public DbSet<Intolerance> Intolerances { get; set; }
+        public DbSet<Meal> Meals { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserData> UserDatas { get; set; }
