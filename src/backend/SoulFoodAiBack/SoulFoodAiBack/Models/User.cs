@@ -8,21 +8,30 @@ namespace SoulFoodAiBack.Models
         public User()
         {
             this.CreationDate = DateTime.Now;
+            this.UserIngredients = new List<UserIngredient>();
+            this.UserFoodPlans = new List<UserFoodPlan>();
         }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdUser { get; set; }
 
+        [Required]
         [StringLength(50)]
         public required string UserName { get; set; }
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
-        public string PasswordHash { get; set; }
+        public required string PasswordHash { get; set; }
+
+        public UserData UserData { get; set; }
+
+        public List<UserIngredient> UserIngredients { get; set; }
+
+        public List<UserFoodPlan> UserFoodPlans { get; set; }
 
         public DateTime CreationDate { get; set; }
 

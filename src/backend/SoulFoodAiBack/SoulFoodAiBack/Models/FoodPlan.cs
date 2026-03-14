@@ -1,6 +1,35 @@
-﻿namespace SoulFoodAiBack.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SoulFoodAiBack.Models
 {
     public class FoodPlan
     {
+        public FoodPlan()
+        {
+            this.CreationDate = DateTime.Now;
+            FoodPlanMeals = new List<FoodPlanMeal>();
+
+        }
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int IdFoodPlan { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public required string FoodPlanName { get; set; }
+
+        public double ProteinPercent { get; set; }
+
+        public double CarbPercent { get; set; }
+
+        public double FatPercent { get; set; }
+
+        public double VegetableminPercent { get; set; }
+
+        public List<FoodPlanMeal> FoodPlanMeals { get; set; }
+
+        public DateTime CreationDate { get; set; }
     }
 }
