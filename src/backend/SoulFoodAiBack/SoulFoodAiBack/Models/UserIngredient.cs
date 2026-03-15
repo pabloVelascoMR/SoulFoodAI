@@ -16,6 +16,7 @@ namespace SoulFoodAiBack.Models
         [Required]
         public required string  Name { get; set; }
 
+        [Required]
         public required string Category { get; set; }
 
         public string? SubCategory { get; set; }
@@ -29,7 +30,7 @@ namespace SoulFoodAiBack.Models
         public double Kcal { get; set; }
 
         [Required]
-        public int IdUser { get; set; }
+        public required int IdUser { get; set; }
 
         [ForeignKey("IdUser")]
         [Required]

@@ -19,7 +19,8 @@ namespace SoulFoodAiBack.Models
         [StringLength(500)]
         public required string RecipeName { get; set; }
 
-        public string IngredientsJson { get; set; }
+        [Required]
+        public required string IngredientsJson { get; set; }
 
         public double Protein { get; set; }
 
