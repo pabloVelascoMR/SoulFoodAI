@@ -3,22 +3,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SoulFoodAiBack.Models
 {
-    public class Goal
+    public class Meal
     {
-        public Goal()
+        public Meal()
         {
             this.CreationDate = DateTime.Now;
-
         }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int IdGoal { get; set; }
+        public int IdMeal { get; set; }
 
         [Required]
         [StringLength(100)]
-        public required string GoalName { get; set; }
+        public required string MealName { get; set; }
 
         public DateTime CreationDate { get; set; }
     }
 }
+
