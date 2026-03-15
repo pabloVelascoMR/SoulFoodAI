@@ -14,11 +14,11 @@ namespace SoulFoodAiBack.Models
         public int IdUserIngredient { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public required string  Name { get; set; }
 
-        public string Category { get; set; }
+        public required string Category { get; set; }
 
-        public string SubCategory { get; set; }
+        public string? SubCategory { get; set; }
 
         public double Protein { get; set; }
 
@@ -32,7 +32,8 @@ namespace SoulFoodAiBack.Models
         public int IdUser { get; set; }
 
         [ForeignKey("IdUser")]
-        public User User { get; set; }
+        [Required]
+        public required User User { get; set; }
 
         public DateTime CreationDate { get; set; }
     }

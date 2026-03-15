@@ -27,7 +27,8 @@ namespace SoulFoodAiBack.Models
         public int IdUserFoodPlan { get; set; }
 
         [ForeignKey("IdUserFoodPlan")]
-        public UserFoodPlan UserFoodPlan { get; set; }
+        [Required]
+        public required UserFoodPlan UserFoodPlan { get; set; }
 
         public DateTime CreationDate { get; set; }
     }

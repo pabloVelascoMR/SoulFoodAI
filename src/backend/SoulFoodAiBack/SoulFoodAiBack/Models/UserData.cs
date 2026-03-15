@@ -29,21 +29,25 @@ namespace SoulFoodAiBack.Models
         public int IdUser { get; set; }
 
         [ForeignKey("IdUser")]
+        [Required]
         public required User User { get; set; }
 
         public int IdFoodPlan { get; set; }
 
         [ForeignKey("IdFoodPlan")]
+        [Required]
         public required FoodPlan FoodPlan { get; set; }
 
         public int IdGoal { get; set; }
 
         [ForeignKey("IdGoal")]
+        [Required]
         public required Goal Goal { get; set; }
 
         public int IdIntolerance { get; set; }
 
         [ForeignKey("IdIntolerance")]
+        [Required]
         public required Intolerance Intolerance { get; set; }
 
         public DateTime CreationDate { get; set; }
