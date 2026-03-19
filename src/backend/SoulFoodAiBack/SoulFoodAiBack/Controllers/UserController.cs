@@ -40,5 +40,18 @@ namespace SoulFoodAiBack.Controllers
             return Ok(allUsers);
            
         }
+
+        [HttpPost]
+        [Route("User")]
+
+        public async Task<IActionResult> AddUser(CreateUserDto dto)
+        {
+
+            User userAdd = new User { UserName = dto.UserName, Email = dto.Email, PasswordHash = dto.PasswordHash };
+            await _context.Users.AddAsync(userAdd);
+            await _context.SaveChangesAsync();
+            return Ok(userAdd);
+
+        }
     }
 }
