@@ -46,8 +46,10 @@ namespace SoulFoodAiBack.Controllers
 
         public async Task<IActionResult> AddUser(CreateUserDto dto)
         {
+            string pass = dto.PasswordHash;
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(pass);
 
-            User userAdd = new User { UserName = dto.UserName, Email = dto.Email, PasswordHash = dto.PasswordHash };
+            User userAdd = new User { UserName = dto.UserName, Email = dto.Email, PasswordHash = passwordHash };
             await _context.Users.AddAsync(userAdd);
             await _context.SaveChangesAsync();
             return Ok(userAdd);
