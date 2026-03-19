@@ -24,9 +24,9 @@ namespace SoulFoodAiBack.Controllers
 
        public async Task<IActionResult> GetAllUsers()
         {
-            List<User> usuarios = await _context.Users.ToListAsync();
+            List<User> users = await _context.Users.ToListAsync();
 
-            List<UserDto> allUsers =  usuarios.
+            List<UserDto> allUsers =  users.
                 
                 Select(u=> new UserDto { 
                     
@@ -51,6 +51,22 @@ namespace SoulFoodAiBack.Controllers
             await _context.Users.AddAsync(userAdd);
             await _context.SaveChangesAsync();
             return Ok(userAdd);
+
+        }
+
+        [HttpDelete]
+        [Route("User")]
+
+        public async Task<IActionResult> DeleteUser(int idUser)
+        {
+
+            User? user = await _context.Users.FirstOrDefaultAsync(u=>u.IdUser== idUser);
+
+            if (user is null) { return NotFound("Ese equipo no existe en la competición."); }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return Ok(GetAllUsers());
 
         }
     }
