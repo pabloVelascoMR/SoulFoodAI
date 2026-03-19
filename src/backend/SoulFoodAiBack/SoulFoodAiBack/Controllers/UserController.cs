@@ -68,7 +68,7 @@ namespace SoulFoodAiBack.Controllers
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-            return Ok(GetAllUsers());
+            return await GetAllUsers(); ;
 
         }
     }
