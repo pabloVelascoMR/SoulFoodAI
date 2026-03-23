@@ -6,6 +6,11 @@
     "analytics": "7b18511b-2dbb-424b-8b66-a027c4c63090"
   },
   "newProjectRoot": "projects",
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    }
+  },
   "projects": {
     "soul-food-ai-front": {
       "projectType": "application",
