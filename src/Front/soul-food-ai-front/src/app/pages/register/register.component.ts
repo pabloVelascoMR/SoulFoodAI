@@ -1,9 +1,20 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-register',
-  imports: [],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css',
+  styleUrls: ['./register.component.css']
 })
-export class RegisterComponent {}
+export class RegisterComponent {
+
+  name = '';
+  email = '';
+  password = '';
+
+  register() {
+    console.log(this.name, this.email, this.password);
+  }
+}
