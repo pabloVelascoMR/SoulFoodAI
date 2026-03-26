@@ -29,7 +29,8 @@ namespace SoulFoodAiBack.Controllers
                 Select(g => new GoalDto
                 {
                     IdGoal = g.IdGoal,
-                    GoalName=g.GoalName
+                    GoalName=g.GoalName,
+                    Description=g.Description
 
                 }).ToList();
 
@@ -42,7 +43,7 @@ namespace SoulFoodAiBack.Controllers
         public async Task<IActionResult> AddGoal(CreateGoalDto dto)
         {
 
-            Goal goalAdd = new Goal { GoalName= dto.GoalName };
+            Goal goalAdd = new Goal { GoalName= dto.GoalName , Description= dto.Description};
             await _context.Goals.AddAsync(goalAdd);
             await _context.SaveChangesAsync();
             return Ok();
@@ -67,10 +68,15 @@ namespace SoulFoodAiBack.Controllers
         [Route("Goal")]
 
         public async Task<IActionResult> EditGoal(GoalDto dto)
-        {
+        { 
+            Goal? goalEdit = await _context.Goals.FirstOrDefaultAsync(g => g.IdGoal == dto.IdGoal);
 
-            Goal goalEdit = new Goal { IdGoal=dto.IdGoal, GoalName = dto.GoalName };
-            await _context.Goals.AddAsync(goalEdit);
+            if (goalEdit is null) { return NotFound("Competicion no existe en la base de datos."); }
+
+            goalEdit.IdGoal= dto.IdGoal;
+            goalEdit.GoalName= dto.GoalName;
+            goalEdit.Description= dto.Description;
+
             await _context.SaveChangesAsync();
             return Ok();
         }
