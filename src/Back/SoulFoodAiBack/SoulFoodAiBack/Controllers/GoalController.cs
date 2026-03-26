@@ -71,7 +71,7 @@ namespace SoulFoodAiBack.Controllers
         { 
             Goal? goalEdit = await _context.Goals.FirstOrDefaultAsync(g => g.IdGoal == dto.IdGoal);
 
-            if (goalEdit is null) { return NotFound("Competicion no existe en la base de datos."); }
+            if (goalEdit is null) { return NotFound("Objetivo no existe en la base de datos."); }
 
             goalEdit.IdGoal= dto.IdGoal;
             goalEdit.GoalName= dto.GoalName;

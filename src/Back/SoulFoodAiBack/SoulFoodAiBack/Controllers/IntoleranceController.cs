@@ -56,7 +56,7 @@ namespace SoulFoodAiBack.Controllers
 
             Intolerance? intolerance = await _context.Intolerances.FirstOrDefaultAsync(i => i.IdIntolerance == idIntolerance);
 
-            if (intolerance is null) { return NotFound("Ese objetivo no existe."); }
+            if (intolerance is null) { return NotFound("Esa intolerancia no existe."); }
 
             _context.Intolerances.Remove(intolerance);
             await _context.SaveChangesAsync();
@@ -70,7 +70,7 @@ namespace SoulFoodAiBack.Controllers
         {
             Intolerance? intoleranceEdit = await _context.Intolerances.FirstOrDefaultAsync(i => i.IdIntolerance == dto.IdIntolerance);
 
-            if (intoleranceEdit is null) { return NotFound("Competicion no existe en la base de datos."); }
+            if (intoleranceEdit is null) { return NotFound("Intolerancia no existe en la base de datos."); }
 
             intoleranceEdit.IdIntolerance = dto.IdIntolerance;
             intoleranceEdit.IntoleranceName = dto.IntoleranceName;
