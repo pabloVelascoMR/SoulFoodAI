@@ -7,7 +7,7 @@ namespace SoulFoodAiBack.Models
     {
         public Recipe()
         {
-            UserFoodPlanMeals = new List<UserFoodPlanMeal>();
+            UserFoodPlanMeals = new List<UserFoodPlanDaily>();
             this.CreationDate = DateTime.Now;
         }
 
@@ -30,7 +30,7 @@ namespace SoulFoodAiBack.Models
 
         public int TotalKcal { get; set; }
 
-        public List<UserFoodPlanMeal> UserFoodPlanMeals { get; set; }
+        public List<UserFoodPlanDaily> UserFoodPlanMeals { get; set; }
 
         public DateTime CreationDate { get; set; }
     }

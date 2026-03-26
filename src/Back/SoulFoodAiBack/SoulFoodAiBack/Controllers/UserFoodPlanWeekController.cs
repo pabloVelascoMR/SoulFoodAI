@@ -4,7 +4,7 @@ namespace SoulFoodAiBack.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserFoodPlanController : ControllerBase
+    public class UserFoodPlanWeekController : ControllerBase
     {
     }
 }

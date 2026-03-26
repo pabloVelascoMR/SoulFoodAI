@@ -19,6 +19,9 @@ namespace SoulFoodAiBack.Models
         [StringLength(100)]
         public required string GoalName { get; set; }
 
+        [MaxLength(1000)]
+        public string? Description { get; set; }
+
         public DateTime CreationDate { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace SoulFoodAiBack.Models
         {
             this.CreationDate = DateTime.Now;
             this.UserIngredients = new List<UserIngredient>();
-            this.UserFoodPlans = new List<UserFoodPlan>();
+            this.UserFoodPlans = new List<UserFoodPlanWeek>();
         }
 
         [Key]
@@ -32,7 +32,7 @@ namespace SoulFoodAiBack.Models
 
         public List<UserIngredient> UserIngredients { get; set; }
 
-        public List<UserFoodPlan> UserFoodPlans { get; set; }
+        public List<UserFoodPlanWeek> UserFoodPlans { get; set; }
 
         public DateTime CreationDate { get; set; }
 
