@@ -16,7 +16,7 @@ namespace SoulFoodAiBack.Dtos
 
         public required double Weight { get; set; }
 
-        public int? MealsPerDay { get; set; }
+        public int MealsPerDay { get; set; }
 
         public required int IdUser { get; set; }
 
@@ -24,6 +24,6 @@ namespace SoulFoodAiBack.Dtos
 
         public required int IdGoal { get; set; }
 
-        public int? IdIntolerance { get; set; }
+        public int IdIntolerance { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SoulFoodAiBack.Data;
 using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Models;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace SoulFoodAiBack.Controllers
@@ -81,6 +82,30 @@ namespace SoulFoodAiBack.Controllers
             _context.UserDatas.Remove(userData);
             await _context.SaveChangesAsync();
             return await GetAllUserDatas(); ;
+        }
+
+        [HttpPut]
+        [Route("UserData")]
+
+        public async Task<IActionResult> EditUserData(UserDataDto dto)
+        {
+            UserData? userDataEdit = await _context.UserDatas.FirstOrDefaultAsync(u => u.IdUser == dto.IdUser);
+
+            if (userDataEdit is null) { return NotFound("Objetivo no existe en la base de datos."); }
+
+            userDataEdit.IdGoal = dto.IdGoal;
+            userDataEdit.Gender = dto.Gender;
+            userDataEdit.Age = dto.Age;
+            userDataEdit.Height = dto.Height;
+            userDataEdit.Weight = dto.Weight;
+            userDataEdit.MealsPerDay = dto.MealsPerDay;
+            userDataEdit.IdUser = dto.IdUser;
+            userDataEdit.IdFoodPlan = dto.IdFoodPlan ;
+            userDataEdit.IdGoal = dto.IdGoal ;
+            userDataEdit.IdIntolerance = dto.IdIntolerance;
+
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }
