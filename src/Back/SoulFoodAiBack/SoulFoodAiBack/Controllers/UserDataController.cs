@@ -21,7 +21,7 @@ namespace SoulFoodAiBack.Controllers
         [HttpGet]
         [Route("UserData")]
 
-        public async Task<IActionResult> GetAlluserDatas()
+        public async Task<IActionResult> GetAllUserDatas()
         {
             List<UserData> userDatas = await _context.UserDatas.ToListAsync();
 
@@ -69,6 +69,18 @@ namespace SoulFoodAiBack.Controllers
             return Ok();
         }
 
-        
+        [HttpDelete]
+        [Route("UserData")]
+        public async Task<IActionResult> DeleteUserData(int idUser)
+        {
+
+            UserData? userData = await _context.UserDatas.FirstOrDefaultAsync(u => u.IdUser == idUser);
+
+            if (userData is null) { return NotFound("Ese usaurio no existe."); }
+
+            _context.UserDatas.Remove(userData);
+            await _context.SaveChangesAsync();
+            return await GetAllUserDatas(); ;
+        }
     }
 }
