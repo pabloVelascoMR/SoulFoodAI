@@ -19,6 +19,7 @@ namespace SoulFoodAiBack.Data
         public DbSet<UserDiary> UserDiaries { get; set; }
         public DbSet<UserFoodPlanWeek> UserFoodPlansWeek { get; set; }
         public DbSet<UserFoodPlanDaily> UserFoodPlansDaily { get; set; }
+        public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<UserIngredient> UserIngredients{ get; set; }
         
 
