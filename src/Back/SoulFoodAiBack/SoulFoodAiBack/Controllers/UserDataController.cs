@@ -107,5 +107,29 @@ namespace SoulFoodAiBack.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpGet]
+        [Route("UserData/{id}")]
+        public async Task<IActionResult> GetUserDataById(int id )
+        {
+            UserData? userData = await _context.UserDatas.Where(ud=>ud.IdUser == id).FirstOrDefaultAsync();
+
+            if (userData is null) { return NotFound("Ese usaurio no existe."); }
+
+            UserDataDto userDataDto = new UserDataDto
+            {
+                IdUserData = userData.IdUserData,
+                Gender = userData.Gender,
+                Age = userData.Age,
+                Height = userData.Height,
+                Weight = userData.Weight,
+                MealsPerDay = userData.MealsPerDay,
+                IdUser = userData.IdUser,
+                IdFoodPlan = userData.IdFoodPlan,
+                IdGoal = userData.IdGoal,
+                IdIntolerance = userData.IdIntolerance,
+            };
+            return Ok(userDataDto);
+        }
     }
 }
