@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SoulFoodAiBack.Models
 {
-    public class UserFoodPlan
+    public class UserFoodPlanWeek
     {
-        public UserFoodPlan()
+        public UserFoodPlanWeek()
         {
-            UserFoodPlanMeals = new List<UserFoodPlanMeal>();
+            UserFoodPlanMeals = new List<UserFoodPlanDaily>();
             this.CreationDate = DateTime.Now;
         }
 
@@ -21,7 +21,7 @@ namespace SoulFoodAiBack.Models
 
         public DateTime EndDate { get; set; }
 
-        public List<UserFoodPlanMeal> UserFoodPlanMeals { get; set; }
+        public List<UserFoodPlanDaily> UserFoodPlanMeals { get; set; }
 
         public int IdUser { get; set; }
 

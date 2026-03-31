@@ -52,7 +52,7 @@ namespace SoulFoodAiBack.Controllers
             User userAdd = new User { UserName = dto.UserName, Email = dto.Email, PasswordHash = passwordHash };
             await _context.Users.AddAsync(userAdd);
             await _context.SaveChangesAsync();
-            return Ok(userAdd);
+            return Ok();
 
         }
 
@@ -64,7 +64,7 @@ namespace SoulFoodAiBack.Controllers
 
             User? user = await _context.Users.FirstOrDefaultAsync(u=>u.IdUser== idUser);
 
-            if (user is null) { return NotFound("Ese equipo no existe en la competición."); }
+            if (user is null) { return NotFound("Ese usuario no existe."); }
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();

@@ -20,6 +20,9 @@ namespace SoulFoodAiBack.Models
         [StringLength(100)]
         public required string FoodPlanName { get; set; }
 
+        [MaxLength(1000)]
+        public string? Description { get; set; }
+
         public double ProteinPercent { get; set; }
 
         public double CarbPercent { get; set; }

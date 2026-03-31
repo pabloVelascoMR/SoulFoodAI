@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SoulFoodAiBack.Models
 {
-    public class UserFoodPlanMeal
+    public class UserFoodPlanDaily
     {
-        public UserFoodPlanMeal()
+        public UserFoodPlanDaily()
         {
             this.CreationDate = DateTime.Now;
         }
