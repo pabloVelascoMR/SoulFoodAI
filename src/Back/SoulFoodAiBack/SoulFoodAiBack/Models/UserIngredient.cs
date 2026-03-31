@@ -14,27 +14,18 @@ namespace SoulFoodAiBack.Models
         public int IdUserIngredient { get; set; }
 
         [Required]
-        public required string  Name { get; set; }
-
-        [Required]
-        public required string Category { get; set; }
-
-        public string? SubCategory { get; set; }
-
-        public double Protein { get; set; }
-
-        public double Carbs { get; set; }
-
-        public double Fat { get; set; }
-
-        public double Kcal { get; set; }
-
-        [Required]
         public required int IdUser { get; set; }
 
         [ForeignKey("IdUser")]
         [Required]
         public required User User { get; set; }
+
+        [Required]
+        public required int IdIngredient { get; set; }
+
+        [ForeignKey("IdIngredient")]
+        [Required]
+        public required Ingredient Ingredient { get; set; }
 
         public DateTime CreationDate { get; set; }
     }
