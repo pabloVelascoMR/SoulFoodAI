@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Services;
 using SoulFoodAiBack.Data;
+using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Models;
 using System.Globalization;
 using System.Text.Json.Nodes;
@@ -190,6 +191,35 @@ namespace SoulFoodAiBack.Controllers
             }
             client.Dispose();
             return Ok(OFFResults);
+        }
+
+        [HttpPost]
+        [Route("AddCustomIngredient/{dto}")]
+        public async Task<ActionResult<Ingredient>> AddCustomIngredient(CustomIngredientDto dto)
+        {
+            
+            if (string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.UserId))
+            {
+                return BadRequest("El nombre del alimento y el ID del usuario son obligatorios.");
+            }
+
+            Ingredient newIngredient = new Ingredient
+            {
+                Name = dto.Name,
+                Brand = dto.Brand,
+                Category = "Personalizado",
+                Icon = dto.Icon,
+                ImageUrl = null, 
+                Protein = dto.Protein,
+                Carbs = dto.Carbs,
+                Fat = dto.Fat,
+                Kcal = dto.Kcal,
+                CreatedByUserId = dto.UserId 
+            };
+
+            _context.Ingredients.Add(newIngredient);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }
