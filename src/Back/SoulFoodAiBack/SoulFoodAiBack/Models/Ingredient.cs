@@ -25,6 +25,12 @@ namespace SoulFoodAiBack.Models
         [MaxLength(50)]
         public string? SubCategory { get; set; }
 
+        [MaxLength(100)]
+        public string? Brand { get; set; }
+
+        [MaxLength(500)]
+        public string? ImageUrl { get; set; }
+
         public double Protein { get; set; }
 
         public double Carbs { get; set; }
