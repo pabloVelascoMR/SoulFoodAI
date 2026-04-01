@@ -31,6 +31,11 @@ namespace SoulFoodAiBack.Models
         [MaxLength(500)]
         public string? ImageUrl { get; set; }
 
+        public string? CreatedByUserId { get; set; }
+
+        [MaxLength(50)]
+        public string? Icon { get; set; }
+
         public double Protein { get; set; }
 
         public double Carbs { get; set; }
@@ -41,6 +46,8 @@ namespace SoulFoodAiBack.Models
 
         [MaxLength(100)]
         public string? OpenFoodFactsId { get; set; }
+
+        public bool IsDeleted { get; set; } = false;
 
         public List<UserIngredient> UserIngredients { get; set; } 
 
