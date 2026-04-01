@@ -247,5 +247,43 @@ namespace SoulFoodAiBack.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { message = $"El ingrediente '{ingredient.Name}' ha sido eliminado de tu lista." });
         }
+
+        [HttpPut]
+        [Route("UpdateCustomIngredient/{dto}")]
+        public async Task<IActionResult> UpdateCustomIngredient(int id, UpdateCustomIngredientDto dto)
+        {
+
+            if (dto.Id <= 0)
+            {
+                return BadRequest("El ID del ingrediente es obligatorio para actualizarlo.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Name) || dto.UserId <= 0)
+            {
+                return BadRequest("El nombre del alimento y el ID del usuario son obligatorios.");
+            }
+
+            Ingredient? ingredient = await _context.Ingredients.FindAsync(dto.Id);
+
+            if (ingredient == null || ingredient.IsDeleted)
+            {
+                return NotFound("El ingrediente no existe o ha sido eliminado.");
+            }
+            if (ingredient.CreatedByUserId == null || ingredient.CreatedByUserId != dto.UserId)
+            {
+                return StatusCode(403, "No tienes permiso para editar este ingrediente. Solo el creador puede modificarlo.");
+            }
+
+            ingredient.Name = dto.Name;
+            ingredient.Brand = dto.Brand;
+            ingredient.Icon = dto.Icon;
+            ingredient.Protein = dto.Protein;
+            ingredient.Carbs = dto.Carbs;
+            ingredient.Fat = dto.Fat;
+            ingredient.Kcal = dto.Kcal;
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
