@@ -31,7 +31,7 @@ namespace SoulFoodAiBack.Models
         [MaxLength(500)]
         public string? ImageUrl { get; set; }
 
-        public string? CreatedByUserId { get; set; }
+        public int? CreatedByUserId { get; set; }
 
         [MaxLength(50)]
         public string? Icon { get; set; }

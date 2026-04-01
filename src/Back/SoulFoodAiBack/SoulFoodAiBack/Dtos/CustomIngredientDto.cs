@@ -9,6 +9,6 @@
         public double Carbs { get; set; }
         public double Fat { get; set; }
         public double Kcal { get; set; }
-        public required string UserId { get; set; }
+        public required int UserId { get; set; }
     }
 }

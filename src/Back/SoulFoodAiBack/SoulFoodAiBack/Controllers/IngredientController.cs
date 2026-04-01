@@ -21,21 +21,25 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("GetIngredients/{category}")]
-        public async Task<ActionResult<List<Ingredient>>> GetIngredients(string category)
+        [Route("GetIngredients/{category}/{userId}")]
+        public async Task<ActionResult<List<Ingredient>>> GetIngredients(string category,int userId)
         {
             List<Ingredient> ingredients = await _context.Ingredients
-                       .Where(i => i.Category.ToLower() == category.ToLower())
+                       .Where(i => i.Category.ToLower() == category.ToLower()&& !i.IsDeleted && (i.CreatedByUserId == null || i.CreatedByUserId == userId))
                        .ToListAsync();
 
             return Ok(ingredients);
         }
 
         [HttpGet]
-        [Route("GetAllIngredients")]
-        public async Task<ActionResult<List<Ingredient>>> GetAllIngredients()
+        [Route("GetAllIngredients/{userId}")]
+        public async Task<ActionResult<List<Ingredient>>> GetAllIngredients(int userId)
         {
-            List<Ingredient> ingredients = await _context.Ingredients.ToListAsync();
+            List<Ingredient> ingredients = await _context.Ingredients
+                            .Where( i => !i.IsDeleted
+                            && (i.CreatedByUserId == null || i.CreatedByUserId == userId))
+                            .ToListAsync();
+
             return Ok(ingredients);
         }
 
@@ -195,10 +199,10 @@ namespace SoulFoodAiBack.Controllers
 
         [HttpPost]
         [Route("AddCustomIngredient/{dto}")]
-        public async Task<ActionResult<Ingredient>> AddCustomIngredient(CustomIngredientDto dto)
+        public async Task<IActionResult> AddCustomIngredient(CustomIngredientDto dto)
         {
             
-            if (string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.UserId))
+            if (string.IsNullOrWhiteSpace(dto.Name) || dto.UserId <= 0)
             {
                 return BadRequest("El nombre del alimento y el ID del usuario son obligatorios.");
             }
@@ -220,6 +224,28 @@ namespace SoulFoodAiBack.Controllers
             _context.Ingredients.Add(newIngredient);
             await _context.SaveChangesAsync();
             return Ok();
+        }
+
+        [HttpDelete]
+        [Route("DeleteCustomIngredient/{id}/{userId}")]
+        public async Task<IActionResult> DeleteCustomIngredient(int id,  int userId)
+        {
+
+            Ingredient? ingredient = await _context.Ingredients.FindAsync(id);
+
+            if (ingredient == null)
+            {
+                return NotFound("El ingrediente no existe.");
+            }
+
+            if (ingredient.CreatedByUserId == null || ingredient.CreatedByUserId != userId)
+            {
+                return Forbid("No tienes permiso para eliminar este ingrediente. Solo el creador puede hacerlo.");
+            }
+
+            ingredient.IsDeleted = true;
+            await _context.SaveChangesAsync();
+            return Ok(new { message = $"El ingrediente '{ingredient.Name}' ha sido eliminado de tu lista." });
         }
     }
 }
