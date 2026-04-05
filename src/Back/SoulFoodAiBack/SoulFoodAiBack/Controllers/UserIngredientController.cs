@@ -77,7 +77,6 @@ namespace SoulFoodAiBack.Controllers
                 return Ok(new { message = "Este ingrediente ya estaba en tu lista." });
             }
 
-            
             UserIngredient newFavorite = new UserIngredient
             {
                 IdUser = dto.IdUser,
@@ -88,6 +87,29 @@ namespace SoulFoodAiBack.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Ingrediente añadido con éxito." });
+        }
+
+        [HttpDelete]
+        [Route("removeFavorite/{Idingredient}/{IdUser}")]
+        public async Task<IActionResult> RemoveFavorite(int Idingredient, int IdUser)
+        {
+          
+            if (IdUser <= 0 || Idingredient <= 0)
+            {
+                return BadRequest("Datos inválidos para eliminar el favorito.");
+            }
+
+            UserIngredient? favorite = await _context.UserIngredients
+                .FirstOrDefaultAsync(ui => ui.IdUser == IdUser && ui.IdIngredient == Idingredient);
+
+            if (favorite == null)
+            {
+                return NotFound("El ingrediente no está en tu lista de favoritos.");
+            }
+            
+            _context.UserIngredients.Remove(favorite);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Ingrediente eliminado de tu lista de preferencias." });
         }
     }
 }
