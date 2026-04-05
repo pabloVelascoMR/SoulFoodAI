@@ -2,9 +2,9 @@
 {
     public class SaveFavouriteIngredientDto
     {
-        public int UserId { get; set; }
-        public int? LocalIngredientId { get; set; }
-        public string? OpenFoodFactsId { get; set; }
+        public int IdUser { get; set; }
+        public int? LocalIdIngredient { get; set; }
+        public string? IdOpenFoodFacts { get; set; }
         public string? Name { get; set; }
         public string? Brand { get; set; }
         public string? ImageUrl { get; set; }
