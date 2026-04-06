@@ -18,7 +18,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("Goal")]
+        [Route("GetAllGoals")]
 
         public async Task<IActionResult> GetAllGoals()
         {
@@ -38,7 +38,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPost]
-        [Route("Goal")]
+        [Route("AddGoal")]
 
         public async Task<IActionResult> AddGoal(CreateGoalDto dto)
         {
@@ -50,7 +50,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpDelete]
-        [Route("Goal")]
+        [Route("DeleteGoal")]
 
         public async Task<IActionResult> DeleteGoal(int idGoal)
         {
@@ -65,7 +65,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPut]
-        [Route("Goal")]
+        [Route("EditGoal")]
 
         public async Task<IActionResult> EditGoal(GoalDto dto)
         { 

@@ -18,7 +18,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("Intolerance")]
+        [Route("GetAllIntolerances")]
 
         public async Task<IActionResult> GetAllIntolerances()
         {
@@ -37,9 +37,9 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPost]
-        [Route("Intolerance")]
+        [Route("AddIntolerance")]
 
-        public async Task<IActionResult> AddGoal(CreateIntoleranceDto dto)
+        public async Task<IActionResult> AddIntolerance(CreateIntoleranceDto dto)
         {
 
             Intolerance intoleranceAdd = new Intolerance { IntoleranceName = dto.IntoleranceName};
@@ -49,7 +49,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpDelete]
-        [Route("Intolerance")]
+        [Route("DeleteIntolerance")]
 
         public async Task<IActionResult> DeleteIntolerance(int idIntolerance)
         {
@@ -64,7 +64,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPut]
-        [Route("Intolerance")]
+        [Route("EditIntolerance")]
 
         public async Task<IActionResult> EditIntolerance(IntoleranceDto dto)
         {

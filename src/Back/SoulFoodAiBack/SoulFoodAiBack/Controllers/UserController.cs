@@ -20,7 +20,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
        [HttpGet]
-       [Route("User")]
+       [Route("GetAllUsers")]
 
        public async Task<IActionResult> GetAllUsers()
         {
@@ -42,7 +42,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPost]
-        [Route("User")]
+        [Route("AddUser")]
 
         public async Task<IActionResult> AddUser(CreateUserDto dto)
         {
@@ -57,7 +57,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpDelete]
-        [Route("User")]
+        [Route("DeleteUser")]
 
         public async Task<IActionResult> DeleteUser(int idUser)
         {
