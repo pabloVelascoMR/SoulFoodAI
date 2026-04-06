@@ -20,7 +20,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("UserData")]
+        [Route("GetAllUserDatas")]
 
         public async Task<IActionResult> GetAllUserDatas()
         {
@@ -46,7 +46,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPost]
-        [Route("UserData")]
+        [Route("AddUserData")]
 
         public async Task<IActionResult> AddUserData(CreateUserDataDto dto)
         {
@@ -71,7 +71,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpDelete]
-        [Route("UserData")]
+        [Route("DeleteUserData")]
         public async Task<IActionResult> DeleteUserData(int idUser)
         {
 
@@ -85,7 +85,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPut]
-        [Route("UserData")]
+        [Route("EditUserData")]
 
         public async Task<IActionResult> EditUserData(UserDataDto dto)
         {
@@ -109,7 +109,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("UserData/{id}")]
+        [Route("GetUserDataById/{id}")]
         public async Task<IActionResult> GetUserDataById(int id )
         {
             UserData? userData = await _context.UserDatas.Where(ud=>ud.IdUser == id).FirstOrDefaultAsync();

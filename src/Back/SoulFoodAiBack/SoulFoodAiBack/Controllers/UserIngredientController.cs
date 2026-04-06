@@ -18,7 +18,7 @@ namespace SoulFoodAiBack.Controllers
         }
         
         [HttpPost]
-        [Route("addFavorite")]
+        [Route("AddFavorite")]
         public async Task<IActionResult> AddFavorite(SaveFavouriteIngredientDto dto)
         {
             if (dto.IdUser <= 0)
@@ -90,7 +90,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpDelete]
-        [Route("removeFavorite/{Idingredient}/{IdUser}")]
+        [Route("RemoveFavorite/{Idingredient}/{IdUser}")]
         public async Task<IActionResult> RemoveFavorite(int Idingredient, int IdUser)
         {
           

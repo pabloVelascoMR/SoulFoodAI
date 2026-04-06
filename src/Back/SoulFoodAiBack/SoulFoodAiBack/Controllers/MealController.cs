@@ -18,7 +18,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("Meal")]
+        [Route("GetAllMeals")]
 
         public async Task<IActionResult> GetAllMeals()
         {
@@ -37,7 +37,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPost]
-        [Route("Meal")]
+        [Route("AddMeal")]
 
         public async Task<IActionResult> AddMeal(CreateMealDto dto)
         {
@@ -49,7 +49,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpDelete]
-        [Route("Meal")]
+        [Route("DeleteMeal")]
 
         public async Task<IActionResult> DeleteMeal(int idMeal)
         {
@@ -64,7 +64,7 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPut]
-        [Route("Meal")]
+        [Route("EditMeal")]
 
         public async Task<IActionResult> EditMeal(MealDto dto)
         {
