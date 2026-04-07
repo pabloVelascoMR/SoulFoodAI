@@ -15,19 +15,17 @@ export class OnboardingComponent implements OnInit {
   currentStep = 1;
   totalSteps = 5;
 
-  // Listas para guardar lo que trae el mensajero
   goals: any[] = [];
   intolerances: any[] = [];
   foodPlans: any[] = [];
 
-  // La "Caja" que enviaremos a tu CreateUserDataDto de C#
   userData = {
     gender: '',
     age: null as number | null,
     height: null as number | null,
     weight: null as number | null,
     mealsPerDay: 3,
-    idUser: 1, // MÁS ADELANTE: Aquí pondremos el ID del usuario real logueado
+    idUser: 1, 
     idGoal: null as number | null,
     idIntolerance: null as number | null,
     idFoodPlan: null as number | null
@@ -57,14 +55,14 @@ export class OnboardingComponent implements OnInit {
     }
   }
 
-  // Métodos que se ejecutan al hacer click en las tarjetas
+  
   selectGender(gender: string) {
     this.userData.gender = gender;
   }
 
   selectGoal(id: number) {
     this.userData.idGoal = id;
-    setTimeout(() => this.nextStep(), 350); // Avanza con estilo después de medio segundo
+    setTimeout(() => this.nextStep(), 350); 
   }
 
   selectIntolerance(id: number) {
@@ -85,8 +83,6 @@ export class OnboardingComponent implements OnInit {
     this.onboardingService.saveUserData(this.userData).subscribe({
       next: () => {
         alert('¡Plan guardado con éxito!');
-        // Aquí luego navegaremos a la Fase 2 (Buscador de ingredientes)
-        // this.router.navigate(['/ingredients']);
       },
       error: (err) => {
         console.error('Error guardando los datos', err);
