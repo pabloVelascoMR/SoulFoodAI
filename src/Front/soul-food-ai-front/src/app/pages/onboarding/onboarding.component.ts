@@ -26,9 +26,9 @@ export class OnboardingComponent implements OnInit {
     weight: null as number | null,
     mealsPerDay: 3,
     idUser: 4, 
-    idGoal: null as number | null,
-    idIntolerance: null as number | null,
-    idFoodPlan: null as number | null
+    idGoal: 0,
+    idIntolerance: 0,
+    idFoodPlan: 0
   };
 
   constructor(
@@ -43,6 +43,32 @@ export class OnboardingComponent implements OnInit {
   }
 
   nextStep() {
+    if (this.currentStep === 1) {
+      if (!this.userData.gender) {
+        alert('Debes seleccionar tu género para continuar.');
+        return; 
+      }
+      if (!this.userData.age || this.userData.age < 1 || this.userData.age > 120) {
+        alert('Por favor, introduce una edad real.');
+        return; 
+      }
+    }
+
+    if (this.currentStep === 2) {
+      if (!this.userData.height || this.userData.height < 0.5 || this.userData.height > 3.0) {
+        alert('ERROR: La altura debe estar en metros. (Ejemplo: 1.75). No uses centímetros.');
+        return;
+      }
+      if (!this.userData.weight || this.userData.weight < 20 || this.userData.weight > 300) {
+        alert('ERROR: El peso debe estar entre 20kg y 300kg.');
+        return;
+      }
+      if (!this.userData.mealsPerDay || this.userData.mealsPerDay < 1 || this.userData.mealsPerDay > 5) {
+        alert('ERROR: Te recomendamos hacer entre 1 y 5 comidas al día.');
+        return;
+      }
+    }
+
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
     }
@@ -54,7 +80,6 @@ export class OnboardingComponent implements OnInit {
     }
   }
 
-  
   selectGender(gender: string) {
     this.userData.gender = gender;
   }
@@ -78,7 +103,6 @@ export class OnboardingComponent implements OnInit {
   }
 
   finishOnboarding() {
-    // Mandamos el mensajero a tu API
     this.onboardingService.saveUserData(this.userData).subscribe({
       next: () => {
         alert('¡Plan guardado con éxito!');

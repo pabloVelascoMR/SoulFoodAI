@@ -19,10 +19,13 @@
 
       <div class="form-group">
         <label>¿Qué edad tienes?</label>
-        <input type="number" class="big-input" [(ngModel)]="userData.age" placeholder="Ej. 25">
+        <input type="number" class="big-input" [(ngModel)]="userData.age" name="age" #ageCtrl="ngModel" required min="1" max="120" placeholder="Ej. 25">
+        <div class="error-text" *ngIf="ageCtrl.invalid && (ageCtrl.dirty || ageCtrl.touched)">
+          Por favor, introduce una edad real.
+        </div>
       </div>
 
-      <button class="btn-primary" [disabled]="!userData.age || !userData.gender" (click)="nextStep()">Continuar</button>
+      <button class="btn-primary" [disabled]="!userData.gender || ageCtrl.invalid" (click)="nextStep()">Continuar</button>
     </div>
 
     <div class="module" *ngIf="currentStep === 2">
@@ -30,22 +33,31 @@
       
       <div class="form-group">
         <label>Altura (en metros)</label>
-        <input type="number" step="0.01" class="big-input" [(ngModel)]="userData.height" placeholder="Ej. 1.75">
+        <input type="number" step="0.01" class="big-input" [(ngModel)]="userData.height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0" placeholder="Ej. 1.75">
+        <div class="error-text" *ngIf="heightCtrl.invalid && (heightCtrl.dirty || heightCtrl.touched)">
+          La altura debe ser en metros (ej: 1.75).
+        </div>
       </div>
 
       <div class="form-group">
         <label>Peso (en kg)</label>
-        <input type="number" class="big-input" [(ngModel)]="userData.weight" placeholder="Ej. 70.5">
+        <input type="number" class="big-input" [(ngModel)]="userData.weight" name="weight" #weightCtrl="ngModel" required min="20" max="300" placeholder="Ej. 70.5">
+        <div class="error-text" *ngIf="weightCtrl.invalid && (weightCtrl.dirty || weightCtrl.touched)">
+          Por favor, introduce un peso válido (entre 20kg y 300kg).
+        </div>
       </div>
 
       <div class="form-group">
         <label>¿Cuántas comidas harás al día?</label>
-        <input type="number" class="big-input" [(ngModel)]="userData.mealsPerDay" placeholder="Ej. 3">
+        <input type="number" class="big-input" [(ngModel)]="userData.mealsPerDay" name="meals" #mealsCtrl="ngModel" required min="1" max="5" placeholder="Ej. 3">
+        <div class="error-text" *ngIf="mealsCtrl.invalid && (mealsCtrl.dirty || mealsCtrl.touched)">
+          Te recomendamos entre 1 y 5 comidas al día.
+        </div>
       </div>
 
       <div class="button-group">
         <button class="btn-secondary" (click)="prevStep()">Volver</button>
-        <button class="btn-primary" [disabled]="!userData.height || !userData.weight || !userData.mealsPerDay" (click)="nextStep()">Continuar</button>
+        <button class="btn-primary" [disabled]="heightCtrl.invalid || weightCtrl.invalid || mealsCtrl.invalid" (click)="nextStep()">Continuar</button>
       </div>
     </div>
 
