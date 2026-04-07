@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Importante para que funcione la pantalla
+  imports: [CommonModule, FormsModule], 
   templateUrl: './onboarding.component.html',
   styleUrls: ['./onboarding.component.css']
 })
@@ -25,7 +25,7 @@ export class OnboardingComponent implements OnInit {
     height: null as number | null,
     weight: null as number | null,
     mealsPerDay: 3,
-    idUser: 1, 
+    idUser: 4, 
     idGoal: null as number | null,
     idIntolerance: null as number | null,
     idFoodPlan: null as number | null
@@ -37,7 +37,6 @@ export class OnboardingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Al abrir la pantalla, mandamos al mensajero a por las opciones
     this.onboardingService.getGoals().subscribe(res => this.goals = res);
     this.onboardingService.getIntolerances().subscribe(res => this.intolerances = res);
     this.onboardingService.getFoodPlans().subscribe(res => this.foodPlans = res);

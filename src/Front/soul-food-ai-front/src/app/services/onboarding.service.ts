@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class OnboardingService {
  
-  private apiUrl = 'http://localhost:4200/api'; 
+  private apiUrl = 'https://localhost:7007/api';
 
   constructor(private http: HttpClient) { }
 
