@@ -1,20 +1,50 @@
-<h2>Registro</h2>
+<div class="page-layout">
+  
+  <h1 class="auth-main-title">SOUL FOOD<br>AI</h1>
 
-<form (ngSubmit)="register()">
-  <input type="text" [(ngModel)]="name" name="name" placeholder="Nombre" required>
-  <br>
+  <div class="auth-card">
+    
+    <h2 class="auth-title">REGISTER</h2>
 
-  <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required>
-  <br>
+    <form (ngSubmit)="register()">
+      
+      <div class="input-group">
+        <div class="label-row">
+          <label>Name</label>
+        </div>
+        <div class="input-wrapper">
+          <input type="text" class="auth-input" [(ngModel)]="name" name="name" placeholder="John Doe" required>
+        </div>
+      </div>
 
-  <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required>
-  <br>
+      <div class="input-group">
+        <div class="label-row">
+          <label>Email</label>
+        </div>
+        <div class="input-wrapper">
+          <input type="email" class="auth-input" [(ngModel)]="email" name="email" placeholder="hello@soulfood.ai" required>
+        </div>
+      </div>
 
-  <button type="submit">Registrarse</button>
-</form>
+      <div class="input-group">
+        <div class="label-row">
+          <label>Password</label>
+        </div>
+        <div class="input-wrapper">
+          <input type="password" class="auth-input has-icon-right" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+          <svg class="icon-right" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </div>
+      </div>
 
-<p>
-  ¿Ya tienes cuenta?
-  <button routerLink="/" class="btn-login">Inicia Sesion</button>
-</p>
+      <button type="submit" class="auth-btn">REGISTER</button>
 
+      <p class="auth-footer-text">
+        Already have an account? <a routerLink="/" class="auth-link">Log in</a>
+      </p>
+    </form>
+
+  </div>
+</div>

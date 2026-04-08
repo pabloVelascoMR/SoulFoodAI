@@ -1,50 +1,149 @@
-form {
-  background-color: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
+:host {
+  display: block;
+}
+
+/* --- Título principal de la imagen --- */
+.auth-main-title {
+  font-family: var(--font-headline);
+  font-size: 5rem;
+  font-weight: 800;
+  color: #0b4522;
   text-align: center;
-  width: 300px;
+  text-transform: uppercase;
+  line-height: 0.9;
+  margin-bottom: 40px;
+  margin-top: 0;
+  text-shadow: 
+    3px 3px 0px rgba(11, 69, 34, 0.8),
+    6px 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-h2 {
-  text-align: center;
-  color: #2e7d32;
-}
-
-input {
+/* --- Tarjeta --- */
+.auth-card {
+  background-color: #fcfbf5;
+  padding: 50px 40px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  max-width: 420px;
+  box-sizing: border-box;
 }
 
-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #FFEB3B;
-  color: black;
-  border: none;
-  border-radius: 8px;
+/* --- Título dentro de la tarjeta --- */
+.auth-title {
+  font-family: var(--font-headline);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0b4522;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+/* --- Estructura de Inputs y Labels --- */
+.input-group {
+  margin-bottom: 24px;
+}
+
+.label-row {
+  margin-bottom: 8px;
+}
+
+.label-row label {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #3d664c;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon-right {
+  position: absolute;
+  right: 18px;
+  color: #6a9c7d;
   cursor: pointer;
-  font-weight: bold;
 }
 
-button:hover {
-  background-color: #fdd835;
+
+.auth-input {
+  width: 100%;
+  /* Padding normal a la izquierda porque no hay iconos */
+  padding: 16px 20px; 
+  background-color: #c7f6d9;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0b4522;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
-p {
-  text-align: center;
+
+.auth-input.has-icon-right {
+  padding-right: 45px;
 }
 
-.btn-login {
+.auth-input::placeholder {
+  color: #8ac09e;
+  font-weight: 400;
+}
+
+.auth-input:focus {
+  border-color: #2ECC71;
+  background-color: #d8fce5;
+}
+
+/* --- Botón Degradado --- */
+.auth-btn {
+  width: 100%;
+  padding: 20px;
   margin-top: 10px;
-  background-color: #4CAF50;
+  background: linear-gradient(90deg, #0f6c34 0%, #4ae382 100%);
   color: white;
+  border: none;
+  border-radius: 50px;
+  font-family: var(--font-headline);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 20px rgba(74, 227, 130, 0.3);
+  transition: all 0.3s ease;
 }
 
-.btn-login:hover {
-  background-color: #388e3c;
+.auth-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 25px rgba(74, 227, 130, 0.4);
+}
+
+/* --- Footer --- */
+.auth-footer-text {
+  text-align: center;
+  margin-top: 30px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: #5c8068;
+}
+
+.auth-link {
+  color: #0b4522;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* --- Responsive --- */
+@media (max-width: 480px) {
+  .auth-main-title { font-size: 3.5rem; }
+  .auth-card { padding: 40px 24px; }
 }
