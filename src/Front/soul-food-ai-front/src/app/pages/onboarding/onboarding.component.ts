@@ -37,16 +37,14 @@ export class OnboardingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    
     this.onboardingService.getGoals().subscribe(res => this.goals = res);
     this.onboardingService.getIntolerances().subscribe(res => this.intolerances = res);
     this.onboardingService.getFoodPlans().subscribe(res => this.foodPlans = res);
   }
 
-  
   decrementAge() {
     if (this.userData.age === null) {
-      this.userData.age = 28; // Edad por defecto si es nula
+      this.userData.age = 28;
     }
     if (this.userData.age > 1) {
       this.userData.age--;
@@ -55,7 +53,7 @@ export class OnboardingComponent implements OnInit {
 
   incrementAge() {
     if (this.userData.age === null) {
-      this.userData.age = 28; // Edad por defecto si es nula
+      this.userData.age = 28;
     }
     if (this.userData.age < 120) {
       this.userData.age++;
@@ -63,7 +61,6 @@ export class OnboardingComponent implements OnInit {
   }
 
   nextStep() {
-    // Validaciones del paso 1
     if (this.currentStep === 1) {
       if (!this.userData.gender) {
         alert('Debes seleccionar tu género para continuar.');
@@ -75,7 +72,6 @@ export class OnboardingComponent implements OnInit {
       }
     }
 
-    
     if (this.currentStep === 2) {
       if (!this.userData.height || this.userData.height < 0.5 || this.userData.height > 3.0) {
         alert('ERROR: La altura debe estar en metros. (Ejemplo: 1.75). No uses centímetros.');
@@ -106,34 +102,34 @@ export class OnboardingComponent implements OnInit {
     this.userData.gender = gender;
   }
 
+  
   selectGoal(id: number) {
     this.userData.idGoal = id;
-    // Transición automática suave al seleccionar el objetivo
-    setTimeout(() => this.nextStep(), 350); 
+    this.nextStep(); 
   }
 
+  
   selectIntolerance(id: number) {
-    this.userData.idIntolerance = id;
-    // Transición automática suave al seleccionar la intolerancia
-    setTimeout(() => this.nextStep(), 350);
+    
+    if (this.userData.idIntolerance === id) {
+      this.userData.idIntolerance = 0;
+    } else {
+      this.userData.idIntolerance = id;
+    }
   }
 
   selectFoodPlan(id: number) {
     this.userData.idFoodPlan = id;
   }
 
- 
   get progressPercentage() {
     return (this.currentStep / this.totalSteps) * 100;
   }
 
   finishOnboarding() {
-    
     this.onboardingService.saveUserData(this.userData).subscribe({
       next: () => {
         alert('¡Plan guardado con éxito!');
-        
-        // this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error('Error guardando los datos', err);

@@ -18,7 +18,7 @@
           
           <div class="selection-card" [class.selected]="userData.gender === 'Hombre'" (click)="selectGender('Hombre')">
             <div class="gender-icon-container">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="10" cy="14" r="5"></circle>
                 <line x1="13.5" y1="10.5" x2="21" y2="3"></line>
                 <line x1="16" y1="3" x2="21" y2="3"></line>
@@ -30,7 +30,7 @@
 
           <div class="selection-card" [class.selected]="userData.gender === 'Mujer'" (click)="selectGender('Mujer')">
             <div class="gender-icon-container">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="10" r="5"></circle>
                 <line x1="12" y1="15" x2="12" y2="22"></line>
                 <line x1="9" y1="19" x2="15" y2="19"></line>
@@ -74,7 +74,7 @@
       
       <div class="form-group">
         <label class="form-label">Altura (en metros)</label>
-        <input type="number" step="0.01" class="form-input big-input" style="width: 100%" [(ngModel)]="userData.height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0" placeholder="Ej. 1.75">
+        <input type="number" step="0.01" class="form-input" [(ngModel)]="userData.height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0" placeholder="Ej. 1.75">
         <div class="text-error" *ngIf="heightCtrl.invalid && (heightCtrl.dirty || heightCtrl.touched)">
           La altura debe ser en metros (ej: 1.75).
         </div>
@@ -82,7 +82,7 @@
 
       <div class="form-group">
         <label class="form-label">Peso (en kg)</label>
-        <input type="number" class="form-input big-input" style="width: 100%" [(ngModel)]="userData.weight" name="weight" #weightCtrl="ngModel" required min="20" max="300" placeholder="Ej. 70.5">
+        <input type="number" class="form-input" [(ngModel)]="userData.weight" name="weight" #weightCtrl="ngModel" required min="20" max="300" placeholder="Ej. 70.5">
         <div class="text-error" *ngIf="weightCtrl.invalid && (weightCtrl.dirty || weightCtrl.touched)">
           Por favor, introduce un peso válido (entre 20kg y 300kg).
         </div>
@@ -90,7 +90,7 @@
 
       <div class="form-group">
         <label class="form-label">¿Cuántas comidas harás al día?</label>
-        <input type="number" class="form-input big-input" style="width: 100%" [(ngModel)]="userData.mealsPerDay" name="meals" #mealsCtrl="ngModel" required min="1" max="5" placeholder="Ej. 3">
+        <input type="number" class="form-input" [(ngModel)]="userData.mealsPerDay" name="meals" #mealsCtrl="ngModel" required min="1" max="5" placeholder="Ej. 3">
         <div class="text-error" *ngIf="mealsCtrl.invalid && (mealsCtrl.dirty || mealsCtrl.touched)">
           Te recomendamos entre 1 y 5 comidas al día.
         </div>
@@ -128,7 +128,9 @@
       </div>
       <div class="btn-group">
         <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
-        <button class="btn-primary" (click)="nextStep()">NINGUNA / OMITIR</button>
+        <button class="btn-primary" (click)="nextStep()">
+          {{ userData.idIntolerance ? 'CONTINUAR' : 'NINGUNA / OMITIR' }}
+        </button>
       </div>
     </div>
 
