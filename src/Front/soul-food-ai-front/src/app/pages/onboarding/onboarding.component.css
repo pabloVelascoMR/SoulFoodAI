@@ -19,7 +19,7 @@
 /* --- Barra de Progreso Ancha --- */
 .progress-container {
   width: 100%;
-  max-width: 850px; /* Igual que la tarjeta */
+  max-width: 850px;
   height: 10px;
   background: rgba(255, 255, 255, 0.4);
   border-radius: var(--border-radius-sm);
@@ -41,7 +41,7 @@
   justify-content: center;
 }
 
-/* --- Tarjetas de selección  --- */
+/* --- Tarjetas de selección --- */
 .selection-card {
   background: var(--bg-surface);
   border: 2px solid var(--border-color);
@@ -54,7 +54,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; 
+  height: 100%; 
 }
 
 .selection-card:hover {
@@ -70,7 +71,29 @@
   box-shadow: var(--shadow-primary);
 }
 
-/* --- Iconos de Género y Botones +/-  --- */
+/* --- Estilos para Emojis (Objetivo, Intolerancias y Dietas) --- */
+.goal-emoji, 
+.intolerance-emoji,
+.diet-emoji {
+  font-size: 3rem; 
+  margin-bottom: 16px;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.selection-card:hover .goal-emoji,
+.selection-card:hover .intolerance-emoji,
+.selection-card:hover .diet-emoji {
+  transform: scale(1.2) rotate(5deg); /* animación al pasar el ratón */
+}
+
+.selection-card.selected .goal-emoji,
+.selection-card.selected .intolerance-emoji,
+.selection-card.selected .diet-emoji {
+  transform: scale(1.2);
+}
+
+/* --- Iconos de Género y Botones +/- --- */
 .gender-icon-container,
 .btn-counter {
   width: 68px; 
@@ -86,9 +109,9 @@
   flex-shrink: 0;
 }
 
-/* Ajustes específicos para Género */
 .gender-icon-container {
   margin-bottom: 16px;
+  font-size: 2rem;
 }
 
 .selection-card.selected .gender-icon-container {
@@ -121,20 +144,22 @@
 
 /* Textos dentro de las tarjetas */
 .selection-card h3 {
-  font-size: 1.3rem; /* Letra más grande */
+  font-size: 1.4rem; 
   font-weight: 800;
   color: var(--text-dark);
-  margin: 0 0 8px;
+  margin: 0 0 12px;
+  line-height: 1.2;
 }
 
 .selection-card p {
-  font-size: 1rem;
+  font-size: 0.95rem; 
   color: var(--text-muted);
   margin: 0;
   line-height: 1.5;
+  text-align: center;
 }
 
-/* --- Input numérico  --- */
+/* --- Input numérico --- */
 .number-input-wrapper {
   display: flex;
   align-items: center;
@@ -149,9 +174,11 @@
   padding: 16px;
   width: 180px; 
   font-family: var(--font-headline);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: white;
 }
 
-/* Ocultar flechas del input numérico */
 .big-input::-webkit-outer-spin-button,
 .big-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -167,9 +194,11 @@
   .number-input-wrapper { gap: 15px; }
   .big-input { font-size: 2.5rem; width: 140px; }
   .gender-icon-container, .btn-counter { width: 56px; height: 56px; font-size: 1.8rem; }
+  .goal-emoji, .intolerance-emoji, .diet-emoji { font-size: 2.5rem; }
 }
 
 @media (max-width: 480px) {
   .app-header-title { font-size: 1.8rem; }
   .selection-card { padding: 24px 16px; }
+  .selection-card h3 { font-size: 1.2rem; }
 }

@@ -137,4 +137,53 @@ export class OnboardingComponent implements OnInit {
       }
     });
   }
+  getGoalEmoji(idGoal: number): string {
+    const emojis: { [key: number]: string } = {
+      1: '🔥', 
+      2: '💪', 
+      3: '⚖️', 
+      4: '🔄', 
+      5: '⚡', 
+      6: '🥗'  
+    };
+    return emojis[idGoal] || '🎯';
+  }
+
+  getIntoleranceEmoji(idIntolerance: number): string {
+  const emojis: { [key: number]: string } = {
+    1: '🥛', 
+    2: '🌾',
+    3: '🌰', 
+    4: '🦐', 
+    5: '🥚', 
+    6: '🌱', 
+    7: '🐟', 
+    8: '𓇢', 
+    9: '🌭',
+    10: '🥜', 
+    11: '🍯', 
+    13: '🍚' 
+  };
+  return emojis[idIntolerance] || '⚠️';
+}
+
+getDietEmoji(idFoodPlan: any): string {
+    const id = Number(idFoodPlan);
+    const emojis: { [key: number]: string } = {
+      1: '🍽️', 
+      2: '🥗', 
+      3: '🫒', 
+      4: '🥑', 
+      5: '🧀', 
+      6: '🥩', 
+      7: '🌱', 
+      8: '🥦🥚', 
+      9: '🐟', 
+      10: '🫐', 
+      11: '🌿',
+      12: '❤️'
+    };
+
+    return emojis[id] || '🎯';
+  }
 }

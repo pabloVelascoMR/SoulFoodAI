@@ -4,16 +4,16 @@
 
   <div class="auth-card">
     
-    <h2 class="auth-title">REGISTER</h2>
+    <h2 class="auth-title">CREAR CUENTA</h2>
 
     <form (ngSubmit)="register()">
       
       <div class="input-group">
         <div class="label-row">
-          <label>Name</label>
+          <label>NOMBRE</label>
         </div>
         <div class="input-wrapper">
-          <input type="text" class="auth-input" [(ngModel)]="name" name="name" placeholder="John Doe" required>
+          <input type="text" class="auth-input" [(ngModel)]="name" name="name" placeholder="Liza Klymenko" required>
         </div>
       </div>
 
@@ -22,27 +22,23 @@
           <label>Email</label>
         </div>
         <div class="input-wrapper">
-          <input type="email" class="auth-input" [(ngModel)]="email" name="email" placeholder="hello@soulfood.ai" required>
+          <input type="email" class="auth-input" [(ngModel)]="email" name="email" placeholder="soulfoodai@email.com" required>
         </div>
       </div>
 
       <div class="input-group">
         <div class="label-row">
-          <label>Password</label>
+          <label>CONTRASEÑA</label>
         </div>
         <div class="input-wrapper">
           <input type="password" class="auth-input has-icon-right" [(ngModel)]="password" name="password" placeholder="••••••••" required>
-          <svg class="icon-right" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
         </div>
       </div>
 
-      <button type="submit" class="auth-btn">REGISTER</button>
+      <button type="submit" class="auth-btn">CREAR CUENTA</button>
 
       <p class="auth-footer-text">
-        Already have an account? <a routerLink="/" class="auth-link">Log in</a>
+        Ya tienes cuenta? <a routerLink="/" class="auth-link">Log in</a>
       </p>
     </form>
 
