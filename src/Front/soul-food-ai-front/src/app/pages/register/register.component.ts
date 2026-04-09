@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router'; 
 import { UserService } from '../../services/user.service';
 
 @Component({
@@ -16,7 +16,8 @@ export class RegisterComponent {
   email = '';
   password = '';
 
-  constructor(private userService: UserService) {}
+  
+  constructor(private userService: UserService, private router: Router) {}
 
   register() {
 
@@ -29,11 +30,12 @@ export class RegisterComponent {
     this.userService.register(user).subscribe({
       next: (res) => {
         console.log("Usuario creado:", res);
-        alert("Usuario registrado correctamente");
+        
+        this.router.navigate(['/onboarding']);
       },
       error: (err) => {
         console.error(err);
-        alert("Error al registrar");
+        alert("Error al registrar. Revisa los datos o prueba con otro email.");
       }
     });
   }
