@@ -184,8 +184,18 @@
   -webkit-appearance: none;
   margin: 0;
 }
-.big-input[type=number] {
+
+/* Ocultar flechas del input numérico */
+.big-input::-webkit-outer-spin-button,
+.big-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.big-input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* --- RESPONSIVE --- */
