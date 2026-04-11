@@ -5,6 +5,7 @@ using SoulFoodAiBack.Data;
 using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Models;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json.Nodes;
 
 namespace SoulFoodAiBack.Controllers
@@ -289,5 +290,120 @@ namespace SoulFoodAiBack.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpPost]
+        [Route("AddDefaultIngredient")]
+        public async Task<IActionResult> AddIngredient(CreateIngredientDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Name))
+            {
+                return BadRequest("El nombre del alimento es obligatorio.");
+            }
+     
+            Ingredient newIngredient = new Ingredient
+            {
+                Name = dto.Name,
+                Brand = dto.Brand,
+                OpenFoodFactsId = dto.OpenFoodFactsId,
+                Category = dto.Category,
+                SubCategory = dto.SubCategory,
+                Icon = dto.Icon,
+                ImageUrl = dto.ImageUrl,
+                Protein = dto.Protein,
+                Carbs = dto.Carbs,
+                Fat = dto.Fat,
+                Kcal = dto.Kcal,
+                CreatedByUserId = dto.CreatedByUserId,
+                IsDeleted = dto.IsDeleted
+            };
+
+            _context.Ingredients.Add(newIngredient);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("AddDefaultIngredients")] 
+        public async Task<IActionResult> AddIngredients([FromBody] List<CreateIngredientDto> dtos)
+        {
+            
+            if (dtos == null || !dtos.Any())
+            {
+                return BadRequest("La lista de ingredientes no puede estar vacía.");
+            }
+            
+            if (dtos.Any(d => string.IsNullOrWhiteSpace(d.Name)))
+            {
+                return BadRequest("Todos los alimentos deben tener un nombre obligatorio.");
+            }
+
+            List<Ingredient>? newIngredients = dtos.Select(dto => new Ingredient
+            {
+                Name = dto.Name,
+                Brand = dto.Brand,
+                OpenFoodFactsId = dto.OpenFoodFactsId,
+                Category = dto.Category,
+                SubCategory = dto.SubCategory,
+                Icon = dto.Icon,
+                ImageUrl = dto.ImageUrl,
+                Protein = dto.Protein,
+                Carbs = dto.Carbs,
+                Fat = dto.Fat,
+                Kcal = dto.Kcal,
+                CreatedByUserId = dto.CreatedByUserId,
+                IsDeleted = dto.IsDeleted
+            }).ToList();
+
+            _context.Ingredients.AddRange(newIngredients);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = $"Se han añadido {newIngredients.Count} ingredientes correctamente." });
+        }
+
+        [HttpPut]
+        [Route("UpdateImagenDefaultIngredient")]
+        public async Task<IActionResult> UpdateIngredient(UpdateImageIngredientDto dto)
+        {
+
+            Ingredient? ingredient = await _context.Ingredients.FindAsync(dto.IdIngredient);
+
+            ingredient.ImageUrl = dto.ImageUrl;
+           
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("UpdateImageIngredients")] 
+        public async Task<IActionResult> UpdateIngredients([FromBody] List<UpdateImageIngredientDto> dtos)
+        {
+            
+            if (dtos == null || !dtos.Any())
+            {
+                return BadRequest("La lista de ingredientes está vacía.");
+            }
+
+            
+            var idsToUpdate = dtos.Select(d => d.IdIngredient).ToList();
+
+            
+            var ingredients = await _context.Ingredients
+                .Where(i => idsToUpdate.Contains(i.IdIngredient))
+                .ToListAsync();
+
+            
+            foreach (var ingredient in ingredients)
+            {
+                var newImageData = dtos.FirstOrDefault(d => d.IdIngredient == ingredient.IdIngredient);
+
+                if (newImageData != null)
+                {
+                    ingredient.ImageUrl = newImageData.ImageUrl;
+
+                }
+            }
+            await _context.SaveChangesAsync();
+            return Ok(new { message = $"{ingredients.Count} imágenes actualizadas correctamente." });
+        }
     }
 }
+
