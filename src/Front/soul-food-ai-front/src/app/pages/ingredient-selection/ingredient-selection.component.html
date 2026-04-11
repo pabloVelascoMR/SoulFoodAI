@@ -1,34 +1,41 @@
 <div class="selection-container">
 
-  <header class="stepper">
-    <div 
-      *ngFor="let step of steps; let i = index" 
-      class="step-item"
-      [class.active]="i === currentStepIndex"
-      [class.completed]="i < currentStepIndex"
-    >
-      <div class="step-circle">{{ i + 1 }}</div>
-      <span class="step-label">{{ step.name }}</span>
+  <header class="stepper-container">
+    <div class="stepper-titles">
+      <h1 class="stepper-main-title">Módulo de Selección de Ingredientes</h1>
+      <p class="stepper-subtitle">Selecciona todos los ingredientes necesarios</p>
+    </div>
+    
+    <div class="stepper">
+      <div 
+        *ngFor="let step of steps; let i = index" 
+        class="step-item"
+        [class.active]="i === currentStepIndex"
+        [class.completed]="i < currentStepIndex"
+      >
+        <div class="step-circle">{{ i + 1 }}</div>
+      </div>
     </div>
   </header>
 
   <main class="content">
     <div class="section-header">
-      <h1 class="section-title">{{ steps[currentStepIndex]?.name }}</h1>
-      <p class="section-subtitle">Selecciona tus ingredientes favoritos.</p>
+      <div class="section-left">
+        <h2 class="section-title">{{ steps[currentStepIndex]?.name || 'Soul Food AI' }}</h2>
+      </div>
       
-      <div class="header-buttons">
+      <div class="section-right">
         <button class="btn-create-custom" (click)="openCustomModal()">
-          + Añadir mi propio ingrediente
+          + Crear
         </button>
         <button class="btn-search-off" (click)="openOFFModal()">
-          🔍 Buscar en Escáner (OFF)
+          🔍 Buscar
         </button>
       </div>
     </div>
 
     <section class="ingredients-grid">
-      <div *ngFor="let ingredient of currentIngredients" class="ingredient-card">
+      <div *ngFor="let ingredient of currentIngredients; trackBy: trackByIngredient" class="ingredient-card">
         
         <div class="card-image-wrapper">
           <img *ngIf="!ingredient.hasImageError && getIngredientImage(ingredient)" 
@@ -70,27 +77,34 @@
           </div>
         </div>
 
-        <div class="card-name">{{ ingredient.name }}</div>
+        <div class="card-name">
+          <span class="card-category">{{ ingredient.category }}</span>
+          <span class="card-ingredient-name">{{ ingredient.name }}</span>
+        </div>
       </div>
     </section>
   </main>
 
   <footer class="final-actions">
-    <button class="btn-nav" [style.visibility]="currentStepIndex === 0 ? 'hidden' : 'visible'" (click)="previousStep()">
-      Anterior
-    </button>
+    <div class="footer-left">
+      <button class="btn-nav" [style.visibility]="currentStepIndex === 0 ? 'hidden' : 'visible'" (click)="previousStep()">
+        ← Anterior
+      </button>
+    </div>
     
-    <button *ngIf="currentStepIndex < steps.length - 1" class="btn-primary" (click)="nextStep()">
-      Siguiente Categoría
-    </button>
-    
-    <div *ngIf="currentStepIndex === steps.length - 1" class="finish-wrapper">
+    <div class="finish-wrapper">
        <span class="ingredients-counter" [class.insufficient]="!canFinish">
-         Llevas {{ selectedIngredientIds.size }} / {{ requiredMinimum }} ingredientes
+         {{ selectedIngredientIds.size }} / {{ requiredMinimum }} ingredientes
        </span>
        <button class="btn-primary" [disabled]="!canFinish" (click)="finalizar()">
          Finalizar
        </button>
+    </div>
+
+    <div class="footer-right">
+      <button class="btn-nav" [style.visibility]="currentStepIndex === steps.length - 1 ? 'hidden' : 'visible'" (click)="nextStep()">
+        Siguiente →
+      </button>
     </div>
   </footer>
 

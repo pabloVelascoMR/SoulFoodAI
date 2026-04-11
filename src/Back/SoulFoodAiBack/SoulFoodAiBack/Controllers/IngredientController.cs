@@ -52,153 +52,110 @@ namespace SoulFoodAiBack.Controllers
         [Route("SearchOFFIngredients/{searchText}")]
         public async Task<ActionResult<List<Ingredient>>> SearchOFFIngredients(string searchText)
         {
-
             List<Ingredient> OFFResults = new List<Ingredient>();
-            HttpClient client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(60);
 
+            using HttpClient client = new HttpClient(); 
+            client.Timeout = TimeSpan.FromSeconds(60);
             client.DefaultRequestHeaders.Add("User-Agent", "SoulFoodApp/1.0 (contact: info@soulfoodapp.com) DotNetBackend");
 
             string safeSearchText = Uri.EscapeDataString(searchText);
-
             string url = $"https://es.openfoodfacts.org/cgi/search.pl?search_terms={safeSearchText}&search_simple=1&action=process&json=1&page_size=60";
 
-            HttpResponseMessage? response = null;
-            int maxRetries = 6;
-            int delayMilliseconds = 2000;
+            int maxRetries = 6; 
+            int delayMilliseconds = 1500; 
 
             for (int i = 0; i < maxRetries; i++)
             {
                 try
                 {
-                    response = await client.GetAsync(url);
+                    HttpResponseMessage response = await client.GetAsync(url);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        break;
-                    }
-                    else
-                    {
-                        if (i < maxRetries - 1)
+                        string jsonResponse = await response.Content.ReadAsStringAsync();
+                        JsonNode? data = JsonNode.Parse(jsonResponse);
+
+                        if (data != null && data["products"] != null)
                         {
-                            await Task.Delay(delayMilliseconds);
-                            delayMilliseconds *= 2;
+                            JsonArray productsArray = data["products"]!.AsArray();
+
+                            if (productsArray.Count > 0)
+                            {
+                                foreach (JsonNode? product in productsArray)
+                                {
+                                    if (product != null)
+                                    {
+                                        string openFoodFactsId = product["_id"]?.ToString() ?? "";
+                                        string name = product["product_name"]?.ToString() ?? "";
+                                        string brand = product["brands"]?.ToString() ?? "";
+                                        string imageUrl = product["image_front_small_url"]?.ToString() ?? product["image_url"]?.ToString() ?? "";
+
+                                        if (string.IsNullOrWhiteSpace(name)) continue;
+
+                                        string nameAndBrand = (name + " " + brand).ToLower();
+                                        string[] searchWords = searchText.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                                        bool isValid = true;
+                                        foreach (string word in searchWords)
+                                        {
+                                            if (!nameAndBrand.Contains(word))
+                                            {
+                                                isValid = false;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!isValid) continue;
+
+                                        JsonNode? nutriments = product["nutriments"];
+                                        double protein = 0, carbs = 0, fat = 0, kcal = 0;
+
+                                        if (nutriments != null)
+                                        {
+                                            if (nutriments["proteins_100g"] != null) double.TryParse(nutriments["proteins_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out protein);
+                                            if (nutriments["carbohydrates_100g"] != null) double.TryParse(nutriments["carbohydrates_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out carbs);
+                                            if (nutriments["fat_100g"] != null) double.TryParse(nutriments["fat_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out fat);
+                                            if (nutriments["energy-kcal_100g"] != null) double.TryParse(nutriments["energy-kcal_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out kcal);
+                                        }
+
+                                        Ingredient newIngredient = new Ingredient
+                                        {
+                                            OpenFoodFactsId = openFoodFactsId,
+                                            Name = name,
+                                            Category = "",
+                                            Brand = brand,
+                                            ImageUrl = imageUrl,
+                                            Protein = protein,
+                                            Carbs = carbs,
+                                            Fat = fat,
+                                            Kcal = kcal
+                                        };
+
+                                        bool alreadyExists = OFFResults.Any(saved => saved.Name.ToLower() == newIngredient.Name.ToLower());
+                                        if (!alreadyExists)
+                                        {
+                                            OFFResults.Add(newIngredient);
+                                        }
+                                    }
+                                }
+                                if (OFFResults.Count > 0)
+                                {
+                                    return Ok(OFFResults);
+                                }
+                            }
                         }
                     }
                 }
                 catch (Exception)
                 {
-                    if (i < maxRetries - 1)
-                    {
-                        await Task.Delay(delayMilliseconds);
-                        delayMilliseconds *= 2;
-                    }
+                    
                 }
-            }
 
-            if (response == null || !response.IsSuccessStatusCode)
-            {
-                return Ok(OFFResults);
-            }
-
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            JsonNode? data = JsonNode.Parse(jsonResponse);
-
-            if (data == null || data["products"] == null)
-            {
-                return Ok(OFFResults);
-            }
-
-            JsonArray productsArray = data["products"]!.AsArray();
-
-            foreach (JsonNode? product in productsArray)
-            {
-                if (product != null)
+                if (i < maxRetries - 1)
                 {
-                    string openFoodFactsId = product["_id"]?.ToString() ?? "";
-                    string name = product["product_name"]?.ToString() ?? "";
-                    string brand = product["brands"]?.ToString() ?? "";
-                    string imageUrl = product["image_front_small_url"]?.ToString() ?? product["image_url"]?.ToString() ?? "";
-
-                    if (string.IsNullOrWhiteSpace(name))
-                    {
-                        continue;
-                    }
-
-                    string nameAndBrand = name + " " + brand;
-                    nameAndBrand = nameAndBrand.ToLower();
-
-                    string[] searchWords = searchText.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                    bool isValid = true;
-                    foreach (string word in searchWords)
-                    {
-                        if (!nameAndBrand.Contains(word))
-                        {
-                            isValid = false;
-                            break;
-                        }
-                    }
-
-                    if (!isValid)
-                    {
-                        continue;
-                    }
-
-                    JsonNode? nutriments = product["nutriments"];
-
-                    double protein = 0;
-                    double carbs = 0;
-                    double fat = 0;
-                    double kcal = 0;
-
-                    if (nutriments != null)
-                    {
-                        if (nutriments["proteins_100g"] != null)
-                            double.TryParse(nutriments["proteins_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out protein);
-
-                        if (nutriments["carbohydrates_100g"] != null)
-                            double.TryParse(nutriments["carbohydrates_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out carbs);
-
-                        if (nutriments["fat_100g"] != null)
-                            double.TryParse(nutriments["fat_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out fat);
-
-                        if (nutriments["energy-kcal_100g"] != null)
-                            double.TryParse(nutriments["energy-kcal_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out kcal);
-                    }
-
-                    Ingredient newIngredient = new Ingredient
-                    {
-                        OpenFoodFactsId = openFoodFactsId,
-                        Name = name,
-                        Category = "",
-                        Brand = brand,
-                        ImageUrl = imageUrl,
-                        Protein = protein,
-                        Carbs = carbs,
-                        Fat = fat,
-                        Kcal = kcal
-                    };
-
-                    bool alreadyExists = false;
-                    foreach (Ingredient savedIngredient in OFFResults)
-                    {
-
-                        if (savedIngredient.Name.ToLower() == newIngredient.Name.ToLower())
-                        {
-                            alreadyExists = true;
-                            break;
-                        }
-                    }
-
-                    if (!alreadyExists)
-                    {
-                        OFFResults.Add(newIngredient);
-                    }
-                    ;
+                    await Task.Delay(delayMilliseconds);
                 }
             }
-            client.Dispose();
             return Ok(OFFResults);
         }
 

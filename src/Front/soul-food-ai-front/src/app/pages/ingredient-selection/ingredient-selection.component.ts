@@ -60,10 +60,8 @@ export class IngredientSelectionComponent implements OnInit {
   ngOnInit(): void {
     this.http.get<any>(`https://localhost:7007/api/UserData/GetUserDataById/${this.userId}`).subscribe({
       next: (userData) => {
-        
         this.userDietType = userData?.idFoodPlan || userData?.IdFoodPlan || '1';
         console.log("Dieta del usuario cargada:", this.userDietType); 
-        
         this.setupSteps();
         this.loadSelectedIngredients(); 
         this.loadIngredientsForCurrentStep();
@@ -82,31 +80,25 @@ export class IngredientSelectionComponent implements OnInit {
     const diet = String(this.userDietType).toLowerCase();
     
     if (diet === '7' || diet.includes('vegana')) {
-      // 7 = Vegano: Ocultamos Carne, Pescado y Lácteos
       this.steps = this.allSteps.filter(s => 
         s.name !== 'Carne' && s.name !== 'Pescado/Marisco' && s.name !== 'Lácteos' && s.name !== 'Quesos'
       );
     } else if (diet === '8' || diet.includes('vegetariana')) {
-      // 8 = Vegetariano: Ocultamos Carne y Pescado
       this.steps = this.allSteps.filter(s => 
         s.name !== 'Carne' && s.name !== 'Pescado/Marisco' 
       );
     } else if (diet === '9' || diet.includes('pesce') || diet.includes('pescata')) {
-      // 9 = Pescetariano: Ocultamos solo Carne
       this.steps = this.allSteps.filter(s => s.name !== 'Carne');
     } else {
-      // 1 = General (o cualquier otra cosa): Todas las pestañas
       this.steps = [...this.allSteps];
     }
   }
 
   get requiredMinimum(): number {
     const diet = String(this.userDietType).toLowerCase();
-    
     if (diet === '7' || diet.includes('vegana')) return this.MIN_VEGAN;
     if (diet === '8' || diet.includes('vegetariana')) return this.MIN_VEGETARIAN;
     if (diet === '9' || diet.includes('pesce') || diet.includes('pescata')) return this.MIN_PESCATARIAN;
-    
     return this.MIN_GENERAL; 
   }
 
@@ -119,8 +111,6 @@ export class IngredientSelectionComponent implements OnInit {
       alert("¡Enhorabuena! Has seleccionado los ingredientes mínimos. Ya puedes avanzar a la siguiente pantalla.");
     }
   }
-
-  
 
   loadSelectedIngredients(): void {
     this.userIngredientService.getSelectedIngredients(this.userId).subscribe({
@@ -276,39 +266,51 @@ export class IngredientSelectionComponent implements OnInit {
   }
   closeOFFModal(): void { this.showOFFModal = false; }
 
+  // 🔴 LA MAGIA PARA OFF (Corregida para que funcione perfecto con tu Backend C# o con API Pública)
   searchOFF(): void {
     if (!this.offSearchQuery || this.offSearchQuery.trim() === '') return;
     this.isSearchingOFF = true;
     this.cdr.markForCheck();
-    this.performSearchRequest(3); 
-  }
-
-  performSearchRequest(retriesLeft: number): void {
+    
     this.ingredientService.searchOpenFoodFacts(this.offSearchQuery).subscribe({
       next: (response: any) => {
-        const products = response.products || [];
-        if (products.length === 0 && retriesLeft > 0) {
-          setTimeout(() => { this.performSearchRequest(retriesLeft - 1); }, 1500);
-        } else {
-          this.offSearchResults = products; this.isSearchingOFF = false; this.cdr.markForCheck();
-        }
+        // Detecta si la respuesta viene del Backend de C# (es un Array directo) o de la API de OFF (tiene .products)
+        let products = Array.isArray(response) ? response : (response.products || []);
+        
+        // Eliminamos el setTimeout de Angular. Tu backend de C# ya se encarga de reintentar si no encuentra nada.
+        this.offSearchResults = products; 
+        this.isSearchingOFF = false; 
+        this.cdr.markForCheck();
       },
-      error: () => { this.isSearchingOFF = false; this.cdr.markForCheck(); }
+      error: () => { 
+        this.isSearchingOFF = false; 
+        this.cdr.markForCheck(); 
+      }
     });
   }
 
   selectOFFIngredient(product: any): void {
+    // Mapeo universal: Entiende propiedades vengan de C# o de la API pública
     const dto = {
-      idUser: this.userId, idOpenFoodFacts: product.id || product.code,
-      name: product.product_name_es || product.product_name || 'Sin nombre',
-      brand: product.brands || null, imageUrl: product.image_url || null,
+      idUser: this.userId, 
+      idOpenFoodFacts: product.openFoodFactsId || product.id || product.code,
+      name: product.name || product.product_name_es || product.product_name || 'Sin nombre',
+      brand: product.brand || product.brands || null, 
+      imageUrl: product.imageUrl || product.image_url || null,
       category: this.steps[this.currentStepIndex].name,
-      protein: product.nutriments?.proteins_100g || 0, carbs: product.nutriments?.carbohydrates_100g || 0,
-      fat: product.nutriments?.fat_100g || 0, kcal: product.nutriments?.['energy-kcal_100g'] || 0
+      protein: product.protein ?? (product.nutriments?.proteins_100g || 0), 
+      carbs: product.carbs ?? (product.nutriments?.carbohydrates_100g || 0),
+      fat: product.fat ?? (product.nutriments?.fat_100g || 0), 
+      kcal: product.kcal ?? (product.nutriments?.['energy-kcal_100g'] || 0)
     };
 
     this.ingredientService.addSearchedIngredient(dto).subscribe({
       next: () => { this.closeOFFModal(); this.loadIngredientsForCurrentStep(); this.loadSelectedIngredients(); }
     });
+  }
+
+  
+  trackByIngredient(index: number, ingredient: any): number {
+    return ingredient.idIngredient || ingredient.id;
   }
 }
