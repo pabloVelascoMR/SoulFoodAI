@@ -21,12 +21,16 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("GetIngredients/{category}/{userId}")]
-        public async Task<ActionResult<List<Ingredient>>> GetIngredients(string category,int userId)
+        [Route("GetIngredients")]
+        public async Task<ActionResult<List<Ingredient>>> GetIngredients([FromQuery] string category, [FromQuery] int userId)
         {
+            string decodedCategory = System.Net.WebUtility.UrlDecode(category);
+
             List<Ingredient> ingredients = await _context.Ingredients
-                       .Where(i => i.Category.ToLower() == category.ToLower()&& !i.IsDeleted && (i.CreatedByUserId == null || i.CreatedByUserId == userId)|| i.CreatedByUserId == 0)
-                       .ToListAsync();
+        .Where(i => i.Category == decodedCategory
+                 && i.IsDeleted == false
+                 && (i.CreatedByUserId == null || i.CreatedByUserId == userId || i.CreatedByUserId == 0))
+                 .ToListAsync();
 
             return Ok(ingredients);
         }
