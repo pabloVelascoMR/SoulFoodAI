@@ -203,10 +203,9 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPost]
-        [Route("AddCustomIngredient/{dto}")]
-        public async Task<IActionResult> AddCustomIngredient(CustomIngredientDto dto)
+        [Route("AddCustomIngredient")]
+        public async Task<IActionResult> AddCustomIngredient([FromBody] CustomIngredientDto dto)
         {
-
             if (string.IsNullOrWhiteSpace(dto.Name) || dto.UserId <= 0)
             {
                 return BadRequest("El nombre del alimento y el ID del usuario son obligatorios.");
@@ -216,7 +215,7 @@ namespace SoulFoodAiBack.Controllers
             {
                 Name = dto.Name,
                 Brand = dto.Brand,
-                Category = "Personalizado",
+                Category = !string.IsNullOrWhiteSpace(dto.Category) ? dto.Category : "Personalizado",
                 Icon = dto.Icon,
                 ImageUrl = null,
                 Protein = dto.Protein,
@@ -228,6 +227,16 @@ namespace SoulFoodAiBack.Controllers
 
             _context.Ingredients.Add(newIngredient);
             await _context.SaveChangesAsync();
+
+            UserIngredient newFavorite = new UserIngredient
+            {
+                IdUser = dto.UserId,
+                IdIngredient = newIngredient.IdIngredient 
+            };
+
+            _context.UserIngredients.Add(newFavorite);
+            await _context.SaveChangesAsync();
+
             return Ok();
         }
 
