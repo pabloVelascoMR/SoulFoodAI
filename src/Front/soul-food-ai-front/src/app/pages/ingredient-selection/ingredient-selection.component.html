@@ -14,7 +14,7 @@
 
   <main class="content">
     <div class="section-header">
-      <h1 class="section-title">{{ steps[currentStepIndex].name }}</h1>
+      <h1 class="section-title">{{ steps[currentStepIndex]?.name }}</h1>
       <p class="section-subtitle">Selecciona tus ingredientes favoritos.</p>
       
       <div class="header-buttons">
@@ -76,9 +76,22 @@
   </main>
 
   <footer class="final-actions">
-    <button class="btn-nav" [style.visibility]="currentStepIndex === 0 ? 'hidden' : 'visible'" (click)="previousStep()">Anterior</button>
-    <button *ngIf="currentStepIndex < steps.length - 1" class="btn-primary" (click)="nextStep()">Siguiente Categoría</button>
-    <button *ngIf="currentStepIndex === steps.length - 1" class="btn-primary">Finalizar</button>
+    <button class="btn-nav" [style.visibility]="currentStepIndex === 0 ? 'hidden' : 'visible'" (click)="previousStep()">
+      Anterior
+    </button>
+    
+    <button *ngIf="currentStepIndex < steps.length - 1" class="btn-primary" (click)="nextStep()">
+      Siguiente Categoría
+    </button>
+    
+    <div *ngIf="currentStepIndex === steps.length - 1" class="finish-wrapper">
+       <span class="ingredients-counter" [class.insufficient]="!canFinish">
+         Llevas {{ selectedIngredientIds.size }} / {{ requiredMinimum }} ingredientes
+       </span>
+       <button class="btn-primary" [disabled]="!canFinish" (click)="finalizar()">
+         Finalizar
+       </button>
+    </div>
   </footer>
 
   <div class="modal-overlay" *ngIf="showCustomModal">
@@ -136,7 +149,7 @@
       
       <div class="off-search-bar">
         <input type="text" class="modal-input" [(ngModel)]="offSearchQuery" 
-               placeholder="Ej: Leche Pascual, Cereales..."
+               placeholder="Ej: Leche Pascual, Cereales..." 
                (keyup.enter)="searchOFF()">
         <button class="btn-save" (click)="searchOFF()" [disabled]="isSearchingOFF">
           {{ isSearchingOFF ? 'Buscando...' : 'Buscar' }}

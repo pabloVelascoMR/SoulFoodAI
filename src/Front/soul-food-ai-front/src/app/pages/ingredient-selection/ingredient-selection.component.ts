@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';   
+import { HttpClient } from '@angular/common/http'; 
 import { IngredientService } from '../../services/ingredient.service';
 import { UserIngredientService } from '../../services/user_ingredient.service';
 
@@ -13,7 +14,8 @@ import { UserIngredientService } from '../../services/user_ingredient.service';
 })
 export class IngredientSelectionComponent implements OnInit {
 
-  steps = [
+  // Todas las categorías posibles
+  allSteps = [
     { name: 'Carne', subcategories: [] },
     { name: 'Pescado/Marisco', subcategories: [] }, 
     { name: 'Verdura', subcategories: [] },
@@ -25,8 +27,17 @@ export class IngredientSelectionComponent implements OnInit {
     { name: 'Cereales', subcategories: [] }
   ];
 
+  steps: any[] = []; 
   currentStepIndex = 0;
-  userId: number = 5; 
+  userId: number = 12; 
+  userDietType: any = '1';
+
+  // Configuración de MÍNIMOS por dieta
+  MIN_GENERAL = 35;
+  MIN_PESCATARIAN = 30;
+  MIN_VEGETARIAN = 25;
+  MIN_VEGAN = 20;
+
   currentIngredients: any[] = [];
   selectedIngredientIds: Set<number> = new Set();
 
@@ -34,7 +45,6 @@ export class IngredientSelectionComponent implements OnInit {
   isEditing: boolean = false;
   newIngredient: any = this.getEmptyIngredient();
 
-  // Variables para OFF
   showOFFModal: boolean = false;
   offSearchQuery: string = '';
   offSearchResults: any[] = [];
@@ -43,22 +53,79 @@ export class IngredientSelectionComponent implements OnInit {
   constructor(
     private ingredientService: IngredientService,
     private userIngredientService: UserIngredientService,
-    private cdr: ChangeDetectorRef 
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient 
   ) {}
 
   ngOnInit(): void {
-    this.loadSelectedIngredients(); 
-    this.loadIngredientsForCurrentStep();
+    this.http.get<any>(`https://localhost:7007/api/UserData/GetUserDataById/${this.userId}`).subscribe({
+      next: (userData) => {
+        
+        this.userDietType = userData?.idFoodPlan || userData?.IdFoodPlan || '1';
+        console.log("Dieta del usuario cargada:", this.userDietType); 
+        
+        this.setupSteps();
+        this.loadSelectedIngredients(); 
+        this.loadIngredientsForCurrentStep();
+      },
+      error: (err) => {
+        console.warn("No se pudo obtener la dieta. Usando General (1) por defecto.");
+        this.userDietType = '1';
+        this.setupSteps();
+        this.loadSelectedIngredients(); 
+        this.loadIngredientsForCurrentStep();
+      }
+    });
   }
+
+  setupSteps(): void {
+    const diet = String(this.userDietType).toLowerCase();
+    
+    if (diet === '7' || diet.includes('vegana')) {
+      // 7 = Vegano: Ocultamos Carne, Pescado y Lácteos
+      this.steps = this.allSteps.filter(s => 
+        s.name !== 'Carne' && s.name !== 'Pescado/Marisco' && s.name !== 'Lácteos' && s.name !== 'Quesos'
+      );
+    } else if (diet === '8' || diet.includes('vegetariana')) {
+      // 8 = Vegetariano: Ocultamos Carne y Pescado
+      this.steps = this.allSteps.filter(s => 
+        s.name !== 'Carne' && s.name !== 'Pescado/Marisco' 
+      );
+    } else if (diet === '9' || diet.includes('pesce') || diet.includes('pescata')) {
+      // 9 = Pescetariano: Ocultamos solo Carne
+      this.steps = this.allSteps.filter(s => s.name !== 'Carne');
+    } else {
+      // 1 = General (o cualquier otra cosa): Todas las pestañas
+      this.steps = [...this.allSteps];
+    }
+  }
+
+  get requiredMinimum(): number {
+    const diet = String(this.userDietType).toLowerCase();
+    
+    if (diet === '7' || diet.includes('vegana')) return this.MIN_VEGAN;
+    if (diet === '8' || diet.includes('vegetariana')) return this.MIN_VEGETARIAN;
+    if (diet === '9' || diet.includes('pesce') || diet.includes('pescata')) return this.MIN_PESCATARIAN;
+    
+    return this.MIN_GENERAL; 
+  }
+
+  get canFinish(): boolean {
+    return this.selectedIngredientIds.size >= this.requiredMinimum;
+  }
+
+  finalizar(): void {
+    if (this.canFinish) {
+      alert("¡Enhorabuena! Has seleccionado los ingredientes mínimos. Ya puedes avanzar a la siguiente pantalla.");
+    }
+  }
+
+  
 
   loadSelectedIngredients(): void {
     this.userIngredientService.getSelectedIngredients(this.userId).subscribe({
       next: (favorites) => {
-        const validIds = favorites.map((f: any) => {
-          const rawId = f.idIngredient || f.IdIngredient || f.id || f.Id;
-          return Number(rawId);
-        }).filter(id => !isNaN(id) && id > 0); 
-
+        const validIds = favorites.map((f: any) => Number(f.idIngredient || f.IdIngredient || f.id || f.Id)).filter(id => !isNaN(id) && id > 0); 
         this.selectedIngredientIds = new Set(validIds);
         this.cdr.markForCheck(); 
       }
@@ -66,23 +133,21 @@ export class IngredientSelectionComponent implements OnInit {
   }
 
   loadIngredientsForCurrentStep(): void {
+    if (this.steps.length === 0) return;
     const currentStep = this.steps[this.currentStepIndex];
     this.currentIngredients = []; 
 
-    this.ingredientService.getIngredients(currentStep.name, this.userId)
-      .subscribe({
-        next: (ingredients) => {
-          this.currentIngredients = ingredients;
-          this.cdr.markForCheck(); 
-        },
-        error: (error) => console.error(`Fallo al obtener ingredientes:`, error)
-      });
+    this.ingredientService.getIngredients(currentStep.name, this.userId).subscribe({
+      next: (ingredients) => {
+        this.currentIngredients = ingredients;
+        this.cdr.markForCheck(); 
+      }
+    });
   }
 
   toggleIngredientSelection(ingredient: any): void {
     const rawId = ingredient.idIngredient || ingredient.IdIngredient || ingredient.id || ingredient.Id;
     if (!rawId) return; 
-
     const validId: number = Number(rawId);
 
     if (this.selectedIngredientIds.has(validId)) {
@@ -105,7 +170,6 @@ export class IngredientSelectionComponent implements OnInit {
   isIngredientSelected(ingredient: any): boolean {
     if (!ingredient) return false;
     const rawId = ingredient.idIngredient || ingredient.IdIngredient || ingredient.id || ingredient.Id;
-    if (!rawId) return false;
     return this.selectedIngredientIds.has(Number(rawId));
   }
 
@@ -124,16 +188,9 @@ export class IngredientSelectionComponent implements OnInit {
   }
 
   getIngredientImage(ingredient: any): string | null {
-    const id = ingredient.idIngredient || ingredient.id;
-    const numericId = Number(id);
-
-    if (numericId > 0 && numericId <= 191) {
-      return `/assets/ingredientes_imagenes/${numericId}.jpg`;
-    }
-
-    if (ingredient.imageUrl && ingredient.imageUrl.startsWith('http')) {
-      return ingredient.imageUrl;
-    }
+    const numericId = Number(ingredient.idIngredient || ingredient.id);
+    if (numericId > 0 && numericId <= 191) return `/assets/ingredientes_imagenes/${numericId}.jpg`;
+    if (ingredient.imageUrl && ingredient.imageUrl.startsWith('http')) return ingredient.imageUrl;
     return null;
   }
 
@@ -143,7 +200,6 @@ export class IngredientSelectionComponent implements OnInit {
     this.cdr.detectChanges();            
   }
 
- 
   canEdit(ingredient: any): boolean {
     const isCreator = ingredient.createdByUserId === this.userId;
     const hasOFF = ingredient.idOpenFoodFacts || ingredient.IdOpenFoodFacts || ingredient.openFoodFactsId;
@@ -158,7 +214,7 @@ export class IngredientSelectionComponent implements OnInit {
 
   deleteCustomIngredient(ingredient: any, event: Event): void {
     event.stopPropagation(); 
-    if (confirm(`¿Estás seguro de que quieres eliminar '${ingredient.name}'?`)) {
+    if (confirm(`¿Estás seguro de que quieres eliminar '${ingredient.name}' definitivamente?`)) {
       const rawId = ingredient.idIngredient || ingredient.id;
       this.ingredientService.deleteCustomIngredient(Number(rawId), this.userId).subscribe({
         next: () => this.loadIngredientsForCurrentStep()
@@ -166,7 +222,6 @@ export class IngredientSelectionComponent implements OnInit {
     }
   }
 
-  // --- Modal Custom ---
   getEmptyIngredient() {
     return { name: '', brand: '', category: '', icon: '🍽️', protein: 0, carbs: 0, fat: 0, kcal: 0 };
   }
@@ -195,58 +250,34 @@ export class IngredientSelectionComponent implements OnInit {
     this.showCustomModal = true;
   }
 
-  closeCustomModal(): void {
-    this.showCustomModal = false;
-  }
+  closeCustomModal(): void { this.showCustomModal = false; }
 
   saveCustomIngredient(): void {
     if (!this.newIngredient.name || this.newIngredient.name.trim() === '') return;
-
     const dto = {
-      id: this.newIngredient.id,
-      name: this.newIngredient.name,
-      brand: this.newIngredient.brand,
-      category: this.newIngredient.category,
-      icon: this.newIngredient.icon,
-      protein: this.newIngredient.protein,
-      carbs: this.newIngredient.carbs,
-      fat: this.newIngredient.fat,
-      kcal: this.newIngredient.kcal,
-      userId: this.userId
+      id: this.newIngredient.id, name: this.newIngredient.name, brand: this.newIngredient.brand,
+      category: this.newIngredient.category, icon: this.newIngredient.icon, protein: this.newIngredient.protein,
+      carbs: this.newIngredient.carbs, fat: this.newIngredient.fat, kcal: this.newIngredient.kcal, userId: this.userId
     };
 
     if (this.isEditing) {
       this.ingredientService.updateCustomIngredient(this.newIngredient.id, dto).subscribe({
-        next: () => {
-          this.closeCustomModal();
-          this.loadIngredientsForCurrentStep();
-        }
+        next: () => { this.closeCustomModal(); this.loadIngredientsForCurrentStep(); }
       });
     } else {
       this.ingredientService.addCustomIngredient(dto).subscribe({
-        next: () => {
-          this.closeCustomModal();
-          this.loadIngredientsForCurrentStep(); 
-          this.loadSelectedIngredients(); 
-        }
+        next: () => { this.closeCustomModal(); this.loadIngredientsForCurrentStep(); this.loadSelectedIngredients(); }
       });
     }
   }
 
-  // --- Modal OpenFoodFacts ---
   openOFFModal(): void {
-    this.offSearchQuery = '';
-    this.offSearchResults = [];
-    this.showOFFModal = true;
+    this.offSearchQuery = ''; this.offSearchResults = []; this.showOFFModal = true;
   }
-
-  closeOFFModal(): void {
-    this.showOFFModal = false;
-  }
+  closeOFFModal(): void { this.showOFFModal = false; }
 
   searchOFF(): void {
     if (!this.offSearchQuery || this.offSearchQuery.trim() === '') return;
-    
     this.isSearchingOFF = true;
     this.cdr.markForCheck();
     this.performSearchRequest(3); 
@@ -256,54 +287,28 @@ export class IngredientSelectionComponent implements OnInit {
     this.ingredientService.searchOpenFoodFacts(this.offSearchQuery).subscribe({
       next: (response: any) => {
         const products = response.products || [];
-
         if (products.length === 0 && retriesLeft > 0) {
-          console.log(`OFF devolvió vacío. Reintentando en la sombra... (Intentos restantes: ${retriesLeft})`);
-          
-          setTimeout(() => {
-            this.performSearchRequest(retriesLeft - 1);
-          }, 1500); // Espera 1.5 segundos antes del siguiente intento
-          
+          setTimeout(() => { this.performSearchRequest(retriesLeft - 1); }, 1500);
         } else {
-          // Si ya trajo productos (o si ya agotamos los 3 intentos), paramos la ruleta y mostramos
-          this.offSearchResults = products;
-          this.isSearchingOFF = false;
-          this.cdr.markForCheck();
+          this.offSearchResults = products; this.isSearchingOFF = false; this.cdr.markForCheck();
         }
       },
-      error: (err) => {
-        console.error("Error buscando en OpenFoodFacts:", err);
-        this.isSearchingOFF = false;
-        this.cdr.markForCheck();
-      }
+      error: () => { this.isSearchingOFF = false; this.cdr.markForCheck(); }
     });
   }
 
   selectOFFIngredient(product: any): void {
-    
     const dto = {
-      idUser: this.userId,
-      idOpenFoodFacts: product.id || product.code,
+      idUser: this.userId, idOpenFoodFacts: product.id || product.code,
       name: product.product_name_es || product.product_name || 'Sin nombre',
-      brand: product.brands || null,
-      imageUrl: product.image_url || null,
+      brand: product.brands || null, imageUrl: product.image_url || null,
       category: this.steps[this.currentStepIndex].name,
-      protein: product.nutriments?.proteins_100g || 0,
-      carbs: product.nutriments?.carbohydrates_100g || 0,
-      fat: product.nutriments?.fat_100g || 0,
-      kcal: product.nutriments?.['energy-kcal_100g'] || 0
+      protein: product.nutriments?.proteins_100g || 0, carbs: product.nutriments?.carbohydrates_100g || 0,
+      fat: product.nutriments?.fat_100g || 0, kcal: product.nutriments?.['energy-kcal_100g'] || 0
     };
 
     this.ingredientService.addSearchedIngredient(dto).subscribe({
-      next: () => {
-        this.closeOFFModal();
-        this.loadIngredientsForCurrentStep();
-        this.loadSelectedIngredients(); 
-      },
-      error: (err) => {
-        console.error("Error al guardar de OFF:", err);
-        alert("Hubo un error al añadir el producto.");
-      }
+      next: () => { this.closeOFFModal(); this.loadIngredientsForCurrentStep(); this.loadSelectedIngredients(); }
     });
   }
 }
