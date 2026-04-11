@@ -27,7 +27,7 @@ namespace SoulFoodAiBack.Controllers
         {
             string decodedCategory = System.Net.WebUtility.UrlDecode(category);
 
-            List<Ingredient> ingredients = await _context.Ingredients
+            List<Ingredient> ingredients = await _context.Ingredients.AsNoTracking()
         .Where(i => i.Category == decodedCategory
                  && i.IsDeleted == false
                  && (i.CreatedByUserId == null || i.CreatedByUserId == userId || i.CreatedByUserId == 0))
