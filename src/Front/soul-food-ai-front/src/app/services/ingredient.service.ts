@@ -32,4 +32,15 @@ export class IngredientService {
     return this.http.get<any[]>(`${this.apiUrl}/GetIngredients`, { params });
   }
 
+  addCustomIngredient(ingredientData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/AddCustomIngredient`, ingredientData);
+  }
+
+  deleteCustomIngredient(id: number, userId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/DeleteCustomIngredient/${id}/${userId}`);
+  }
+
+  updateCustomIngredient(id: number, ingredientData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/UpdateCustomIngredient/${id}`, ingredientData);
+  }
 }

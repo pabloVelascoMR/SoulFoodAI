@@ -91,7 +91,6 @@
   font-size: 4.5rem;
 }
 
-/* --- ZONA INTERACTIVA (CORREGIDA CON Z-INDEX) --- */
 .card-action-overlay {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -101,10 +100,17 @@
   justify-content: center;
   opacity: 0;
   transition: opacity 0.2s;
-  z-index: 10; /* 🔴 OBLIGA AL BOTÓN A ESTAR POR ENCIMA DE LA FOTO */
+  z-index: 10; 
 }
 
 .ingredient-card:hover .card-action-overlay { opacity: 1; }
+
+.overlay-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
 
 .action-btn {
   background: #2ecc71;
@@ -114,6 +120,22 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+}
+
+.action-btn-secondary {
+  background: #3b82f6; 
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: background-color 0.2s;
+}
+
+.action-btn-secondary:hover {
+  background: #2563eb; 
 }
 
 .card-selected-tick {
@@ -126,10 +148,33 @@
   display: flex;
   align-items: center; justify-content: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  z-index: 20; /* 🔴 OBLIGA AL TIC A ESTAR POR ENCIMA DE TODO */
+  z-index: 20;
 }
 
 .tick-icon { width: 16px; height: 16px; }
+
+/* X Roja para borrar */
+.card-delete-x {
+  position: absolute;
+  top: 8px; right: 8px; 
+  background: #ef4444; 
+  color: white;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center; justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  z-index: 30; 
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s;
+}
+
+.card-delete-x:hover {
+  transform: scale(1.15);
+  background: #dc2626; 
+}
+
+.x-icon { width: 16px; height: 16px; }
 
 .card-name {
   padding: 1rem;
@@ -160,4 +205,111 @@
   background: #f1f5f9; color: #64748b;
   border: none; padding: 0.8rem 2rem; border-radius: 8px;
   font-weight: 600; cursor: pointer;
+}
+
+/* --- ESTILOS DEL BOTÓN Y MODAL --- */
+.btn-create-custom {
+  background-color: #f1f5f9;
+  color: #3b82f6;
+  border: 1px dashed #3b82f6;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-create-custom:hover {
+  background-color: #eff6ff;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-title {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+  font-size: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.3rem;
+}
+
+.modal-input {
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.macros-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-cancel {
+  background: white;
+  border: 1px solid #cbd5e1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+}
+
+.btn-save {
+  background: #3b82f6;
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-save:hover {
+  background: #2563eb;
 }
