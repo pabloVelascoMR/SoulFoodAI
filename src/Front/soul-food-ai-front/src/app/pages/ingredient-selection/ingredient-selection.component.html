@@ -23,13 +23,19 @@
         
         <div class="card-image-wrapper">
           <img *ngIf="ingredient.imageUrl" [src]="ingredient.imageUrl" [alt]="ingredient.name" class="card-image">
-          
-          <div *ngIf="!ingredient.imageUrl && ingredient.icon" class="emoji-display">
-            {{ ingredient.icon }}
+          <div *ngIf="!ingredient.imageUrl && ingredient.icon" class="emoji-display">{{ ingredient.icon }}</div>
+          <div *ngIf="!ingredient.imageUrl && !ingredient.icon" class="emoji-display">🍽️</div>
+
+          <div class="card-action-overlay">
+            <button class="action-btn" (click)="toggleIngredientSelection(ingredient)">
+              {{ isIngredientSelected(ingredient) ? 'Eliminar' : 'Seleccionar' }}
+            </button>
           </div>
-          
-          <div *ngIf="!ingredient.imageUrl && !ingredient.icon" class="emoji-display">
-            🍽️
+
+          <div class="card-selected-tick" *ngIf="isIngredientSelected(ingredient)">
+            <svg class="tick-icon" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+            </svg>
           </div>
         </div>
 

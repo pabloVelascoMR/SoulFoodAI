@@ -29,6 +29,8 @@ export class IngredientSelectionComponent implements OnInit {
   userId: number = 5; 
   currentIngredients: any[] = [];
 
+  selectedIngredientIds: Set<number> = new Set();
+
   constructor(
     private ingredientService: IngredientService,
     private userIngredientService: UserIngredientService,
@@ -36,12 +38,27 @@ export class IngredientSelectionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadSelectedIngredients(); 
     this.loadIngredientsForCurrentStep();
+  }
+
+  
+  loadSelectedIngredients(): void {
+    this.userIngredientService.getSelectedIngredients(this.userId).subscribe({
+      next: (favorites) => {
+        const validIds = favorites.map((f: any) => {
+          const rawId = f.idIngredient ;
+          return Number(rawId);
+        }).filter(id => !isNaN(id) && id > 0); 
+
+        this.selectedIngredientIds = new Set(validIds);
+        this.cdr.detectChanges(); 
+      }
+    });
   }
 
   loadIngredientsForCurrentStep(): void {
     const currentStep = this.steps[this.currentStepIndex];
-  
     this.currentIngredients = []; 
     this.cdr.detectChanges();
 
@@ -49,14 +66,47 @@ export class IngredientSelectionComponent implements OnInit {
       .subscribe({
         next: (ingredients) => {
           this.currentIngredients = ingredients;
-          this.cdr.detectChanges(); // Forzamos el pintado
+          this.cdr.detectChanges(); 
         },
-        error: (error) => {
-          console.error(`Fallo al obtener ingredientes de ${currentStep.name}:`, error);
-        }
+        error: (error) => console.error(`Fallo al obtener ingredientes:`, error)
       });
   }
 
+  toggleIngredientSelection(ingredient: any): void {
+    
+    const rawId = ingredient.idIngredient 
+    if (!rawId) return; 
+
+    const validId: number = Number(rawId);
+
+    if (this.selectedIngredientIds.has(validId)) {
+      this.userIngredientService.deselectIngredient(this.userId, validId).subscribe({
+        next: () => {
+          this.selectedIngredientIds.delete(validId);
+          this.cdr.detectChanges(); 
+        },
+        error: (err) => console.error("Error al eliminar relación:", err)
+      });
+    } else {
+      this.userIngredientService.selectIngredient(this.userId, ingredient).subscribe({
+        next: () => {
+          this.selectedIngredientIds.add(validId);
+          this.cdr.detectChanges(); 
+        },
+        error: (err) => console.error("Error al añadir relación:", err)
+      });
+    }
+  }
+
+  isIngredientSelected(ingredient: any): boolean {
+    if (!ingredient) return false;
+    const rawId = ingredient.idIngredient 
+    if (!rawId) return false;
+
+    return this.selectedIngredientIds.has(Number(rawId));
+  }
+
+  // --- Navegación ---
   nextStep(): void {
     if (this.currentStepIndex < this.steps.length - 1) {
       this.currentStepIndex++;
