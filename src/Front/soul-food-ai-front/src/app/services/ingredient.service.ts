@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export interface Ingredient {
   idIngredient?: number; 
@@ -23,4 +24,12 @@ export class IngredientService {
 
   constructor(private http: HttpClient) {}
   
+  getIngredients(category: string, userId: number): Observable<any[]> {
+    const params = new HttpParams()
+      .set('category', category)
+      .set('userId', userId.toString());
+
+    return this.http.get<any[]>(`${this.apiUrl}/GetIngredients`, { params });
+  }
+
 }

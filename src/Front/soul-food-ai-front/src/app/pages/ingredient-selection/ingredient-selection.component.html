@@ -5,6 +5,7 @@
       *ngFor="let step of steps; let i = index" 
       class="step-item"
       [class.active]="i === currentStepIndex"
+      [class.completed]="i < currentStepIndex"
     >
       <div class="step-circle">{{ i + 1 }}</div>
       <span class="step-label">{{ step.name }}</span>
@@ -17,12 +18,50 @@
       <p class="section-subtitle">Selecciona tus ingredientes favoritos.</p>
     </div>
 
-    <div style="text-align: center; padding: 50px; color: gray;">
-      ingredientes
-    </div>
+    <section class="ingredients-grid">
+      <div *ngFor="let ingredient of currentIngredients" class="ingredient-card">
+        
+        <div class="card-image-wrapper">
+          <img *ngIf="ingredient.imageUrl" [src]="ingredient.imageUrl" [alt]="ingredient.name" class="card-image">
+          
+          <div *ngIf="!ingredient.imageUrl && ingredient.icon" class="emoji-display">
+            {{ ingredient.icon }}
+          </div>
+          
+          <div *ngIf="!ingredient.imageUrl && !ingredient.icon" class="emoji-display">
+            🍽️
+          </div>
+        </div>
+
+        <div class="card-name">{{ ingredient.name }}</div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="final-actions">
-    </footer>
+    <button 
+      class="btn-nav" 
+      [style.visibility]="currentStepIndex === 0 ? 'hidden' : 'visible'"
+      (click)="previousStep()"
+    >
+      Anterior
+    </button>
+
+    <button 
+      *ngIf="currentStepIndex < steps.length - 1"
+      class="btn-primary" 
+      (click)="nextStep()"
+    >
+      Siguiente Categoría
+    </button>
+
+    <button 
+      *ngIf="currentStepIndex === steps.length - 1"
+      class="btn-primary" 
+    >
+      Finalizar
+    </button>
+  </footer>
 
 </div>
