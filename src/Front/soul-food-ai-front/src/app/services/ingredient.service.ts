@@ -43,4 +43,13 @@ export class IngredientService {
   updateCustomIngredient(id: number, ingredientData: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/UpdateCustomIngredient/${id}`, ingredientData);
   }
+  
+  searchOpenFoodFacts(query: string): Observable<any> {
+    const url = `https://es.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1&page_size=20&fields=code,product_name,product_name_es,brands,image_url,nutriments`;
+    return this.http.get(url);
+  }
+
+  addSearchedIngredient(ingredientData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/AddSearchedIngredient`, ingredientData);
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';   
 import { IngredientService } from '../../services/ingredient.service';
@@ -21,6 +21,7 @@ export class IngredientSelectionComponent implements OnInit {
     { name: 'Hortaliza', subcategories: [] },
     { name: 'Fruta', subcategories: [] },
     { name: 'Lácteos', subcategories: [] },
+    { name: 'Quesos', subcategories: [] },
     { name: 'Cereales', subcategories: [] }
   ];
 
@@ -33,6 +34,12 @@ export class IngredientSelectionComponent implements OnInit {
   isEditing: boolean = false;
   newIngredient: any = this.getEmptyIngredient();
 
+  // Variables para OFF
+  showOFFModal: boolean = false;
+  offSearchQuery: string = '';
+  offSearchResults: any[] = [];
+  isSearchingOFF: boolean = false;
+
   constructor(
     private ingredientService: IngredientService,
     private userIngredientService: UserIngredientService,
@@ -40,7 +47,6 @@ export class IngredientSelectionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Cargamos los datos normalmente
     this.loadSelectedIngredients(); 
     this.loadIngredientsForCurrentStep();
   }
@@ -99,6 +105,7 @@ export class IngredientSelectionComponent implements OnInit {
   isIngredientSelected(ingredient: any): boolean {
     if (!ingredient) return false;
     const rawId = ingredient.idIngredient || ingredient.IdIngredient || ingredient.id || ingredient.Id;
+    if (!rawId) return false;
     return this.selectedIngredientIds.has(Number(rawId));
   }
 
@@ -136,9 +143,10 @@ export class IngredientSelectionComponent implements OnInit {
     this.cdr.detectChanges();            
   }
 
+ 
   canEdit(ingredient: any): boolean {
     const isCreator = ingredient.createdByUserId === this.userId;
-    const hasOFF = ingredient.openFoodFactsId || ingredient.IdOpenFoodFacts || ingredient.idOpenFoodFacts;
+    const hasOFF = ingredient.idOpenFoodFacts || ingredient.IdOpenFoodFacts || ingredient.openFoodFactsId;
     return isCreator && !hasOFF;
   }
 
@@ -158,6 +166,7 @@ export class IngredientSelectionComponent implements OnInit {
     }
   }
 
+  // --- Modal Custom ---
   getEmptyIngredient() {
     return { name: '', brand: '', category: '', icon: '🍽️', protein: 0, carbs: 0, fat: 0, kcal: 0 };
   }
@@ -222,5 +231,79 @@ export class IngredientSelectionComponent implements OnInit {
         }
       });
     }
+  }
+
+  // --- Modal OpenFoodFacts ---
+  openOFFModal(): void {
+    this.offSearchQuery = '';
+    this.offSearchResults = [];
+    this.showOFFModal = true;
+  }
+
+  closeOFFModal(): void {
+    this.showOFFModal = false;
+  }
+
+  searchOFF(): void {
+    if (!this.offSearchQuery || this.offSearchQuery.trim() === '') return;
+    
+    this.isSearchingOFF = true;
+    this.cdr.markForCheck();
+    this.performSearchRequest(3); 
+  }
+
+  performSearchRequest(retriesLeft: number): void {
+    this.ingredientService.searchOpenFoodFacts(this.offSearchQuery).subscribe({
+      next: (response: any) => {
+        const products = response.products || [];
+
+        if (products.length === 0 && retriesLeft > 0) {
+          console.log(`OFF devolvió vacío. Reintentando en la sombra... (Intentos restantes: ${retriesLeft})`);
+          
+          setTimeout(() => {
+            this.performSearchRequest(retriesLeft - 1);
+          }, 1500); // Espera 1.5 segundos antes del siguiente intento
+          
+        } else {
+          // Si ya trajo productos (o si ya agotamos los 3 intentos), paramos la ruleta y mostramos
+          this.offSearchResults = products;
+          this.isSearchingOFF = false;
+          this.cdr.markForCheck();
+        }
+      },
+      error: (err) => {
+        console.error("Error buscando en OpenFoodFacts:", err);
+        this.isSearchingOFF = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  selectOFFIngredient(product: any): void {
+    
+    const dto = {
+      idUser: this.userId,
+      idOpenFoodFacts: product.id || product.code,
+      name: product.product_name_es || product.product_name || 'Sin nombre',
+      brand: product.brands || null,
+      imageUrl: product.image_url || null,
+      category: this.steps[this.currentStepIndex].name,
+      protein: product.nutriments?.proteins_100g || 0,
+      carbs: product.nutriments?.carbohydrates_100g || 0,
+      fat: product.nutriments?.fat_100g || 0,
+      kcal: product.nutriments?.['energy-kcal_100g'] || 0
+    };
+
+    this.ingredientService.addSearchedIngredient(dto).subscribe({
+      next: () => {
+        this.closeOFFModal();
+        this.loadIngredientsForCurrentStep();
+        this.loadSelectedIngredients(); 
+      },
+      error: (err) => {
+        console.error("Error al guardar de OFF:", err);
+        alert("Hubo un error al añadir el producto.");
+      }
+    });
   }
 }

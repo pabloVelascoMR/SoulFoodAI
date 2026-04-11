@@ -17,9 +17,14 @@
       <h1 class="section-title">{{ steps[currentStepIndex].name }}</h1>
       <p class="section-subtitle">Selecciona tus ingredientes favoritos.</p>
       
-      <button class="btn-create-custom" (click)="openCustomModal()">
-        + Añadir mi propio ingrediente
-      </button>
+      <div class="header-buttons">
+        <button class="btn-create-custom" (click)="openCustomModal()">
+          + Añadir mi propio ingrediente
+        </button>
+        <button class="btn-search-off" (click)="openOFFModal()">
+          🔍 Buscar en Escáner (OFF)
+        </button>
+      </div>
     </div>
 
     <section class="ingredients-grid">
@@ -63,7 +68,6 @@
               <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
             </svg>
           </div>
-
         </div>
 
         <div class="card-name">{{ ingredient.name }}</div>
@@ -122,6 +126,54 @@
         <button class="btn-save" (click)="saveCustomIngredient()">
           {{ isEditing ? 'Actualizar' : 'Guardar' }}
         </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showOFFModal">
+    <div class="modal-content modal-off">
+      <h2 class="modal-title">Buscar en OpenFoodFacts</h2>
+      
+      <div class="off-search-bar">
+        <input type="text" class="modal-input" [(ngModel)]="offSearchQuery" 
+               placeholder="Ej: Leche Pascual, Cereales..."
+               (keyup.enter)="searchOFF()">
+        <button class="btn-save" (click)="searchOFF()" [disabled]="isSearchingOFF">
+          {{ isSearchingOFF ? 'Buscando...' : 'Buscar' }}
+        </button>
+      </div>
+
+      <div class="off-results-container">
+        
+        <div *ngIf="isSearchingOFF" class="loading-container">
+          <div class="spinner"></div>
+          <p class="loading-text-animated">Buscando en la base de datos...</p>
+        </div>
+        
+        <div class="off-list" *ngIf="!isSearchingOFF">
+          <div *ngFor="let prod of offSearchResults" class="off-item">
+            <img [src]="prod.image_url || 'assets/placeholder.jpg'" class="off-img" alt="IMG">
+            <div class="off-info">
+              <strong class="off-name">{{ prod.product_name_es || prod.product_name || 'Sin nombre' }}</strong>
+              <span class="off-brand">{{ prod.brands }}</span>
+              <div class="off-macros">
+                {{ prod.nutriments?.['energy-kcal_100g'] || 0 | number:'1.0-0' }} kcal | 
+                P: {{ prod.nutriments?.proteins_100g || 0 }}g | 
+                C: {{ prod.nutriments?.carbohydrates_100g || 0 }}g | 
+                G: {{ prod.nutriments?.fat_100g || 0 }}g
+              </div>
+            </div>
+            <button class="btn-add-off" (click)="selectOFFIngredient(prod)">Añadir</button>
+          </div>
+          
+          <p *ngIf="offSearchResults.length === 0 && offSearchQuery !== '' && !isSearchingOFF" class="no-results">
+            No se han encontrado productos.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeOFFModal()">Cerrar</button>
       </div>
     </div>
   </div>
