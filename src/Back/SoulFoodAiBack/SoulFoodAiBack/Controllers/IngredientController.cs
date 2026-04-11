@@ -301,6 +301,56 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpPost]
+        [Route("AddSearchedIngredient")]
+        public async Task<IActionResult> AddSearchedIngredient([FromBody] SaveSerchedIngredientDto dto)
+        {
+            if (dto.IdUser <= 0) return BadRequest("Usuario no válido.");
+
+            bool userExists = await _context.Users.AnyAsync(u => u.IdUser == dto.IdUser);
+            if (!userExists) return NotFound("Usuario no existe.");
+
+            Ingredient? ingredientSave = await _context.Ingredients
+                .FirstOrDefaultAsync(i => i.OpenFoodFactsId == dto.IdOpenFoodFacts);
+
+            if (ingredientSave == null)
+            {
+                ingredientSave = new Ingredient
+                {
+                    OpenFoodFactsId = dto.IdOpenFoodFacts,
+                    Name = dto.Name ?? "Sin nombre",
+                    Brand = dto.Brand,
+                    ImageUrl = dto.ImageUrl,
+                    Protein = dto.Protein,
+                    Carbs = dto.Carbs,
+                    Fat = dto.Fat,
+                    Kcal = dto.Kcal,
+                    Category = !string.IsNullOrWhiteSpace(dto.Category) ? dto.Category : "Otros",
+                    CreatedByUserId = dto.IdUser,
+                    IsDeleted = false
+                };
+
+                _context.Ingredients.Add(ingredientSave);
+                await _context.SaveChangesAsync(); 
+            }
+
+            bool relationExists = await _context.UserIngredients
+                .AnyAsync(ui => ui.IdUser == dto.IdUser && ui.IdIngredient == ingredientSave.IdIngredient);
+
+            if (!relationExists)
+            {
+                UserIngredient newUserIngredient = new UserIngredient
+                {
+                    IdUser = dto.IdUser,
+                    IdIngredient = ingredientSave.IdIngredient
+                };
+                _context.UserIngredients.Add(newUserIngredient);
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok(new { message = "Ingrediente de catálogo añadido con éxito." });
+        }
+    
+        [HttpPost]
         [Route("AddDefaultIngredient")]
         public async Task<IActionResult> AddIngredient(CreateIngredientDto dto)
         {
