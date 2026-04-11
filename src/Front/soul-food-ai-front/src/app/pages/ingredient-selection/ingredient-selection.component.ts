@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';   
 import { IngredientService } from '../../services/ingredient.service';
@@ -21,14 +21,13 @@ export class IngredientSelectionComponent implements OnInit {
     { name: 'Hortaliza', subcategories: [] },
     { name: 'Fruta', subcategories: [] },
     { name: 'Lácteos', subcategories: [] },
-    { name: 'Quesos', subcategories: [] },
     { name: 'Cereales', subcategories: [] }
   ];
 
   currentStepIndex = 0;
   userId: number = 5; 
   currentIngredients: any[] = [];
-
+  
   selectedIngredientIds: Set<number> = new Set();
 
   constructor(
@@ -42,12 +41,11 @@ export class IngredientSelectionComponent implements OnInit {
     this.loadIngredientsForCurrentStep();
   }
 
-  
   loadSelectedIngredients(): void {
     this.userIngredientService.getSelectedIngredients(this.userId).subscribe({
       next: (favorites) => {
         const validIds = favorites.map((f: any) => {
-          const rawId = f.idIngredient ;
+          const rawId = f.idIngredient || f.IdIngredient || f.id || f.Id;
           return Number(rawId);
         }).filter(id => !isNaN(id) && id > 0); 
 
@@ -72,9 +70,9 @@ export class IngredientSelectionComponent implements OnInit {
       });
   }
 
+  // --- Lógica de Selección ---
   toggleIngredientSelection(ingredient: any): void {
-    
-    const rawId = ingredient.idIngredient 
+    const rawId = ingredient.idIngredient || ingredient.IdIngredient || ingredient.id || ingredient.Id;
     if (!rawId) return; 
 
     const validId: number = Number(rawId);
@@ -100,7 +98,7 @@ export class IngredientSelectionComponent implements OnInit {
 
   isIngredientSelected(ingredient: any): boolean {
     if (!ingredient) return false;
-    const rawId = ingredient.idIngredient 
+    const rawId = ingredient.idIngredient || ingredient.IdIngredient || ingredient.id || ingredient.Id;
     if (!rawId) return false;
 
     return this.selectedIngredientIds.has(Number(rawId));
@@ -119,5 +117,32 @@ export class IngredientSelectionComponent implements OnInit {
       this.currentStepIndex--;
       this.loadIngredientsForCurrentStep();
     }
+  }
+
+  // --- Lógica de Imágenes Locales ---
+  getIngredientImage(ingredient: any): string | null {
+    const id = ingredient.idIngredient || ingredient.id;
+    const numericId = Number(id);
+
+    if (numericId > 0 && numericId <= 191) {
+      return `/assets/ingredientes_imagenes/${numericId}.jpg`; 
+    }
+
+    if (ingredient.imageUrl && ingredient.imageUrl.startsWith('http')) {
+      return ingredient.imageUrl;
+    }
+
+    return null;
+  }
+
+  onImageError(event: any, ingredient: any): void {
+    event.target.style.display = 'none'; 
+    ingredient.hasImageError = true;     
+  }
+  
+  handleImageError(event: any, ingredient: any): void {
+    event.target.style.display = 'none'; 
+    ingredient.hasImageError = true;     
+    this.cdr.detectChanges();  
   }
 }
