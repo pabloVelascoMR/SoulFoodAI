@@ -25,7 +25,7 @@ namespace SoulFoodAiBack.Controllers
         public async Task<ActionResult<List<Ingredient>>> GetIngredients(string category,int userId)
         {
             List<Ingredient> ingredients = await _context.Ingredients
-                       .Where(i => i.Category.ToLower() == category.ToLower()&& !i.IsDeleted && (i.CreatedByUserId == null || i.CreatedByUserId == userId))
+                       .Where(i => i.Category.ToLower() == category.ToLower()&& !i.IsDeleted && (i.CreatedByUserId == null || i.CreatedByUserId == userId)|| i.CreatedByUserId == 0)
                        .ToListAsync();
 
             return Ok(ingredients);
@@ -37,7 +37,7 @@ namespace SoulFoodAiBack.Controllers
         {
             List<Ingredient> ingredients = await _context.Ingredients
                             .Where( i => !i.IsDeleted
-                            && (i.CreatedByUserId == null || i.CreatedByUserId == userId))
+                            && (i.CreatedByUserId == null || i.CreatedByUserId == userId || i.CreatedByUserId == 0))
                             .ToListAsync();
 
             return Ok(ingredients);
@@ -47,7 +47,7 @@ namespace SoulFoodAiBack.Controllers
         [Route("SearchOFFIngredients/{searchText}")]
         public async Task<ActionResult<List<Ingredient>>> SearchOFFIngredients(string searchText)
         {
-            
+
             List<Ingredient> OFFResults = new List<Ingredient>();
             HttpClient client = new HttpClient();
             client.Timeout = TimeSpan.FromSeconds(60);
@@ -98,14 +98,14 @@ namespace SoulFoodAiBack.Controllers
 
             string jsonResponse = await response.Content.ReadAsStringAsync();
             JsonNode? data = JsonNode.Parse(jsonResponse);
-            
+
             if (data == null || data["products"] == null)
             {
                 return Ok(OFFResults);
             }
 
             JsonArray productsArray = data["products"]!.AsArray();
-            
+
             foreach (JsonNode? product in productsArray)
             {
                 if (product != null)
@@ -121,7 +121,7 @@ namespace SoulFoodAiBack.Controllers
                     }
 
                     string nameAndBrand = name + " " + brand;
-                    nameAndBrand = nameAndBrand.ToLower(); 
+                    nameAndBrand = nameAndBrand.ToLower();
 
                     string[] searchWords = searchText.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -152,16 +152,16 @@ namespace SoulFoodAiBack.Controllers
                         if (nutriments["proteins_100g"] != null)
                             double.TryParse(nutriments["proteins_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out protein);
 
-                        if (nutriments["carbohydrates_100g"] != null) 
+                        if (nutriments["carbohydrates_100g"] != null)
                             double.TryParse(nutriments["carbohydrates_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out carbs);
 
-                        if (nutriments["fat_100g"] != null) 
+                        if (nutriments["fat_100g"] != null)
                             double.TryParse(nutriments["fat_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out fat);
 
-                        if (nutriments["energy-kcal_100g"] != null) 
+                        if (nutriments["energy-kcal_100g"] != null)
                             double.TryParse(nutriments["energy-kcal_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out kcal);
                     }
-                    
+
                     Ingredient newIngredient = new Ingredient
                     {
                         OpenFoodFactsId = openFoodFactsId,
@@ -178,7 +178,7 @@ namespace SoulFoodAiBack.Controllers
                     bool alreadyExists = false;
                     foreach (Ingredient savedIngredient in OFFResults)
                     {
-                        
+
                         if (savedIngredient.Name.ToLower() == newIngredient.Name.ToLower())
                         {
                             alreadyExists = true;
@@ -201,7 +201,7 @@ namespace SoulFoodAiBack.Controllers
         [Route("AddCustomIngredient/{dto}")]
         public async Task<IActionResult> AddCustomIngredient(CustomIngredientDto dto)
         {
-            
+
             if (string.IsNullOrWhiteSpace(dto.Name) || dto.UserId <= 0)
             {
                 return BadRequest("El nombre del alimento y el ID del usuario son obligatorios.");
@@ -213,12 +213,12 @@ namespace SoulFoodAiBack.Controllers
                 Brand = dto.Brand,
                 Category = "Personalizado",
                 Icon = dto.Icon,
-                ImageUrl = null, 
+                ImageUrl = null,
                 Protein = dto.Protein,
                 Carbs = dto.Carbs,
                 Fat = dto.Fat,
                 Kcal = dto.Kcal,
-                CreatedByUserId = dto.UserId 
+                CreatedByUserId = dto.UserId
             };
 
             _context.Ingredients.Add(newIngredient);
