@@ -132,7 +132,7 @@ namespace SoulFoodAiBack.Controllers
                 return BadRequest("Usuario no válido.");
             }
 
-            List<IngredientsFavoritesDto> favorites = await _context.UserIngredients
+            List<IngredientsFavoritesDto> favorites = await _context.UserIngredients.AsNoTracking()
                 .Where(ui => ui.IdUser == userId)
                 .Select(ui => new IngredientsFavoritesDto
                 {

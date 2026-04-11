@@ -40,7 +40,7 @@ namespace SoulFoodAiBack.Controllers
         [Route("GetAllIngredients/{userId}")]
         public async Task<ActionResult<List<Ingredient>>> GetAllIngredients(int userId)
         {
-            List<Ingredient> ingredients = await _context.Ingredients
+            List<Ingredient> ingredients = await _context.Ingredients.AsNoTracking()
                             .Where( i => !i.IsDeleted
                             && (i.CreatedByUserId == null || i.CreatedByUserId == userId || i.CreatedByUserId == 0))
                             .ToListAsync();
