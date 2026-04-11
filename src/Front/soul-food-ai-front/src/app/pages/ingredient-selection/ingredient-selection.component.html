@@ -1,0 +1,28 @@
+<div class="selection-container">
+
+  <header class="stepper">
+    <div 
+      *ngFor="let step of steps; let i = index" 
+      class="step-item"
+      [class.active]="i === currentStepIndex"
+    >
+      <div class="step-circle">{{ i + 1 }}</div>
+      <span class="step-label">{{ step.name }}</span>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="section-header">
+      <h1 class="section-title">{{ steps[currentStepIndex].name }}</h1>
+      <p class="section-subtitle">Selecciona tus ingredientes favoritos.</p>
+    </div>
+
+    <div style="text-align: center; padding: 50px; color: gray;">
+      ingredientes
+    </div>
+  </main>
+
+  <footer class="final-actions">
+    </footer>
+
+</div>

@@ -25,7 +25,7 @@ export class OnboardingComponent implements OnInit {
     height: null as number | null,
     weight: null as number | null,
     mealsPerDay: 3,
-    idUser: 6, 
+    idUser: 7, 
     idGoal: 0,
     idIntolerance: 0,
     idFoodPlan: 0
