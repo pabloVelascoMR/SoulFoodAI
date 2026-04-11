@@ -330,7 +330,18 @@ namespace SoulFoodAiBack.Controllers
                 };
 
                 _context.Ingredients.Add(ingredientSave);
-                await _context.SaveChangesAsync(); 
+                await _context.SaveChangesAsync();
+            }
+            else if (ingredientSave.IsDeleted)
+            {
+                
+                ingredientSave.IsDeleted = false;
+                ingredientSave.Name = dto.Name ?? ingredientSave.Name;
+                ingredientSave.Brand = dto.Brand ?? ingredientSave.Brand;
+                ingredientSave.ImageUrl = dto.ImageUrl ?? ingredientSave.ImageUrl;
+                ingredientSave.Category = !string.IsNullOrWhiteSpace(dto.Category) ? dto.Category : ingredientSave.Category;
+
+                await _context.SaveChangesAsync();
             }
 
             bool relationExists = await _context.UserIngredients
@@ -349,7 +360,7 @@ namespace SoulFoodAiBack.Controllers
 
             return Ok(new { message = "Ingrediente de catálogo añadido con éxito." });
         }
-    
+
         [HttpPost]
         [Route("AddDefaultIngredient")]
         public async Task<IActionResult> AddIngredient(CreateIngredientDto dto)
