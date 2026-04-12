@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http'; 
 import { IngredientService } from '../../services/ingredient.service';
 import { UserIngredientService } from '../../services/user_ingredient.service';
+import { UserService } from '../../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ingredient-selection',
@@ -29,7 +31,7 @@ export class IngredientSelectionComponent implements OnInit {
 
   steps: any[] = []; 
   currentStepIndex = 0;
-  userId: number = 12; 
+  userId: number = 0; 
   userDietType: any = '1';
 
   // Configuración de MÍNIMOS por dieta
@@ -53,21 +55,36 @@ export class IngredientSelectionComponent implements OnInit {
   constructor(
     private ingredientService: IngredientService,
     private userIngredientService: UserIngredientService,
+    private router: Router,
+    private userService: UserService,
     private cdr: ChangeDetectorRef,
     private http: HttpClient 
   ) {}
 
   ngOnInit(): void {
+    
+    const id = this.userService.getUserId();
+    if (!id) {
+      alert("Debes iniciar sesión para acceder a esta pantalla.");
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.userId = id;
+    this.loadUserDataAndSetup(); 
+  }
+
+  loadUserDataAndSetup(): void {
     this.http.get<any>(`https://localhost:7007/api/UserData/GetUserDataById/${this.userId}`).subscribe({
       next: (userData) => {
         this.userDietType = userData?.idFoodPlan || userData?.IdFoodPlan || '1';
-        console.log("Dieta del usuario cargada:", this.userDietType); 
+        console.log(`Cargando ingredientes para el usuario ${this.userId} con dieta ${this.userDietType}`); 
+        
         this.setupSteps();
         this.loadSelectedIngredients(); 
         this.loadIngredientsForCurrentStep();
       },
       error: (err) => {
-        console.warn("No se pudo obtener la dieta. Usando General (1) por defecto.");
+        console.warn("No se pudo obtener la dieta del usuario. Usando General (1) por defecto.");
         this.userDietType = '1';
         this.setupSteps();
         this.loadSelectedIngredients(); 

@@ -13,20 +13,22 @@ import { UserService } from '../../services/user.service';
 })
 export class RegisterComponent {
   
-  // Variables para el formulario
-  username: string = ''; // 🔴 Nuevo campo
+  username: string = '';
   email: string = '';
   password: string = '';
   confirmPassword: string = ''; 
-  
   errorMessage: string = '';
+  
+  isSubmitting: boolean = false; 
 
   constructor(private userService: UserService, private router: Router) {}
 
   register() {
+    // Si ya se está enviando, no hacemos nada aunque le de al botón mil veces
+    if (this.isSubmitting) return; 
+
     this.errorMessage = '';
 
-    // Validaciones básicas
     if (!this.username || !this.email || !this.password || !this.confirmPassword) {
       this.errorMessage = 'Todos los campos son obligatorios.';
       return;
@@ -42,7 +44,6 @@ export class RegisterComponent {
       return;
     }
 
-    // Validación de seguridad (8 caracteres, Mayus, Num)
     const pass = this.password;
     if (pass.length < 8 || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass)) {
       this.errorMessage = 'Contraseña: mín. 8 caracteres, una mayúscula y un número.';
@@ -50,17 +51,21 @@ export class RegisterComponent {
     }
 
     const dto = {
-      userName: this.username,         
+      userName: this.username,
       email: this.email,
-      passwordHash: this.password      
+      passwordHash: this.password
     };
+
+    this.isSubmitting = true; 
 
     this.userService.register(dto).subscribe({
       next: (res) => {
         this.router.navigate(['/onboarding']);
       },
       error: (err) => {
-        this.errorMessage = err.error || 'Error al registrar usuario.';
+        
+        this.isSubmitting = false; 
+        this.errorMessage = err.error?.message || err.error || 'Error al registrar usuario.';
       }
     });
   }

@@ -43,17 +43,29 @@ namespace SoulFoodAiBack.Controllers
 
         [HttpPost]
         [Route("AddUser")]
-
-        public async Task<IActionResult> AddUser(CreateUserDto dto)
+        public async Task<IActionResult> AddUser([FromBody] CreateUserDto dto)
         {
+            bool emailExists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
+            if (emailExists)
+            {
+                
+                return BadRequest("Este correo electrónico ya está registrado.");
+            }
+
             string pass = dto.PasswordHash;
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(pass);
 
-            User userAdd = new User { UserName = dto.UserName, Email = dto.Email, PasswordHash = passwordHash };
+            User userAdd = new User
+            {
+                UserName = dto.UserName,
+                Email = dto.Email,
+                PasswordHash = passwordHash
+            };
+
             await _context.Users.AddAsync(userAdd);
             await _context.SaveChangesAsync();
-            return Ok(new { IdUser = userAdd.IdUser, Email = userAdd.Email, UserName = userAdd.UserName });
 
+            return Ok(new { IdUser = userAdd.IdUser, Email = userAdd.Email, UserName = userAdd.UserName });
         }
 
         [HttpDelete]
