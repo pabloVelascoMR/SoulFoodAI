@@ -1,41 +1,74 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router'; 
+import { Router, RouterModule } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrl: './register.component.css'
 })
 export class RegisterComponent {
+  // Datos del formulario
+  userData = {
+    email: '',
+    password: '',
+    confirmPassword: ''
+  };
 
-  name = '';
-  email = '';
-  password = '';
+  errorMessage: string = '';
 
-  
   constructor(private userService: UserService, private router: Router) {}
 
-  register() {
+  onRegister() {
+   
+    if (!this.userData.email.includes('@')) {
+      this.errorMessage = 'Por favor, introduce un correo válido.';
+      return;
+    }
 
-    const user = {
-      userName: this.name,
-      email: this.email,
-      passwordHash: this.password
+    if (this.userData.password !== this.userData.confirmPassword) {
+      this.errorMessage = 'Las contraseñas no coinciden.';
+      return;
+    }
+
+    const password = this.userData.password;
+    
+    if (password.length < 8) {
+      this.errorMessage = 'La contraseña debe tener al menos 8 caracteres.';
+      return;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      this.errorMessage = 'La contraseña debe contener al menos una letra mayúscula.';
+      return;
+    }
+
+    if (!/[a-z]/.test(password)) {
+      this.errorMessage = 'La contraseña debe contener al menos una letra minúscula.';
+      return;
+    }
+
+    if (!/[0-9]/.test(password)) {
+      this.errorMessage = 'La contraseña debe contener al menos un número.';
+      return;
+    }
+
+    const dto = {
+      email: this.userData.email,
+      password: this.userData.password
     };
 
-    this.userService.register(user).subscribe({
+    this.userService.register(dto).subscribe({
       next: (res) => {
-        console.log("Usuario creado:", res);
-        
+        console.log('Usuario registrado con ID:', res.idUser);
         this.router.navigate(['/onboarding']);
       },
       error: (err) => {
-        console.error(err);
-        alert("Error al registrar. Revisa los datos o prueba con otro email.");
+        this.errorMessage = err.error || 'Usuario ya registrado';
       }
     });
   }
