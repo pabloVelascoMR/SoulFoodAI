@@ -11,7 +11,7 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   register(user: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Register`, user).pipe(
+    return this.http.post(`${this.apiUrl}/AddUser`, user).pipe(
       tap((res: any) => this.saveSession(res.idUser))
     );
   }

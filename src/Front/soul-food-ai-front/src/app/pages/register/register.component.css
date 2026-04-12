@@ -2,24 +2,33 @@
   display: block;
 }
 
-/* --- Título principal de la imagen --- */
-.auth-main-title {
+/* --- Si page-layout no existe en tu global, añade esto --- */
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.login-main-title {
   font-family: var(--font-headline);
   font-size: 5rem;
   font-weight: 800;
-  color: #0b4522;
+  color: #0b4522; /* Verde muy oscuro */
   text-align: center;
   text-transform: uppercase;
   line-height: 0.9;
   margin-bottom: 40px;
   margin-top: 0;
+  /* Sombra 3D igual a la imagen */
   text-shadow: 
-    3px 3px 0px rgba(11, 69, 34, 0.8),
-    6px 6px 15px rgba(0, 0, 0, 0.2);
+    3px 3px 0px rgba(11, 69, 34, 0.8), 
+    6px 6px 15px rgba(0, 0, 0, 0.2); 
 }
 
-/* --- Tarjeta --- */
-.auth-card {
+/* --- Tarjeta de Login --- */
+.login-card {
   background-color: #fcfbf5;
   padding: 50px 40px;
   border-radius: 16px;
@@ -30,13 +39,25 @@
 }
 
 /* --- Título dentro de la tarjeta --- */
-.auth-title {
+.login-title {
   font-family: var(--font-headline);
   font-size: 2rem;
   font-weight: 800;
   color: #0b4522;
+  display: flex;
+  align-items: center;
   margin-top: 0;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+}
+
+.login-title::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 30px;
+  background-color: #0b4522;
+  border-radius: 4px;
+  margin-right: 14px;
 }
 
 /* --- Estructura de Inputs y Labels --- */
@@ -45,7 +66,10 @@
 }
 
 .label-row {
-  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .label-row label {
@@ -55,25 +79,26 @@
   color: #3d664c;
 }
 
+/* --- Wrapper para los iconos dentro del input --- */
 .input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.icon-right {
+.input-wrapper svg {
   position: absolute;
-  right: 18px;
-  color: #6a9c7d;
-  cursor: pointer;
+  color: #6a9c7d; 
 }
 
+.icon-left {
+  left: 18px;
+}
 
-.auth-input {
+.login-input {
   width: 100%;
-  /* Padding normal a la izquierda porque no hay iconos */
-  padding: 16px 20px; 
-  background-color: #c7f6d9;
+  padding: 18px 45px; 
+  background-color: #c7f6d9; 
   border: 2px solid transparent;
   border-radius: 12px;
   font-family: var(--font-body);
@@ -85,26 +110,21 @@
   transition: all 0.2s ease;
 }
 
-
-.auth-input.has-icon-right {
-  padding-right: 45px;
-}
-
-.auth-input::placeholder {
+.login-input::placeholder {
   color: #8ac09e;
   font-weight: 400;
 }
 
-.auth-input:focus {
+.login-input:focus {
   border-color: #2ECC71;
   background-color: #d8fce5;
 }
 
 /* --- Botón Degradado --- */
-.auth-btn {
+.login-btn {
   width: 100%;
   padding: 20px;
-  margin-top: 10px;
+  margin-top: 20px;
   background: linear-gradient(90deg, #0f6c34 0%, #4ae382 100%);
   color: white;
   border: none;
@@ -117,17 +137,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 12px;
   box-shadow: 0 10px 20px rgba(74, 227, 130, 0.3);
   transition: all 0.3s ease;
 }
 
-.auth-btn:hover {
+.login-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 15px 25px rgba(74, 227, 130, 0.4);
 }
 
-/* --- Footer --- */
-.auth-footer-text {
+/* --- Footer Register --- */
+.register-text {
   text-align: center;
   margin-top: 30px;
   font-family: var(--font-body);
@@ -135,15 +156,19 @@
   color: #5c8068;
 }
 
-.auth-link {
+.register-link {
   color: #0b4522;
   font-weight: 800;
   cursor: pointer;
   text-decoration: none;
 }
 
+.register-link:hover {
+  text-decoration: underline;
+}
+
 /* --- Responsive --- */
 @media (max-width: 480px) {
-  .auth-main-title { font-size: 3.5rem; }
-  .auth-card { padding: 40px 24px; }
+  .login-main-title { font-size: 3.5rem; }
+  .login-card { padding: 40px 24px; }
 }

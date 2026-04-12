@@ -12,63 +12,55 @@ import { UserService } from '../../services/user.service';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-  // Datos del formulario
-  userData = {
-    email: '',
-    password: '',
-    confirmPassword: ''
-  };
-
+  
+  // Variables para el formulario
+  username: string = ''; // 🔴 Nuevo campo
+  email: string = '';
+  password: string = '';
+  confirmPassword: string = ''; 
+  
   errorMessage: string = '';
 
   constructor(private userService: UserService, private router: Router) {}
 
-  onRegister() {
-   
-    if (!this.userData.email.includes('@')) {
-      this.errorMessage = 'Por favor, introduce un correo válido.';
+  register() {
+    this.errorMessage = '';
+
+    // Validaciones básicas
+    if (!this.username || !this.email || !this.password || !this.confirmPassword) {
+      this.errorMessage = 'Todos los campos son obligatorios.';
       return;
     }
 
-    if (this.userData.password !== this.userData.confirmPassword) {
+    if (!this.email.includes('@')) {
+      this.errorMessage = 'Introduce un email válido.';
+      return;
+    }
+
+    if (this.password !== this.confirmPassword) {
       this.errorMessage = 'Las contraseñas no coinciden.';
       return;
     }
 
-    const password = this.userData.password;
-    
-    if (password.length < 8) {
-      this.errorMessage = 'La contraseña debe tener al menos 8 caracteres.';
-      return;
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      this.errorMessage = 'La contraseña debe contener al menos una letra mayúscula.';
-      return;
-    }
-
-    if (!/[a-z]/.test(password)) {
-      this.errorMessage = 'La contraseña debe contener al menos una letra minúscula.';
-      return;
-    }
-
-    if (!/[0-9]/.test(password)) {
-      this.errorMessage = 'La contraseña debe contener al menos un número.';
+    // Validación de seguridad (8 caracteres, Mayus, Num)
+    const pass = this.password;
+    if (pass.length < 8 || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass)) {
+      this.errorMessage = 'Contraseña: mín. 8 caracteres, una mayúscula y un número.';
       return;
     }
 
     const dto = {
-      email: this.userData.email,
-      password: this.userData.password
+      userName: this.username,         
+      email: this.email,
+      passwordHash: this.password      
     };
 
     this.userService.register(dto).subscribe({
       next: (res) => {
-        console.log('Usuario registrado con ID:', res.idUser);
         this.router.navigate(['/onboarding']);
       },
       error: (err) => {
-        this.errorMessage = err.error || 'Usuario ya registrado';
+        this.errorMessage = err.error || 'Error al registrar usuario.';
       }
     });
   }

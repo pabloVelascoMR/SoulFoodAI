@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../services/user.service';
 import { OnboardingService } from '../../services/onboarding.service';
 import { Router } from '@angular/router';
 
@@ -25,13 +26,14 @@ export class OnboardingComponent implements OnInit {
     height: null as number | null,
     weight: null as number | null,
     mealsPerDay: 3,
-    idUser: 12, 
+    idUser: 0, 
     idGoal: 0,
     idIntolerance: 0,
     idFoodPlan: 0
   };
 
   constructor(
+    private userService: UserService,
     private onboardingService: OnboardingService,
     private router: Router
   ) {}
@@ -127,16 +129,31 @@ export class OnboardingComponent implements OnInit {
   }
 
   finishOnboarding() {
-    this.onboardingService.saveUserData(this.userData).subscribe({
-      next: () => {
-        alert('¡Plan guardado con éxito!');
-      },
-      error: (err) => {
-        console.error('Error guardando los datos', err);
-        alert('Hubo un error al guardar.');
-      }
-    });
+  const userId = this.userService.getUserId();
+  
+  if (!userId) {
+    alert('Error: No se ha detectado tu sesión de usuario.');
+    this.router.navigate(['/login']);
+    return;
   }
+
+  const onboardingData = {
+    ...this.userData, 
+    idUser: userId    
+  };
+
+  this.onboardingService.saveUserData(onboardingData).subscribe({
+    next: () => {
+      console.log('Datos de salud guardados con éxito.');
+      this.router.navigate(['/ingredient-selection']);
+    },
+    error: (err) => {
+      console.error('Error al guardar onboarding:', err);
+      alert('Hubo un problema al guardar tus datos.');
+    }
+  });
+  }
+  
   getGoalEmoji(idGoal: number): string {
     const emojis: { [key: number]: string } = {
       1: '🔥', 

@@ -52,7 +52,7 @@ namespace SoulFoodAiBack.Controllers
             User userAdd = new User { UserName = dto.UserName, Email = dto.Email, PasswordHash = passwordHash };
             await _context.Users.AddAsync(userAdd);
             await _context.SaveChangesAsync();
-            return Ok();
+            return Ok(new { IdUser = userAdd.IdUser, Email = userAdd.Email, UserName = userAdd.UserName });
 
         }
 
