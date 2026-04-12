@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoulFoodAiBack.Data;
+using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Services;
 
 namespace SoulFoodAiBack.Controllers

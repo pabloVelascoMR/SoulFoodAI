@@ -40,6 +40,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddScoped<SoulFoodAiBack.Services.AuthService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

@@ -60,12 +60,12 @@ export class RegisterComponent {
 
     this.userService.register(dto).subscribe({
       next: (res) => {
-        this.router.navigate(['/onboarding']);
+        this.router.navigate(['/onboarding']); 
       },
       error: (err) => {
-        
         this.isSubmitting = false; 
-        this.errorMessage = err.error?.message || err.error || 'Error al registrar usuario.';
+        console.error("Error completo del servidor:", err);
+        this.errorMessage = err.error?.message || err.error || 'Error del servidor (500). Revisa la consola de C#.';
       }
     });
   }
