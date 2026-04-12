@@ -12,7 +12,18 @@ export class UserService {
 
   register(user: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/AddUser`, user).pipe(
-      tap((res: any) => this.saveSession(res.idUser))
+      tap((res: any) => {
+        
+        const id = res.idUser || res.IdUser; 
+        if (id) {
+          localStorage.setItem('soulfood_userId', id.toString());
+        }
+
+        const token = res.token || res.Token; 
+        if (token) {
+          localStorage.setItem('soulfood_token', token);
+        }
+      })
     );
   }
 
