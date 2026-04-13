@@ -110,11 +110,11 @@ namespace SoulFoodAiBack.Controllers
 
         [HttpGet]
         [Route("GetUserDataById/{id}")]
-        public async Task<IActionResult> GetUserDataById(int id )
+        public async Task<IActionResult> GetUserDataById(int id)
         {
-            UserData? userData = await _context.UserDatas.Where(ud=>ud.IdUser == id).FirstOrDefaultAsync();
+            UserData? userData = await _context.UserDatas.AsNoTracking().Where(ud => ud.IdUser == id).FirstOrDefaultAsync();
 
-            if (userData is null) { return NotFound("Ese usaurio no existe."); }
+            if (userData is null) {return Ok(new { IdFoodPlan = 1 });}
 
             UserDataDto userDataDto = new UserDataDto
             {
@@ -129,6 +129,7 @@ namespace SoulFoodAiBack.Controllers
                 IdGoal = userData.IdGoal,
                 IdIntolerance = userData.IdIntolerance,
             };
+
             return Ok(userDataDto);
         }
     }

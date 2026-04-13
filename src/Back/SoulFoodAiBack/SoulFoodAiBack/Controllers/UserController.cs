@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SoulFoodAiBack.Data;
 using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Models;
+using SoulFoodAiBack.Services;
 using System.ComponentModel;
 
 namespace SoulFoodAiBack.Controllers
@@ -13,10 +14,12 @@ namespace SoulFoodAiBack.Controllers
     {
 
         private readonly DataContext _context;
+        private readonly AuthService _authService;
 
-        public UserController(DataContext dataContext)
+        public UserController(DataContext dataContext, AuthService authService)
         {
             _context = dataContext;
+            _authService = authService;
         }
 
        [HttpGet]
@@ -43,17 +46,20 @@ namespace SoulFoodAiBack.Controllers
 
         [HttpPost]
         [Route("AddUser")]
-
-        public async Task<IActionResult> AddUser(CreateUserDto dto)
+        public async Task<IActionResult> AddUser([FromBody] CreateUserDto dto)
         {
-            string pass = dto.PasswordHash;
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(pass);
+            
+            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+                return BadRequest("Este correo ya existe.");
 
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.PasswordHash);
             User userAdd = new User { UserName = dto.UserName, Email = dto.Email, PasswordHash = passwordHash };
-            await _context.Users.AddAsync(userAdd);
-            await _context.SaveChangesAsync();
-            return Ok();
 
+            _context.Users.Add(userAdd);
+            await _context.SaveChangesAsync();
+            string token = _authService.GenerateJwtToken(userAdd);
+
+            return Ok(new { IdUser = userAdd.IdUser, Token = token });
         }
 
         [HttpDelete]

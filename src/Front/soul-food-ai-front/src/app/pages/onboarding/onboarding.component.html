@@ -1,0 +1,175 @@
+<div class="page-layout">
+  
+  <h1 class="app-header-title">SOUL FOOD AI</h1>
+
+  <div class="progress-container">
+    <div class="progress-bar" [style.width.%]="progressPercentage"></div>
+  </div>
+
+  <div class="step-content">
+    
+    <div class="surface-module" *ngIf="currentStep === 1">
+      <h2 class="page-title">Empecemos por lo básico</h2>
+      <p class="page-subtitle">Cuéntanos un poco sobre ti para personalizar tu plan nutricional.</p>
+      
+      <div class="form-group">
+        <label class="form-label">GÉNERO</label>
+        <div class="grid-2-cols">
+          
+          <div class="selection-card" [class.selected]="userData.gender === 'Hombre'" (click)="selectGender('Hombre')">
+            <div class="gender-icon-container">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10" cy="14" r="5"></circle>
+                <line x1="13.5" y1="10.5" x2="21" y2="3"></line>
+                <line x1="16" y1="3" x2="21" y2="3"></line>
+                <line x1="21" y1="8" x2="21" y2="3"></line>
+              </svg>
+            </div>
+            <h3>Hombre</h3>
+          </div>
+
+          <div class="selection-card" [class.selected]="userData.gender === 'Mujer'" (click)="selectGender('Mujer')">
+            <div class="gender-icon-container">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="10" r="5"></circle>
+                <line x1="12" y1="15" x2="12" y2="22"></line>
+                <line x1="9" y1="19" x2="15" y2="19"></line>
+              </svg>
+            </div>
+            <h3>Mujer</h3>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">INTRODUCE TU EDAD</label>
+        
+        <div class="number-input-wrapper">
+          <button type="button" class="btn-counter" (click)="decrementAge()" [disabled]="!userData.age || userData.age <= 1">－</button>
+          
+          <input type="number" 
+                 class="form-input big-input" 
+                 [(ngModel)]="userData.age" 
+                 name="age" 
+                 #ageCtrl="ngModel" 
+                 required 
+                 min="1" 
+                 max="120" 
+                 placeholder="28">
+          
+          <button type="button" class="btn-counter" (click)="incrementAge()" [disabled]="userData.age !== null && userData.age >= 120">＋</button>
+        </div>
+        
+        <div class="text-error" *ngIf="ageCtrl.invalid && (ageCtrl.dirty || ageCtrl.touched)">
+          Por favor, introduce una edad real y mayor que 16.
+        </div>
+      </div>
+
+      <button class="btn-primary" [disabled]="!userData.gender || ageCtrl.invalid" (click)="nextStep()">CONTINUAR</button>
+    </div>
+
+    <div class="surface-module" *ngIf="currentStep === 2">
+      <h2 class="page-title">Tus medidas y hábitos</h2>
+      
+      <div class="form-group">
+        <label class="form-label">Altura (en metros)</label>
+        <input type="number" step="0.01" class="form-input" [(ngModel)]="userData.height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0" placeholder="Ej. 1.75">
+        <div class="text-error" *ngIf="heightCtrl.invalid && (heightCtrl.dirty || heightCtrl.touched)">
+          La altura debe ser en metros (ej: 1.75).
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Peso (en kg)</label>
+        <input type="number" class="form-input" [(ngModel)]="userData.weight" name="weight" #weightCtrl="ngModel" required min="20" max="300" placeholder="Ej. 70.5">
+        <div class="text-error" *ngIf="weightCtrl.invalid && (weightCtrl.dirty || weightCtrl.touched)">
+          Por favor, introduce un peso válido (entre 20kg y 300kg).
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">¿Cuántas comidas harás al día?</label>
+        <input type="number" class="form-input" [(ngModel)]="userData.mealsPerDay" name="meals" #mealsCtrl="ngModel" required min="1" max="5" placeholder="Ej. 3">
+        <div class="text-error" *ngIf="mealsCtrl.invalid && (mealsCtrl.dirty || mealsCtrl.touched)">
+          Te recomendamos entre 1 y 5 comidas al día.
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
+        <button class="btn-primary" [disabled]="heightCtrl.invalid || weightCtrl.invalid || mealsCtrl.invalid" (click)="nextStep()">CONTINUAR</button>
+      </div>
+    </div>
+
+    <div class="surface-module" *ngIf="currentStep === 3">
+      <h2 class="page-title">¿Cuál es tu objetivo principal?</h2>
+      <div class="grid-auto-fit">
+        <div class="selection-card" *ngFor="let goal of goals" 
+          [class.selected]="userData.idGoal === goal.idGoal" 
+          (click)="selectGoal(goal.idGoal)">
+  
+          <div class="goal-emoji">
+            {{ getGoalEmoji(goal.idGoal) }}
+          </div>
+
+          <h3>{{ goal.goalName }}</h3>
+          <p *ngIf="goal.description">{{ goal.description }}</p>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
+      </div>
+    </div>
+
+    <div class="surface-module" *ngIf="currentStep === 4">
+      <h2 class="page-title">¿Tienes alguna intolerancia?</h2>
+      
+      <div class="grid-auto-fit">
+        <div class="selection-card" *ngFor="let int of intolerances" 
+             [class.selected]="userData.idIntolerance === int.idIntolerance" 
+             (click)="selectIntolerance(int.idIntolerance)">
+          
+          <div class="intolerance-emoji">
+            {{ getIntoleranceEmoji(int.idIntolerance) }}
+          </div>
+
+          <h3>{{ int.intoleranceName }}</h3>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
+        <button class="btn-primary" (click)="nextStep()">
+          {{ userData.idIntolerance ? 'CONTINUAR' : 'NINGUNA / OMITIR' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="surface-module" *ngIf="currentStep === 5">
+      <h2 class="page-title">¿Qué tipo de dieta prefieres?</h2>
+      
+      <div class="grid-auto-fit">
+        <div class="selection-card" *ngFor="let plan of foodPlans" 
+             [class.selected]="userData.idFoodPlan === plan.idFoodPlan" 
+             (click)="selectFoodPlan(plan.idFoodPlan)">
+          
+          <div class="diet-emoji">
+            {{ getDietEmoji(plan.idFoodPlan) }}
+          </div>
+
+          <h3>{{  plan.foodPlanName }}</h3>
+          <p *ngIf="plan.description">{{ plan.description }}</p>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
+        <button class="btn-primary" (click)="finishOnboarding()">
+          FINALIZAR
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -5,6 +5,7 @@ using SoulFoodAiBack.Data;
 using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Models;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json.Nodes;
 
 namespace SoulFoodAiBack.Controllers
@@ -21,12 +22,16 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("GetIngredients/{category}/{userId}")]
-        public async Task<ActionResult<List<Ingredient>>> GetIngredients(string category,int userId)
+        [Route("GetIngredients")]
+        public async Task<ActionResult<List<Ingredient>>> GetIngredients([FromQuery] string category, [FromQuery] int userId)
         {
-            List<Ingredient> ingredients = await _context.Ingredients
-                       .Where(i => i.Category.ToLower() == category.ToLower()&& !i.IsDeleted && (i.CreatedByUserId == null || i.CreatedByUserId == userId))
-                       .ToListAsync();
+            string decodedCategory = System.Net.WebUtility.UrlDecode(category);
+
+            List<Ingredient> ingredients = await _context.Ingredients.AsNoTracking()
+        .Where(i => i.Category == decodedCategory
+                 && i.IsDeleted == false
+                 && (i.CreatedByUserId == null || i.CreatedByUserId == userId || i.CreatedByUserId == 0))
+                 .ToListAsync();
 
             return Ok(ingredients);
         }
@@ -35,9 +40,9 @@ namespace SoulFoodAiBack.Controllers
         [Route("GetAllIngredients/{userId}")]
         public async Task<ActionResult<List<Ingredient>>> GetAllIngredients(int userId)
         {
-            List<Ingredient> ingredients = await _context.Ingredients
+            List<Ingredient> ingredients = await _context.Ingredients.AsNoTracking()
                             .Where( i => !i.IsDeleted
-                            && (i.CreatedByUserId == null || i.CreatedByUserId == userId))
+                            && (i.CreatedByUserId == null || i.CreatedByUserId == userId || i.CreatedByUserId == 0))
                             .ToListAsync();
 
             return Ok(ingredients);
@@ -47,161 +52,117 @@ namespace SoulFoodAiBack.Controllers
         [Route("SearchOFFIngredients/{searchText}")]
         public async Task<ActionResult<List<Ingredient>>> SearchOFFIngredients(string searchText)
         {
-            
             List<Ingredient> OFFResults = new List<Ingredient>();
-            HttpClient client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(60);
 
+            using HttpClient client = new HttpClient(); 
+            client.Timeout = TimeSpan.FromSeconds(60);
             client.DefaultRequestHeaders.Add("User-Agent", "SoulFoodApp/1.0 (contact: info@soulfoodapp.com) DotNetBackend");
 
             string safeSearchText = Uri.EscapeDataString(searchText);
-
             string url = $"https://es.openfoodfacts.org/cgi/search.pl?search_terms={safeSearchText}&search_simple=1&action=process&json=1&page_size=60";
 
-            HttpResponseMessage? response = null;
-            int maxRetries = 6;
-            int delayMilliseconds = 2000;
+            int maxRetries = 6; 
+            int delayMilliseconds = 1500; 
 
             for (int i = 0; i < maxRetries; i++)
             {
                 try
                 {
-                    response = await client.GetAsync(url);
+                    HttpResponseMessage response = await client.GetAsync(url);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        break;
-                    }
-                    else
-                    {
-                        if (i < maxRetries - 1)
+                        string jsonResponse = await response.Content.ReadAsStringAsync();
+                        JsonNode? data = JsonNode.Parse(jsonResponse);
+
+                        if (data != null && data["products"] != null)
                         {
-                            await Task.Delay(delayMilliseconds);
-                            delayMilliseconds *= 2;
+                            JsonArray productsArray = data["products"]!.AsArray();
+
+                            if (productsArray.Count > 0)
+                            {
+                                foreach (JsonNode? product in productsArray)
+                                {
+                                    if (product != null)
+                                    {
+                                        string openFoodFactsId = product["_id"]?.ToString() ?? "";
+                                        string name = product["product_name"]?.ToString() ?? "";
+                                        string brand = product["brands"]?.ToString() ?? "";
+                                        string imageUrl = product["image_front_small_url"]?.ToString() ?? product["image_url"]?.ToString() ?? "";
+
+                                        if (string.IsNullOrWhiteSpace(name)) continue;
+
+                                        string nameAndBrand = (name + " " + brand).ToLower();
+                                        string[] searchWords = searchText.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                                        bool isValid = true;
+                                        foreach (string word in searchWords)
+                                        {
+                                            if (!nameAndBrand.Contains(word))
+                                            {
+                                                isValid = false;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!isValid) continue;
+
+                                        JsonNode? nutriments = product["nutriments"];
+                                        double protein = 0, carbs = 0, fat = 0, kcal = 0;
+
+                                        if (nutriments != null)
+                                        {
+                                            if (nutriments["proteins_100g"] != null) double.TryParse(nutriments["proteins_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out protein);
+                                            if (nutriments["carbohydrates_100g"] != null) double.TryParse(nutriments["carbohydrates_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out carbs);
+                                            if (nutriments["fat_100g"] != null) double.TryParse(nutriments["fat_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out fat);
+                                            if (nutriments["energy-kcal_100g"] != null) double.TryParse(nutriments["energy-kcal_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out kcal);
+                                        }
+
+                                        Ingredient newIngredient = new Ingredient
+                                        {
+                                            OpenFoodFactsId = openFoodFactsId,
+                                            Name = name,
+                                            Category = "",
+                                            Brand = brand,
+                                            ImageUrl = imageUrl,
+                                            Protein = protein,
+                                            Carbs = carbs,
+                                            Fat = fat,
+                                            Kcal = kcal
+                                        };
+
+                                        bool alreadyExists = OFFResults.Any(saved => saved.Name.ToLower() == newIngredient.Name.ToLower());
+                                        if (!alreadyExists)
+                                        {
+                                            OFFResults.Add(newIngredient);
+                                        }
+                                    }
+                                }
+                                if (OFFResults.Count > 0)
+                                {
+                                    return Ok(OFFResults);
+                                }
+                            }
                         }
                     }
                 }
                 catch (Exception)
                 {
-                    if (i < maxRetries - 1)
-                    {
-                        await Task.Delay(delayMilliseconds);
-                        delayMilliseconds *= 2;
-                    }
-                }
-            }
-
-            if (response == null || !response.IsSuccessStatusCode)
-            {
-                return Ok(OFFResults);
-            }
-
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            JsonNode? data = JsonNode.Parse(jsonResponse);
-            
-            if (data == null || data["products"] == null)
-            {
-                return Ok(OFFResults);
-            }
-
-            JsonArray productsArray = data["products"]!.AsArray();
-            
-            foreach (JsonNode? product in productsArray)
-            {
-                if (product != null)
-                {
-                    string openFoodFactsId = product["_id"]?.ToString() ?? "";
-                    string name = product["product_name"]?.ToString() ?? "";
-                    string brand = product["brands"]?.ToString() ?? "";
-                    string imageUrl = product["image_front_small_url"]?.ToString() ?? product["image_url"]?.ToString() ?? "";
-
-                    if (string.IsNullOrWhiteSpace(name))
-                    {
-                        continue;
-                    }
-
-                    string nameAndBrand = name + " " + brand;
-                    nameAndBrand = nameAndBrand.ToLower(); 
-
-                    string[] searchWords = searchText.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                    bool isValid = true;
-                    foreach (string word in searchWords)
-                    {
-                        if (!nameAndBrand.Contains(word))
-                        {
-                            isValid = false;
-                            break;
-                        }
-                    }
-
-                    if (!isValid)
-                    {
-                        continue;
-                    }
-
-                    JsonNode? nutriments = product["nutriments"];
-
-                    double protein = 0;
-                    double carbs = 0;
-                    double fat = 0;
-                    double kcal = 0;
-
-                    if (nutriments != null)
-                    {
-                        if (nutriments["proteins_100g"] != null)
-                            double.TryParse(nutriments["proteins_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out protein);
-
-                        if (nutriments["carbohydrates_100g"] != null) 
-                            double.TryParse(nutriments["carbohydrates_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out carbs);
-
-                        if (nutriments["fat_100g"] != null) 
-                            double.TryParse(nutriments["fat_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out fat);
-
-                        if (nutriments["energy-kcal_100g"] != null) 
-                            double.TryParse(nutriments["energy-kcal_100g"]!.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out kcal);
-                    }
                     
-                    Ingredient newIngredient = new Ingredient
-                    {
-                        OpenFoodFactsId = openFoodFactsId,
-                        Name = name,
-                        Category = "",
-                        Brand = brand,
-                        ImageUrl = imageUrl,
-                        Protein = protein,
-                        Carbs = carbs,
-                        Fat = fat,
-                        Kcal = kcal
-                    };
+                }
 
-                    bool alreadyExists = false;
-                    foreach (Ingredient savedIngredient in OFFResults)
-                    {
-                        
-                        if (savedIngredient.Name.ToLower() == newIngredient.Name.ToLower())
-                        {
-                            alreadyExists = true;
-                            break;
-                        }
-                    }
-
-                    if (!alreadyExists)
-                    {
-                        OFFResults.Add(newIngredient);
-                    }
-                    ;
+                if (i < maxRetries - 1)
+                {
+                    await Task.Delay(delayMilliseconds);
                 }
             }
-            client.Dispose();
             return Ok(OFFResults);
         }
 
         [HttpPost]
-        [Route("AddCustomIngredient/{dto}")]
-        public async Task<IActionResult> AddCustomIngredient(CustomIngredientDto dto)
+        [Route("AddCustomIngredient")]
+        public async Task<IActionResult> AddCustomIngredient([FromBody] CustomIngredientDto dto)
         {
-            
             if (string.IsNullOrWhiteSpace(dto.Name) || dto.UserId <= 0)
             {
                 return BadRequest("El nombre del alimento y el ID del usuario son obligatorios.");
@@ -211,18 +172,28 @@ namespace SoulFoodAiBack.Controllers
             {
                 Name = dto.Name,
                 Brand = dto.Brand,
-                Category = "Personalizado",
+                Category = !string.IsNullOrWhiteSpace(dto.Category) ? dto.Category : "Personalizado",
                 Icon = dto.Icon,
-                ImageUrl = null, 
+                ImageUrl = null,
                 Protein = dto.Protein,
                 Carbs = dto.Carbs,
                 Fat = dto.Fat,
                 Kcal = dto.Kcal,
-                CreatedByUserId = dto.UserId 
+                CreatedByUserId = dto.UserId
             };
 
             _context.Ingredients.Add(newIngredient);
             await _context.SaveChangesAsync();
+
+            UserIngredient newFavorite = new UserIngredient
+            {
+                IdUser = dto.UserId,
+                IdIngredient = newIngredient.IdIngredient 
+            };
+
+            _context.UserIngredients.Add(newFavorite);
+            await _context.SaveChangesAsync();
+
             return Ok();
         }
 
@@ -285,5 +256,181 @@ namespace SoulFoodAiBack.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpPost]
+        [Route("AddSearchedIngredient")]
+        public async Task<IActionResult> AddSearchedIngredient([FromBody] SaveSerchedIngredientDto dto)
+        {
+            if (dto.IdUser <= 0) return BadRequest("Usuario no válido.");
+
+            bool userExists = await _context.Users.AnyAsync(u => u.IdUser == dto.IdUser);
+            if (!userExists) return NotFound("Usuario no existe.");
+
+            Ingredient? ingredientSave = await _context.Ingredients
+                .FirstOrDefaultAsync(i => i.OpenFoodFactsId == dto.IdOpenFoodFacts);
+
+            if (ingredientSave == null)
+            {
+                ingredientSave = new Ingredient
+                {
+                    OpenFoodFactsId = dto.IdOpenFoodFacts,
+                    Name = dto.Name ?? "Sin nombre",
+                    Brand = dto.Brand,
+                    ImageUrl = dto.ImageUrl,
+                    Protein = dto.Protein,
+                    Carbs = dto.Carbs,
+                    Fat = dto.Fat,
+                    Kcal = dto.Kcal,
+                    Category = !string.IsNullOrWhiteSpace(dto.Category) ? dto.Category : "Otros",
+                    CreatedByUserId = dto.IdUser,
+                    IsDeleted = false
+                };
+
+                _context.Ingredients.Add(ingredientSave);
+                await _context.SaveChangesAsync();
+            }
+            else if (ingredientSave.IsDeleted)
+            {
+                
+                ingredientSave.IsDeleted = false;
+                ingredientSave.Name = dto.Name ?? ingredientSave.Name;
+                ingredientSave.Brand = dto.Brand ?? ingredientSave.Brand;
+                ingredientSave.ImageUrl = dto.ImageUrl ?? ingredientSave.ImageUrl;
+                ingredientSave.Category = !string.IsNullOrWhiteSpace(dto.Category) ? dto.Category : ingredientSave.Category;
+
+                await _context.SaveChangesAsync();
+            }
+
+            bool relationExists = await _context.UserIngredients
+                .AnyAsync(ui => ui.IdUser == dto.IdUser && ui.IdIngredient == ingredientSave.IdIngredient);
+
+            if (!relationExists)
+            {
+                UserIngredient newUserIngredient = new UserIngredient
+                {
+                    IdUser = dto.IdUser,
+                    IdIngredient = ingredientSave.IdIngredient
+                };
+                _context.UserIngredients.Add(newUserIngredient);
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok(new { message = "Ingrediente de catálogo añadido con éxito." });
+        }
+
+        [HttpPost]
+        [Route("AddDefaultIngredient")]
+        public async Task<IActionResult> AddIngredient(CreateIngredientDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Name))
+            {
+                return BadRequest("El nombre del alimento es obligatorio.");
+            }
+     
+            Ingredient newIngredient = new Ingredient
+            {
+                Name = dto.Name,
+                Brand = dto.Brand,
+                OpenFoodFactsId = dto.OpenFoodFactsId,
+                Category = dto.Category,
+                SubCategory = dto.SubCategory,
+                Icon = dto.Icon,
+                ImageUrl = dto.ImageUrl,
+                Protein = dto.Protein,
+                Carbs = dto.Carbs,
+                Fat = dto.Fat,
+                Kcal = dto.Kcal,
+                CreatedByUserId = dto.CreatedByUserId,
+                IsDeleted = dto.IsDeleted
+            };
+
+            _context.Ingredients.Add(newIngredient);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("AddDefaultIngredients")] 
+        public async Task<IActionResult> AddIngredients([FromBody] List<CreateIngredientDto> dtos)
+        {
+            
+            if (dtos == null || !dtos.Any())
+            {
+                return BadRequest("La lista de ingredientes no puede estar vacía.");
+            }
+            
+            if (dtos.Any(d => string.IsNullOrWhiteSpace(d.Name)))
+            {
+                return BadRequest("Todos los alimentos deben tener un nombre obligatorio.");
+            }
+
+            List<Ingredient>? newIngredients = dtos.Select(dto => new Ingredient
+            {
+                Name = dto.Name,
+                Brand = dto.Brand,
+                OpenFoodFactsId = dto.OpenFoodFactsId,
+                Category = dto.Category,
+                SubCategory = dto.SubCategory,
+                Icon = dto.Icon,
+                ImageUrl = dto.ImageUrl,
+                Protein = dto.Protein,
+                Carbs = dto.Carbs,
+                Fat = dto.Fat,
+                Kcal = dto.Kcal,
+                CreatedByUserId = dto.CreatedByUserId,
+                IsDeleted = dto.IsDeleted
+            }).ToList();
+
+            _context.Ingredients.AddRange(newIngredients);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = $"Se han añadido {newIngredients.Count} ingredientes correctamente." });
+        }
+
+        [HttpPut]
+        [Route("UpdateImagenDefaultIngredient")]
+        public async Task<IActionResult> UpdateIngredient(UpdateImageIngredientDto dto)
+        {
+
+            Ingredient? ingredient = await _context.Ingredients.FindAsync(dto.IdIngredient);
+
+            ingredient.ImageUrl = dto.ImageUrl;
+           
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("UpdateImageIngredients")] 
+        public async Task<IActionResult> UpdateIngredients([FromBody] List<UpdateImageIngredientDto> dtos)
+        {
+            
+            if (dtos == null || !dtos.Any())
+            {
+                return BadRequest("La lista de ingredientes está vacía.");
+            }
+
+            
+            var idsToUpdate = dtos.Select(d => d.IdIngredient).ToList();
+
+            
+            var ingredients = await _context.Ingredients
+                .Where(i => idsToUpdate.Contains(i.IdIngredient))
+                .ToListAsync();
+
+            
+            foreach (var ingredient in ingredients)
+            {
+                var newImageData = dtos.FirstOrDefault(d => d.IdIngredient == ingredient.IdIngredient);
+
+                if (newImageData != null)
+                {
+                    ingredient.ImageUrl = newImageData.ImageUrl;
+
+                }
+            }
+            await _context.SaveChangesAsync();
+            return Ok(new { message = $"{ingredients.Count} imágenes actualizadas correctamente." });
+        }
     }
 }
+

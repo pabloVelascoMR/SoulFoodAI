@@ -1,0 +1,214 @@
+:host {
+  display: block;
+}
+
+/* --- Título de la App Centrado --- */
+.app-header-title {
+  width: 100%;
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  letter-spacing: -1px;
+  text-align: center;
+  margin-bottom: 40px;
+  margin-top: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* --- Barra de Progreso Ancha --- */
+.progress-container {
+  width: 100%;
+  max-width: 850px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 40px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: var(--border-radius-sm);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Contenido --- */
+.step-content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* --- Tarjetas de selección --- */
+.selection-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 32px 24px; 
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; 
+  height: 100%; 
+}
+
+.selection-card:hover {
+  border-color: var(--primary-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.selection-card.selected {
+  background: var(--bg-surface-hover);
+  border: 3px solid var(--primary-color);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-primary);
+}
+
+/* --- Estilos para Emojis (Objetivo, Intolerancias y Dietas) --- */
+.goal-emoji, 
+.intolerance-emoji,
+.diet-emoji {
+  font-size: 3rem; 
+  margin-bottom: 16px;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.selection-card:hover .goal-emoji,
+.selection-card:hover .intolerance-emoji,
+.selection-card:hover .diet-emoji {
+  transform: scale(1.2) rotate(5deg); /* animación al pasar el ratón */
+}
+
+.selection-card.selected .goal-emoji,
+.selection-card.selected .intolerance-emoji,
+.selection-card.selected .diet-emoji {
+  transform: scale(1.2);
+}
+
+/* --- Iconos de Género y Botones +/- --- */
+.gender-icon-container,
+.btn-counter {
+  width: 68px; 
+  height: 68px;
+  border-radius: 50%; 
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.15) 0%, rgba(46, 204, 113, 0.4) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  transition: all 0.3s ease;
+  border: none;
+  flex-shrink: 0;
+}
+
+.gender-icon-container {
+  margin-bottom: 16px;
+  font-size: 2rem;
+}
+
+.selection-card.selected .gender-icon-container {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+/* Ajustes específicos para +/- */
+.btn-counter {
+  font-size: 2.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.btn-counter:hover:not(:disabled) {
+  background: var(--primary-color);
+  color: white;
+  transform: scale(1.08);
+  box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+}
+
+.btn-counter:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Textos dentro de las tarjetas */
+.selection-card h3 {
+  font-size: 1.4rem; 
+  font-weight: 800;
+  color: var(--text-dark);
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.selection-card p {
+  font-size: 0.95rem; 
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* --- Input numérico --- */
+.number-input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.big-input {
+  font-size: 3rem; 
+  font-weight: 800; 
+  text-align: center;
+  padding: 16px;
+  width: 180px; 
+  font-family: var(--font-headline);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: white;
+}
+
+.big-input::-webkit-outer-spin-button,
+.big-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Ocultar flechas del input numérico */
+.big-input::-webkit-outer-spin-button,
+.big-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.big-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .app-header-title { font-size: 2.2rem; }
+  .number-input-wrapper { gap: 15px; }
+  .big-input { font-size: 2.5rem; width: 140px; }
+  .gender-icon-container, .btn-counter { width: 56px; height: 56px; font-size: 1.8rem; }
+  .goal-emoji, .intolerance-emoji, .diet-emoji { font-size: 2.5rem; }
+}
+
+@media (max-width: 480px) {
+  .app-header-title { font-size: 1.8rem; }
+  .selection-card { padding: 24px 16px; }
+  .selection-card h3 { font-size: 1.2rem; }
+}

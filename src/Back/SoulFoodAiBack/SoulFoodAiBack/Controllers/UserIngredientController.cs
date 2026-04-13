@@ -16,7 +16,7 @@ namespace SoulFoodAiBack.Controllers
         {
             _context = context;
         }
-        
+
         [HttpPost]
         [Route("AddFavorite")]
         public async Task<IActionResult> AddFavorite(SaveFavouriteIngredientDto dto)
@@ -26,16 +26,27 @@ namespace SoulFoodAiBack.Controllers
                 return BadRequest("El ID de usuario no es valido.");
             }
 
+            if (dto.IdUser <= 0)
+            {
+                return BadRequest("El ID de usuario no es valido.");
+            }
+
+            bool userExists = await _context.Users.AnyAsync(u => u.IdUser == dto.IdUser);
+            if (!userExists)
+            {
+                return NotFound($"No se puede guardar el favorito porque el usuario con ID {dto.IdUser} no existe en la base de datos.");
+            }
+
             Ingredient? ingredientSave = null;
 
             if (dto.LocalIdIngredient.HasValue && dto.LocalIdIngredient > 0)
             {
                 ingredientSave = await _context.Ingredients.FindAsync(dto.LocalIdIngredient);
             }
-            
+
             else if (!string.IsNullOrEmpty(dto.IdOpenFoodFacts))
             {
-                
+
                 ingredientSave = await _context.Ingredients
                     .FirstOrDefaultAsync(i => i.OpenFoodFactsId == dto.IdOpenFoodFacts);
 
@@ -52,7 +63,7 @@ namespace SoulFoodAiBack.Controllers
                         Brand = dto.Brand,
                         ImageUrl = dto.ImageUrl,
                         OpenFoodFactsId = dto.IdOpenFoodFacts,
-                        Category = "", 
+                        Category = "",
                         Protein = dto.Protein,
                         Carbs = dto.Carbs,
                         Fat = dto.Fat,
@@ -60,7 +71,7 @@ namespace SoulFoodAiBack.Controllers
                     };
 
                     _context.Ingredients.Add(ingredientSave);
-                    await _context.SaveChangesAsync(); 
+                    await _context.SaveChangesAsync();
                 }
             }
 
@@ -93,7 +104,7 @@ namespace SoulFoodAiBack.Controllers
         [Route("RemoveFavorite/{Idingredient}/{IdUser}")]
         public async Task<IActionResult> RemoveFavorite(int Idingredient, int IdUser)
         {
-          
+
             if (IdUser <= 0 || Idingredient <= 0)
             {
                 return BadRequest("Datos inválidos para eliminar el favorito.");
@@ -106,10 +117,31 @@ namespace SoulFoodAiBack.Controllers
             {
                 return NotFound("El ingrediente no está en tu lista de favoritos.");
             }
-            
+
             _context.UserIngredients.Remove(favorite);
             await _context.SaveChangesAsync();
             return Ok(new { message = "Ingrediente eliminado de tu lista de preferencias." });
+        }
+
+        [HttpGet]
+        [Route("GetFavorites/{userId}")]
+        public async Task<IActionResult> GetFavorites(int userId)
+        {
+            if (userId <= 0)
+            {
+                return BadRequest("Usuario no válido.");
+            }
+
+            List<IngredientsFavoritesDto> favorites = await _context.UserIngredients.AsNoTracking()
+                .Where(ui => ui.IdUser == userId)
+                .Select(ui => new IngredientsFavoritesDto
+                {
+                    IdIngredient = ui.Ingredient.IdIngredient,
+                    Category = ui.Ingredient.Category
+                })
+                .ToListAsync();
+
+            return Ok(favorites);
         }
     }
 }
