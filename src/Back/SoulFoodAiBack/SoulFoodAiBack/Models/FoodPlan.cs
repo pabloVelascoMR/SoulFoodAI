@@ -8,7 +8,6 @@ namespace SoulFoodAiBack.Models
         public FoodPlan()
         {
             this.CreationDate = DateTime.Now;
-            FoodPlanMeals = new List<FoodPlanMeal>();
 
         }
 
@@ -30,8 +29,6 @@ namespace SoulFoodAiBack.Models
         public double FatPercent { get; set; }
 
         public double VegetableminPercent { get; set; }
-
-        public List<FoodPlanMeal> FoodPlanMeals { get; set; }
 
         public DateTime CreationDate { get; set; }
     }
