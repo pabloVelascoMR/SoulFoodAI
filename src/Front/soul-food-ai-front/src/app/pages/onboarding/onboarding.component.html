@@ -127,7 +127,7 @@
       
       <div class="grid-auto-fit">
         <div class="selection-card" *ngFor="let int of intolerances" 
-             [class.selected]="userData.idIntolerance === int.idIntolerance" 
+             [class.selected]="userData.idIntolerances.includes(int.idIntolerance)"
              (click)="selectIntolerance(int.idIntolerance)">
           
           <div class="intolerance-emoji">
@@ -141,7 +141,7 @@
       <div class="btn-group">
         <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
         <button class="btn-primary" (click)="nextStep()">
-          {{ userData.idIntolerance ? 'CONTINUAR' : 'NINGUNA / OMITIR' }}
+          {{ userData.idIntolerances.length > 0 ? 'CONTINUAR' : 'NINGUNA / OMITIR' }}
         </button>
       </div>
     </div>

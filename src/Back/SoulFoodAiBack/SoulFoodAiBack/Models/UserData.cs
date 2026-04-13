@@ -46,9 +46,7 @@ namespace SoulFoodAiBack.Models
 
         public int IdIntolerance { get; set; }
 
-        [ForeignKey("IdIntolerance")]
-        [Required]
-        public Intolerance Intolerance { get; set; }
+        public List<UserIntolerance> UserIntolerances { get; set; } = new List<UserIntolerance>();
 
         public DateTime CreationDate { get; set; }
     }

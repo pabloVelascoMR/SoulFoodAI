@@ -28,7 +28,8 @@ export class OnboardingComponent implements OnInit {
     mealsPerDay: 3,
     idUser: 0, 
     idGoal: 0,
-    idIntolerance: 0,
+    // 👇 CAMBIO 1: Ahora es un array vacío en lugar de un 0
+    idIntolerances: [] as number[], 
     idFoodPlan: 0
   };
 
@@ -104,19 +105,20 @@ export class OnboardingComponent implements OnInit {
     this.userData.gender = gender;
   }
 
-  
   selectGoal(id: number) {
     this.userData.idGoal = id;
     this.nextStep(); 
   }
 
-  
+  // 👇 CAMBIO 2: Lógica para añadir o quitar el ID de la lista
   selectIntolerance(id: number) {
-    
-    if (this.userData.idIntolerance === id) {
-      this.userData.idIntolerance = 0;
+    const index = this.userData.idIntolerances.indexOf(id);
+    if (index > -1) {
+      // Si ya estaba seleccionado, lo quitamos del array (desmarcar)
+      this.userData.idIntolerances.splice(index, 1);
     } else {
-      this.userData.idIntolerance = id;
+      // Si no estaba, lo añadimos al array (marcar)
+      this.userData.idIntolerances.push(id);
     }
   }
 

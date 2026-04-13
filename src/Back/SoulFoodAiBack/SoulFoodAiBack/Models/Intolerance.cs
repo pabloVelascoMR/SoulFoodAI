@@ -18,6 +18,10 @@ namespace SoulFoodAiBack.Models
         [StringLength(100)]
         public required string IntoleranceName { get; set; }
 
+        public List<UserIntolerance> UserIntolerances { get; set; }
+        public List<UserFoodPlanWeekIntolerance> UserFoodPlanWeekIntolerances { get; set; }
+    
+
         public DateTime CreationDate { get; set; }
     }
 }

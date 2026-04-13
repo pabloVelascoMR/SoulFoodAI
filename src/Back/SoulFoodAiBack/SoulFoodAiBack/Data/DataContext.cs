@@ -22,6 +22,8 @@ namespace SoulFoodAiBack.Data
         public DbSet<RecipeUserIngredient> RecipeUserIngredients { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<UserIngredient> UserIngredients{ get; set; }
+        public DbSet<UserIntolerance> UserIntolerances { get; set; }
+        public DbSet<UserFoodPlanWeekIntolerance> UserFoodPlanWeekIntolerances { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

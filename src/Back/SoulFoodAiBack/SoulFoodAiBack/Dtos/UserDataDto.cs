@@ -24,6 +24,6 @@ namespace SoulFoodAiBack.Dtos
 
         public required int IdGoal { get; set; }
 
-        public int IdIntolerance { get; set; }
+        public List<int>? IdIntolerances { get; set; }
     }
 }

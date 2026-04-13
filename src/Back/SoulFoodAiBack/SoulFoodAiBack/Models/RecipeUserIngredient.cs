@@ -7,7 +7,7 @@ namespace SoulFoodAiBack.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int IdRecipeIngredient { get; set; }
+        public int IdRecipeUserIngredient { get; set; }
 
         [Required]
         public double Quantity { get; set; } 

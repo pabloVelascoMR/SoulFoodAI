@@ -24,7 +24,10 @@ namespace SoulFoodAiBack.Controllers
 
         public async Task<IActionResult> GetAllUserDatas()
         {
-            List<UserData> userDatas = await _context.UserDatas.ToListAsync();
+        
+            List<UserData> userDatas = await _context.UserDatas
+                .Include(ud => ud.UserIntolerances)
+                .ToListAsync();
 
             List<UserDataDto> allUserDatas = userDatas.
 
@@ -39,15 +42,14 @@ namespace SoulFoodAiBack.Controllers
                     IdUser =ud.IdUser,
                     IdFoodPlan =ud.IdFoodPlan,
                     IdGoal =ud.IdGoal,
-                    IdIntolerance =ud.IdIntolerance,
-                 }).ToList();
+                    IdIntolerances = ud.UserIntolerances.Select(ui => ui.IdIntolerance).ToList()
+                }).ToList();
 
             return Ok(allUserDatas);
         }
 
         [HttpPost]
         [Route("AddUserData")]
-
         public async Task<IActionResult> AddUserData(CreateUserDataDto dto)
         {
             
@@ -62,9 +64,20 @@ namespace SoulFoodAiBack.Controllers
                 IdUser = dto.IdUser,
                 IdFoodPlan = dto.IdFoodPlan > 0 ? dto.IdFoodPlan : 2,
                 IdGoal = dto.IdGoal > 0 ? dto.IdGoal : 6,
-                IdIntolerance = dto.IdIntolerance > 0 ? dto.IdIntolerance : 12
+                UserIntolerances = new List<UserIntolerance>()
             };
 
+            if (dto.IdIntolerances != null && dto.IdIntolerances.Any())
+            {
+                foreach (var idIntolerance in dto.IdIntolerances)
+                {
+                    userDataAdd.UserIntolerances.Add(new UserIntolerance
+                    {
+                        IdIntolerance = idIntolerance,
+                        IdUser = dto.IdUser 
+                    });
+                }
+            }
             await _context.UserDatas.AddAsync(userDataAdd);
             await _context.SaveChangesAsync();
             return Ok();
@@ -89,7 +102,9 @@ namespace SoulFoodAiBack.Controllers
 
         public async Task<IActionResult> EditUserData(UserDataDto dto)
         {
-            UserData? userDataEdit = await _context.UserDatas.FirstOrDefaultAsync(u => u.IdUser == dto.IdUser);
+            UserData? userDataEdit = await _context.UserDatas
+                .Include(u => u.UserIntolerances)
+                .FirstOrDefaultAsync(u => u.IdUser == dto.IdUser);
 
             if (userDataEdit is null) { return NotFound("Objetivo no existe en la base de datos."); }
 
@@ -102,7 +117,16 @@ namespace SoulFoodAiBack.Controllers
             userDataEdit.IdUser = dto.IdUser;
             userDataEdit.IdFoodPlan = dto.IdFoodPlan ;
             userDataEdit.IdGoal = dto.IdGoal ;
-            userDataEdit.IdIntolerance = dto.IdIntolerance;
+            _context.UserIntolerances.RemoveRange(userDataEdit.UserIntolerances);
+
+            if(dto.IdIntolerances != null && dto.IdIntolerances.Any())
+            {
+                userDataEdit.UserIntolerances = dto.IdIntolerances.Select(id => new UserIntolerance
+                {
+                    IdUser = dto.IdUser,
+                    IdIntolerance = id
+                }).ToList();
+            }
 
             await _context.SaveChangesAsync();
             return Ok();
@@ -112,7 +136,10 @@ namespace SoulFoodAiBack.Controllers
         [Route("GetUserDataById/{id}")]
         public async Task<IActionResult> GetUserDataById(int id)
         {
-            UserData? userData = await _context.UserDatas.AsNoTracking().Where(ud => ud.IdUser == id).FirstOrDefaultAsync();
+            UserData? userData = await _context.UserDatas
+                 .Include(ud => ud.UserIntolerances)
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(ud => ud.IdUser == id);
 
             if (userData is null) {return Ok(new { IdFoodPlan = 1 });}
 
@@ -127,7 +154,7 @@ namespace SoulFoodAiBack.Controllers
                 IdUser = userData.IdUser,
                 IdFoodPlan = userData.IdFoodPlan,
                 IdGoal = userData.IdGoal,
-                IdIntolerance = userData.IdIntolerance,
+                IdIntolerances = userData.UserIntolerances.Select(ui => ui.IdIntolerance).ToList()
             };
 
             return Ok(userDataDto);

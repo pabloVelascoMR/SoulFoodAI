@@ -28,6 +28,7 @@ namespace SoulFoodAiBack.Models
 
         public int TotalKcal { get; set; }
         public int IdMeal { get; set; }
+
         [ForeignKey("IdMeal")]
         public required Meal Meal { get; set; }
 

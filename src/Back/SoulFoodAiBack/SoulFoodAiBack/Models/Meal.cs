@@ -8,6 +8,7 @@ namespace SoulFoodAiBack.Models
         public Meal()
         {
             this.CreationDate = DateTime.Now;
+            Recipes = new List<Recipe>();
         }
 
         [Key]
@@ -17,6 +18,8 @@ namespace SoulFoodAiBack.Models
         [Required]
         [StringLength(100)]
         public required string MealName { get; set; }
+
+        public List<Recipe> Recipes { get; set; }
 
         public DateTime CreationDate { get; set; }
     }

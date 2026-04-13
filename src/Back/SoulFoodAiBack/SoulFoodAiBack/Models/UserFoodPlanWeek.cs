@@ -50,10 +50,7 @@ namespace SoulFoodAiBack.Models
         [Required]
         public required Goal Goal { get; set; }
 
-        public int? IdIntolerance { get; set; }
-
-        [ForeignKey("IdIntolerance")]
-        public Intolerance? Intolerance { get; set; }
+        public List<UserFoodPlanWeekIntolerance> UserFoodPlanWeekIntolerances { get; set; } = new List<UserFoodPlanWeekIntolerance>();
 
         public DateTime CreationDate { get; set; }
     }
