@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoulFoodAiBack.Data;
+using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Models;
 
 namespace SoulFoodAiBack.Controllers
@@ -50,20 +51,20 @@ namespace SoulFoodAiBack.Controllers
             switch (userData.IdGoal)
             {
                 case 1: // Pérdida de grasa 
-                    dailyKcalTarget -= 500;
+                    dailyKcalTarget -= 400;
                     break;
                 case 2: // Ganancia muscular 
                     dailyKcalTarget += 300;
                     break;
                 case 3: // Mantenimiento Saludable
                     break;
-                case 4: 
+                case 4: // Recomposición corporal
                     dailyKcalTarget -= 200;
                     break;
-                case 5: 
+                case 5: // Rendimiento deportivo
                     dailyKcalTarget += 250;
                     break;
-                case 6: 
+                case 6: // Sin objetivo específico
                     break;
             }
 
@@ -113,8 +114,7 @@ namespace SoulFoodAiBack.Controllers
             double dailyCarbsGrams = (finalDailyKcal * carbPercent) / 4.0;
             double dailyFatGrams = (finalDailyKcal * fatPercent) / 9.0;
 
-
-            // 4. CREAR LA SEMANA 
+           
             DateTime today = DateTime.Today;
             UserFoodPlanWeek newWeek = new UserFoodPlanWeek
             {
@@ -175,6 +175,32 @@ namespace SoulFoodAiBack.Controllers
                 Message = "Plan Semanal y 7 días generados correctamente.",
                 IdUserFoodPlanWeek = newWeek.IdUserFoodPlanWeek
             });
+        }
+
+        [HttpGet]
+        [Route("GetWeekHeader/{idUser}")]
+        public async Task<IActionResult> GetWeekHeader(int idUser)
+        {
+            
+            UserFoodPlanWeek? activeWeek = await _context.UserFoodPlansWeek
+                .Include(w => w.FoodPlan)
+                .FirstOrDefaultAsync(w => w.IdUser == idUser && w.IsActive);
+
+            if (activeWeek == null)
+                return NotFound("No hay plan semanal activo para este usuario.");
+
+     
+            var dto = new WeeklyHeaderDto
+            {
+                IdUserFoodPlanWeek = activeWeek.IdUserFoodPlanWeek,
+                DietName = activeWeek.FoodPlan.FoodPlanName,
+                TotalWeeklyKcal = activeWeek.TotalWeeklyKcal,
+                TargetProteinPercent = activeWeek.FoodPlan.ProteinPercent,
+                TargetCarbsPercent = activeWeek.FoodPlan.CarbPercent,
+                TargetFatPercent = activeWeek.FoodPlan.FatPercent
+            };
+
+            return Ok(dto);
         }
     }
 }
