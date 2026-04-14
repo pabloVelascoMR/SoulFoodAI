@@ -17,15 +17,15 @@ namespace SoulFoodAiBack.Models
 
         public int IdUser { get; set; }
         [ForeignKey("IdUser")]
-        public required User User { get; set; }
+        public  User? User { get; set; }
 
         public int IdUserFoodPlanDaily { get; set; }
         [ForeignKey("IdUserFoodPlanDaily")]
-        public required UserFoodPlanDaily UserFoodPlanDaily { get; set; }
+        public  UserFoodPlanDaily? UserFoodPlanDaily { get; set; }
 
         public int IdRecipe { get; set; }
         [ForeignKey("IdRecipe")]
-        public required Recipe Recipe { get; set; }
+        public  Recipe? Recipe { get; set; }
 
         public bool IsActive { get; set; }
         public DateTime CreationDate { get; set; }

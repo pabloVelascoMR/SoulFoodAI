@@ -35,20 +35,19 @@ namespace SoulFoodAiBack.Models
         public int IdUser { get; set; }
 
         [ForeignKey("IdUser")]
-        [Required]
-        public required User User { get; set; }
+        public User? User { get; set; }
 
         public int IdFoodPlan { get; set; }
 
         [ForeignKey("IdFoodPlan")]
-        [Required]
-        public required  FoodPlan FoodPlan { get; set; }
+ 
+        public FoodPlan? FoodPlan { get; set; }
 
         public int IdGoal { get; set; }
 
         [ForeignKey("IdGoal")]
-        [Required]
-        public required Goal Goal { get; set; }
+      
+        public Goal? Goal { get; set; }
 
         public List<UserFoodPlanWeekIntolerance> UserFoodPlanWeekIntolerances { get; set; } = new List<UserFoodPlanWeekIntolerance>();
 
