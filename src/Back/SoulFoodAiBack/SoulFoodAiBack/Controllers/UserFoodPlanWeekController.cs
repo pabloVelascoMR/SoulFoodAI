@@ -208,25 +208,29 @@ namespace SoulFoodAiBack.Controllers
         [Route("GetActiveWeekCalendar/{idUser}")]
         public async Task<IActionResult> GetActiveWeekCalendar(int idUser)
         {
-            
-            UserFoodPlanWeek? activeWeek = await _context.UserFoodPlansWeek
+            var activeWeek = await _context.UserFoodPlansWeek
                 .FirstOrDefaultAsync(w => w.IdUser == idUser && w.IsActive);
 
             if (activeWeek == null)
-                return NotFound("No hay plan semanal activo para cargar el calendario.");
+                return NotFound("No hay plan semanal activo para este usuario.");
 
-            
-            List<UserFoodPlanDaily> weekDays = await _context.UserFoodPlansDaily
+            var weekDays = await _context.UserFoodPlansDaily
+                .Include(d => d.FoodPlanDailyRecipes) 
+                    .ThenInclude(dr => dr.Recipe)         
+                        .ThenInclude(r => r.Meal)          
                 .Where(d => d.IdUserFoodPlanWeek == activeWeek.IdUserFoodPlanWeek)
-                .OrderBy(d => d.CreationDate) 
+                .OrderBy(d => d.CreationDate)              
                 .ToListAsync();
 
-            CultureInfo culture = new System.Globalization.CultureInfo("es-ES");
+            
+            var culture = new System.Globalization.CultureInfo("es-ES");
 
-            WeekCalendarDto calendarDto = new WeekCalendarDto
+            
+            var calendarDto = new WeekCalendarDto
             {
                 IdUserFoodPlanWeek = activeWeek.IdUserFoodPlanWeek,
-                MealsPerDay = activeWeek.MealsPerDay,
+                MealsPerDay = activeWeek.MealsPerDay, 
+
                 Days = weekDays.Select(day => new DayCalendarDto
                 {
                     IdUserFoodPlanDaily = day.IdUserFoodPlanDaily,
@@ -238,8 +242,13 @@ namespace SoulFoodAiBack.Controllers
 
                     FullDate = day.CreationDate,
 
-                    AssignedRecipes = new List<DailyRecipeDto>()
-
+                    AssignedRecipes = day.FoodPlanDailyRecipes.Select(dr => new DailyRecipeDto
+                    {
+                        IdRecipe = dr.IdRecipe,
+                        RecipeName = dr.Recipe.RecipeName,
+                        Kcal = dr.Recipe.TotalKcal,
+                        MealType = dr.Recipe.Meal.MealName 
+                    }).ToList()
                 }).ToList()
             };
 
