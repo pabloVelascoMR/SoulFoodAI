@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SoulFoodAiBack.Data;
 using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Models;
+using System.Globalization;
 
 namespace SoulFoodAiBack.Controllers
 {
@@ -135,7 +136,7 @@ namespace SoulFoodAiBack.Controllers
            
             if (userData.UserIntolerances != null && userData.UserIntolerances.Any())
             {
-                foreach (var intol in userData.UserIntolerances)
+                foreach (UserIntolerance? intol in userData.UserIntolerances)
                 {
                     newWeek.UserFoodPlanWeekIntolerances.Add(new UserFoodPlanWeekIntolerance
                     {
@@ -189,8 +190,8 @@ namespace SoulFoodAiBack.Controllers
             if (activeWeek == null)
                 return NotFound("No hay plan semanal activo para este usuario.");
 
-     
-            var dto = new WeeklyHeaderDto
+
+            WeeklyHeaderDto dto = new WeeklyHeaderDto
             {
                 IdUserFoodPlanWeek = activeWeek.IdUserFoodPlanWeek,
                 DietName = activeWeek.FoodPlan.FoodPlanName,
@@ -201,6 +202,48 @@ namespace SoulFoodAiBack.Controllers
             };
 
             return Ok(dto);
+        }
+
+        [HttpGet]
+        [Route("GetActiveWeekCalendar/{idUser}")]
+        public async Task<IActionResult> GetActiveWeekCalendar(int idUser)
+        {
+            
+            UserFoodPlanWeek? activeWeek = await _context.UserFoodPlansWeek
+                .FirstOrDefaultAsync(w => w.IdUser == idUser && w.IsActive);
+
+            if (activeWeek == null)
+                return NotFound("No hay plan semanal activo para cargar el calendario.");
+
+            
+            List<UserFoodPlanDaily> weekDays = await _context.UserFoodPlansDaily
+                .Where(d => d.IdUserFoodPlanWeek == activeWeek.IdUserFoodPlanWeek)
+                .OrderBy(d => d.CreationDate) 
+                .ToListAsync();
+
+            CultureInfo culture = new System.Globalization.CultureInfo("es-ES");
+
+            WeekCalendarDto calendarDto = new WeekCalendarDto
+            {
+                IdUserFoodPlanWeek = activeWeek.IdUserFoodPlanWeek,
+                MealsPerDay = activeWeek.MealsPerDay,
+                Days = weekDays.Select(day => new DayCalendarDto
+                {
+                    IdUserFoodPlanDaily = day.IdUserFoodPlanDaily,
+
+                    DayName = char.ToUpper(day.CreationDate.ToString("dddd", culture)[0]) +
+                              day.CreationDate.ToString("dddd", culture).Substring(1),
+
+                    DateNumber = day.CreationDate.ToString("dd"),
+
+                    FullDate = day.CreationDate,
+
+                    AssignedRecipes = new List<DailyRecipeDto>()
+
+                }).ToList()
+            };
+
+            return Ok(calendarDto);
         }
     }
 }
