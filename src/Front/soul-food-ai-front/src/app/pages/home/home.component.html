@@ -1,0 +1,71 @@
+<div class="dashboard-container">
+  
+  <header class="weekly-header" *ngIf="weeklyHeader">
+    <div class="header-info">
+      <h1>Tu Plan Activo: {{ weeklyHeader.dietName }}</h1>
+      <p>Objetivo Semanal: {{ weeklyHeader.totalWeeklyKcal }} Kcal</p>
+    </div>
+    <div class="header-macros">
+      <div class="macro-badge protein">Proteína: {{ weeklyHeader.targetProteinPercent }}%</div>
+      <div class="macro-badge carbs">Carbohidratos: {{ weeklyHeader.targetCarbsPercent }}%</div>
+      <div class="macro-badge fat">Grasas: {{ weeklyHeader.targetFatPercent }}%</div>
+    </div>
+  </header>
+
+  <div class="calendar-grid" *ngIf="calendar">
+    <div class="day-column" *ngFor="let day of calendar.days">
+      
+      <div class="day-header">
+        <span class="day-name">{{ day.dayName }}</span>
+        <span class="day-number">{{ day.dateNumber }}</span>
+        <div class="day-progress" *ngIf="dailyHeaders[day.idUserFoodPlanDaily]">
+          {{ dailyHeaders[day.idUserFoodPlanDaily].realKcal }} / {{ dailyHeaders[day.idUserFoodPlanDaily].targetKcal }} kcal
+        </div>
+      </div>
+
+      <div class="meals-dropzone" 
+           [id]="'day-list-' + day.idUserFoodPlanDaily"
+           cdkDropList
+           [cdkDropListData]="day.assignedRecipes"
+           [cdkDropListConnectedTo]="connectedLists"
+           (cdkDropListDropped)="drop($event, day.idUserFoodPlanDaily)">
+        
+        <div class="recipe-card in-calendar" 
+             *ngFor="let recipe of day.assignedRecipes" 
+             cdkDrag>
+          <div class="card-meal-type">{{ recipe.mealType || recipe.mealName }}</div>
+          <div class="card-title">{{ recipe.recipeName }}</div>
+          <div class="card-kcal">{{ recipe.kcal }} kcal</div>
+        </div>
+
+        <div class="empty-slot" 
+             *ngFor="let empty of getEmptySlots(day)">
+          +
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="recipe-catalog-section">
+    <h2>Tus Recetas Disponibles</h2>
+    <div class="recipe-catalog" 
+         id="recipe-catalog"
+         cdkDropList
+         [cdkDropListData]="availableRecipes"
+         [cdkDropListConnectedTo]="connectedLists"
+         cdkDropListOrientation="horizontal"
+         (cdkDropListDropped)="drop($event)">
+      
+      <div class="recipe-card catalog-card" 
+           *ngFor="let recipe of availableRecipes" 
+           cdkDrag>
+        <div class="card-meal-type">{{ recipe.mealName }}</div>
+        <div class="card-title">{{ recipe.recipeName }}</div>
+        <div class="card-kcal">{{ recipe.kcal }} kcal</div>
+      </div>
+      
+    </div>
+  </div>
+
+</div>
