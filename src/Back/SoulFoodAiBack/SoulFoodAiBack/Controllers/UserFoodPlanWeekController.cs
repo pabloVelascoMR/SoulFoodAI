@@ -179,26 +179,24 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("GetWeekHeader/{idUser}")]
-        public async Task<IActionResult> GetWeekHeader(int idUser)
+        [Route("GetWeeklyHeader/{idUser}")]
+        public async Task<IActionResult> GetWeeklyHeader(int idUser)
         {
-            
-            UserFoodPlanWeek? activeWeek = await _context.UserFoodPlansWeek
+            var activeWeek = await _context.UserFoodPlansWeek
                 .Include(w => w.FoodPlan)
                 .FirstOrDefaultAsync(w => w.IdUser == idUser && w.IsActive);
 
             if (activeWeek == null)
                 return NotFound("No hay plan semanal activo para este usuario.");
 
-
-            WeeklyHeaderDto dto = new WeeklyHeaderDto
+            var dto = new WeeklyHeaderDto
             {
                 IdUserFoodPlanWeek = activeWeek.IdUserFoodPlanWeek,
                 DietName = activeWeek.FoodPlan.FoodPlanName,
                 TotalWeeklyKcal = activeWeek.TotalWeeklyKcal,
-                TargetProteinPercent = activeWeek.FoodPlan.ProteinPercent,
-                TargetCarbsPercent = activeWeek.FoodPlan.CarbPercent,
-                TargetFatPercent = activeWeek.FoodPlan.FatPercent
+                TargetProteinPercent = activeWeek.TotalWeeklyKcal > 0 ? Math.Round((activeWeek.TotalWeeklyProtein * 4 / activeWeek.TotalWeeklyKcal) * 100) : 0,
+                TargetCarbsPercent = activeWeek.TotalWeeklyKcal > 0 ? Math.Round((activeWeek.TotalWeeklyCarbs * 4 / activeWeek.TotalWeeklyKcal) * 100) : 0,
+                TargetFatPercent = activeWeek.TotalWeeklyKcal > 0 ? Math.Round((activeWeek.TotalWeeklyFat * 9 / activeWeek.TotalWeeklyKcal) * 100) : 0
             };
 
             return Ok(dto);
