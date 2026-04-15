@@ -1,0 +1,129 @@
+.dashboard-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Cabecera Semanal --- */
+.weekly-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  margin-bottom: 30px;
+}
+
+.weekly-header h1 { margin: 0 0 5px 0; color: #333; font-size: 1.5rem; }
+.weekly-header p { margin: 0; color: #666; font-size: 1rem; }
+
+.header-macros { display: flex; gap: 10px; }
+.macro-badge {
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+.protein { background: #ffebee; color: #c62828; }
+.carbs { background: #e3f2fd; color: #1565c0; }
+.fat { background: #fff3e0; color: #ef6c00; }
+
+/* --- Calendario --- */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.day-column {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.day-header {
+  text-align: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+}
+
+.day-name { display: block; font-size: 0.9rem; color: #888; text-transform: uppercase;}
+.day-number { display: block; font-size: 2rem; font-weight: bold; color: #222; }
+.day-progress { margin-top: 5px; font-size: 0.8rem; font-weight: bold; color: #4CAF50; }
+
+.meals-dropzone {
+  flex-grow: 1;
+  min-height: 100px;
+}
+
+.empty-slot {
+  height: 80px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+/* --- Tarjetas de Recetas --- */
+.recipe-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: grab;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.recipe-card:active { cursor: grabbing; }
+
+.card-meal-type { font-size: 0.7rem; text-transform: uppercase; color: #999; margin-bottom: 4px; }
+.card-title { font-size: 0.95rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+.card-kcal { font-size: 0.85rem; color: #666; }
+
+/* --- Catálogo Inferior --- */
+.recipe-catalog-section h2 { margin-bottom: 15px; color: #333; font-size: 1.2rem; }
+
+.recipe-catalog {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 15px;
+  background: white;
+  border-radius: 12px;
+  min-height: 120px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.catalog-card {
+  min-width: 150px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+/* Efectos Drag & Drop de Angular */
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  background: white;
+}
+.cdk-drag-placeholder { opacity: 0; }
+.cdk-drag-animating { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
+.meals-dropzone.cdk-drop-list-dragging .recipe-card:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
