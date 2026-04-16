@@ -11,72 +11,43 @@ export interface WeeklyHeaderDto {
   targetFatPercent: number;
 }
 
-export interface DailyHeaderDto {
-  idUserFoodPlanDaily: number;
-  dietName: string;
-  dayName: string;
-  targetKcal: number;
-  realKcal: number;
-  targetProtein: number;
-  realProtein: number;
-  targetCarbs: number;
-  realCarbs: number;
-  targetFat: number;
-  realFat: number;
-  mealsPerDay: number;
-}
-
-export interface DayCalendarDto {
-  idUserFoodPlanDaily: number;
-  dayName: string;
-  dateNumber: string;
-  fullDate: string;
-  assignedRecipes: any[]; 
-}
-
 export interface WeekCalendarDto {
   idUserFoodPlanWeek: number;
   mealsPerDay: number;
-  days: DayCalendarDto[];
+  days: any[];
 }
 
-export interface RecipeCardDto {
-  idRecipe: number;
-  recipeName: string;
-  kcal: number;
-  mealName: string;
-}
-
-export interface UpdateDailyRecipesDto {
+export interface DailyHeaderDto {
   idUserFoodPlanDaily: number;
-  recipeIds: number[];
+  targetKcal: number;
+  realKcal: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class HomeService {
-  private baseUrl = 'https://localhost:7007/api'; 
+  private baseUrl = 'https://localhost:7007/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getWeeklyHeader(idUser: number): Observable<WeeklyHeaderDto> {
-    return this.http.get<WeeklyHeaderDto>(`${this.baseUrl}/UserFoodPlanWeek/GetWeeklyHeader/${idUser}`);
+  getWeeklyHeader(userId: number): Observable<WeeklyHeaderDto> {
+    return this.http.get<WeeklyHeaderDto>(`${this.baseUrl}/UserFoodPlanWeek/GetWeeklyHeader/${userId}`);
   }
 
-  getActiveWeekCalendar(idUser: number): Observable<WeekCalendarDto> {
-    return this.http.get<WeekCalendarDto>(`${this.baseUrl}/UserFoodPlanWeek/GetActiveWeekCalendar/${idUser}`);
+  getActiveWeekCalendar(userId: number): Observable<WeekCalendarDto> {
+    return this.http.get<WeekCalendarDto>(`${this.baseUrl}/UserFoodPlanWeek/GetActiveWeekCalendar/${userId}`);
   }
 
-  getDailyHeader(idDailyPlan: number): Observable<DailyHeaderDto> {
-    return this.http.get<DailyHeaderDto>(`${this.baseUrl}/UserFoodPlanDaily/GetDailyHeader/${idDailyPlan}`);
+  getDailyHeader(idDaily: number): Observable<DailyHeaderDto> {
+    return this.http.get<DailyHeaderDto>(`${this.baseUrl}/UserFoodPlanWeek/GetDailyHeader/${idDaily}`);
   }
 
-  getRecipesForUser(idUser: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/Recipe/GetRecipesForUser/${idUser}`);
+  getRecipesForUser(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/Recipe/GetRecipesForUser/${userId}`);
   }
 
-  updateDailyRecipes(dto: UpdateDailyRecipesDto): Observable<any> {
-    return this.http.post(`${this.baseUrl}/UserFoodPlanDaily/UpdateDailyRecipes`, dto);
+  updateDailyRecipes(data: { idUserFoodPlanDaily: number, recipeIds: number[] }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UserFoodPlanWeek/UpdateDailyRecipes`, data);
   }
 }

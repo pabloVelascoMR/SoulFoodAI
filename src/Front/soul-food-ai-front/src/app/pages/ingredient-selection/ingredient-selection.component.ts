@@ -62,7 +62,6 @@ export class IngredientSelectionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    
     const id = this.userService.getUserId();
     if (!id) {
       alert("Debes iniciar sesión para acceder a esta pantalla.");
@@ -77,8 +76,6 @@ export class IngredientSelectionComponent implements OnInit {
     this.http.get<any>(`https://localhost:7007/api/UserData/GetUserDataById/${this.userId}`).subscribe({
       next: (userData) => {
         this.userDietType = userData?.idFoodPlan || userData?.IdFoodPlan || '1';
-        console.log(`Cargando ingredientes para el usuario ${this.userId} con dieta ${this.userDietType}`); 
-        
         this.setupSteps();
         this.loadSelectedIngredients(); 
         this.loadIngredientsForCurrentStep();
@@ -123,9 +120,12 @@ export class IngredientSelectionComponent implements OnInit {
     return this.selectedIngredientIds.size >= this.requiredMinimum;
   }
 
+  // MODIFICADO: Ahora redirige al Home
   finalizar(): void {
     if (this.canFinish) {
-      alert("¡Enhorabuena! Has seleccionado los ingredientes mínimos. Ya puedes avanzar a la siguiente pantalla.");
+      this.router.navigate(['/home']);
+    } else {
+      alert(`Necesitas seleccionar al menos ${this.requiredMinimum} ingredientes.`);
     }
   }
 
@@ -283,7 +283,6 @@ export class IngredientSelectionComponent implements OnInit {
   }
   closeOFFModal(): void { this.showOFFModal = false; }
 
-  // 🔴 LA MAGIA PARA OFF (Corregida para que funcione perfecto con tu Backend C# o con API Pública)
   searchOFF(): void {
     if (!this.offSearchQuery || this.offSearchQuery.trim() === '') return;
     this.isSearchingOFF = true;
@@ -291,10 +290,7 @@ export class IngredientSelectionComponent implements OnInit {
     
     this.ingredientService.searchOpenFoodFacts(this.offSearchQuery).subscribe({
       next: (response: any) => {
-        // Detecta si la respuesta viene del Backend de C# (es un Array directo) o de la API de OFF (tiene .products)
         let products = Array.isArray(response) ? response : (response.products || []);
-        
-        // Eliminamos el setTimeout de Angular. Tu backend de C# ya se encarga de reintentar si no encuentra nada.
         this.offSearchResults = products; 
         this.isSearchingOFF = false; 
         this.cdr.markForCheck();
@@ -307,7 +303,6 @@ export class IngredientSelectionComponent implements OnInit {
   }
 
   selectOFFIngredient(product: any): void {
-    // Mapeo universal: Entiende propiedades vengan de C# o de la API pública
     const dto = {
       idUser: this.userId, 
       idOpenFoodFacts: product.openFoodFactsId || product.id || product.code,
@@ -326,7 +321,6 @@ export class IngredientSelectionComponent implements OnInit {
     });
   }
 
-  
   trackByIngredient(index: number, ingredient: any): number {
     return ingredient.idIngredient || ingredient.id;
   }

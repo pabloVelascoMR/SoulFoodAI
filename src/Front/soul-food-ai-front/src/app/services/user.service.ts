@@ -7,13 +7,13 @@ import { Observable, tap } from 'rxjs';
 })
 export class UserService {
   private apiUrl = 'https://localhost:7007/api/User'; 
+  private authUrl = 'https://localhost:7007/api/Auth'; 
 
   constructor(private http: HttpClient) {}
 
   register(user: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/AddUser`, user).pipe(
       tap((res: any) => {
-        
         const id = res.idUser || res.IdUser; 
         if (id) {
           localStorage.setItem('soulfood_userId', id.toString());
@@ -28,13 +28,21 @@ export class UserService {
   }
 
   login(loginData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Login`, loginData).pipe(
-      tap((res: any) => this.saveSession(res.idUser))
-    );
-  }
+    
+    return this.http.post(`${this.authUrl}/Login`, loginData).pipe(
+      tap((res: any) => {
+        // Guardamos la sesión leyendo exactamente lo que devuelve tu AuthController
+        const id = res.idUser || res.IdUser; 
+        if (id) {
+          localStorage.setItem('soulfood_userId', id.toString());
+        }
 
-  private saveSession(userId: number): void {
-    localStorage.setItem('soulfood_userId', userId.toString());
+        const token = res.token || res.Token; 
+        if (token) {
+          localStorage.setItem('soulfood_token', token);
+        }
+      })
+    );
   }
 
   getUserId(): number | null {
@@ -44,5 +52,6 @@ export class UserService {
 
   logout(): void {
     localStorage.removeItem('soulfood_userId');
+    localStorage.removeItem('soulfood_token');
   }
 }
