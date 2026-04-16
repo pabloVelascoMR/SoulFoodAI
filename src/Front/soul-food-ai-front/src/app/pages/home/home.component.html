@@ -1,3 +1,25 @@
+<button class="menu-toggle-btn" (click)="toggleSidebar()" *ngIf="!loading">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="3" y1="12" x2="21" y2="12"></line>
+    <line x1="3" y1="6" x2="21" y2="6"></line>
+    <line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+</button>
+
+<div class="sidebar-overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
+
+<aside class="sidebar" [class.open]="isSidebarOpen">
+  <div class="sidebar-header">
+    <h3>Menú SoulFood</h3>
+    <button class="close-btn" (click)="closeSidebar()">✕</button>
+  </div>
+  
+  <nav class="sidebar-nav">
+    <a routerLink="/ingredient-selection" class="nav-item" (click)="closeSidebar()">
+      <span class="nav-icon">🥦</span> Mis Ingredientes
+    </a>
+  </nav>
+</aside>
 <div class="dashboard-container page-layout">
 
   <div *ngIf="loading" class="loading-state">

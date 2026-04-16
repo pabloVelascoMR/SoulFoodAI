@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router'; // Asegúrate de importar RouterModule
 import { UserService } from '../../services/user.service';
 import { 
   HomeService, 
@@ -13,12 +13,13 @@ import {
 @Component({
   selector: 'app-home',
   standalone: true, 
-  imports: [CommonModule, DragDropModule], 
+  imports: [CommonModule, DragDropModule, RouterModule], // Añadido RouterModule para el menú
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
   
+  // --- VARIABLES DE DATOS ---
   userId: number = 0; 
   hasActivePlan: boolean = false;
   loading: boolean = true;
@@ -28,6 +29,9 @@ export class HomeComponent implements OnInit {
   availableRecipes: any[] = [];
   connectedLists: string[] = ['recipe-catalog'];
   dailyHeaders: { [key: number]: DailyHeaderDto } = {};
+
+  // --- VARIABLES DEL MENÚ LATERAL ---
+  isSidebarOpen: boolean = false;
 
   constructor(
     private homeService: HomeService,
@@ -39,7 +43,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // 1. Obtenemos el ID real del usuario desde el Login
       const id = this.userService.getUserId();
       if (!id) {
         this.router.navigate(['/login']);
@@ -50,13 +53,21 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // --- FUNCIONES DEL MENÚ LATERAL ---
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  closeSidebar() {
+    this.isSidebarOpen = false;
+  }
+
+  // --- CARGA DE DATOS ---
   loadDashboardData(): void {
     this.loading = true;
     
-    // Primero comprobamos si tiene calendario activo
     this.homeService.getActiveWeekCalendar(this.userId).subscribe({
       next: (cal) => {
-        // Si no devuelve nada o no tiene días, no hay plan
         if (!cal || !cal.days || cal.days.length === 0) {
           this.hasActivePlan = false;
           this.loading = false;
@@ -71,7 +82,6 @@ export class HomeComponent implements OnInit {
               this.loadDailyHeader(day.idUserFoodPlanDaily);
             });
           }
-          // Si hay plan, cargamos la cabecera y las recetas
           this.loadRemainingData();
         }
       },
@@ -96,7 +106,7 @@ export class HomeComponent implements OnInit {
     this.homeService.getRecipesForUser(this.userId).subscribe({
       next: (recipes) => {
         this.availableRecipes = recipes;
-        this.loading = false; // Terminamos de cargar todo
+        this.loading = false; 
         this.cdr.detectChanges(); 
       },
       error: (err) => {
@@ -114,6 +124,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  // --- DRAG AND DROP ---
   drop(event: CdkDragDrop<any[]>, targetDayId?: number) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -142,7 +153,6 @@ export class HomeComponent implements OnInit {
 
   saveDayConfiguration(idDailyPlan: number, recipes: any[]): void {
     const recipeIds = recipes.map(r => r.idRecipe);
-    
     this.homeService.updateDailyRecipes({
       idUserFoodPlanDaily: idDailyPlan,
       recipeIds: recipeIds
@@ -158,20 +168,21 @@ export class HomeComponent implements OnInit {
   }
 
   crearNuevoPlan() {
-    this.loading = true;
+    this.loading = true; 
     
     this.homeService.createWeeklyPlan(this.userId).subscribe({
       next: () => {
+        
         this.loadDashboardData();
       },
       error: (err) => {
         console.error("Error al crear plan:", err);
-        
         this.loading = false;
         this.cdr.detectChanges();
 
+        
         if (err.status === 404 || err.status === 400 || err.status === 500) {
-           console.warn("Faltan datos del usuario. Redirigiendo al Onboarding...");
+           console.warn("Redirigiendo al Onboarding...");
            this.router.navigate(['/onboarding']); 
         } else {
            alert("Ha ocurrido un error inesperado al intentar crear tu plan.");
@@ -179,5 +190,4 @@ export class HomeComponent implements OnInit {
       }
     });
   }
-  
 }
