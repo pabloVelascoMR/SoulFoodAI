@@ -3,7 +3,12 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
-import { HomeService, WeekCalendarDto, WeeklyHeaderDto, DailyHeaderDto } from '../../services/home.service';
+import { 
+  HomeService, 
+  WeekCalendarDto, 
+  WeeklyHeaderDto, 
+  DailyHeaderDto,
+} from '../../services/home.service';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +18,10 @@ import { HomeService, WeekCalendarDto, WeeklyHeaderDto, DailyHeaderDto } from '.
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
-  userId: number = 0;
+  
+  userId: number = 0; 
+  hasActivePlan: boolean = false;
+  loading: boolean = true;
 
   weeklyHeader: WeeklyHeaderDto | null = null;
   calendar: WeekCalendarDto | null = null;
@@ -31,76 +39,145 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      // 1. Obtenemos el ID real del usuario desde el Login
       const id = this.userService.getUserId();
-      
       if (!id) {
         this.router.navigate(['/login']);
         return;
       }
-
       this.userId = id;
       this.loadDashboardData();
     }
   }
 
   loadDashboardData(): void {
+    this.loading = true;
+    
+    // Primero comprobamos si tiene calendario activo
+    this.homeService.getActiveWeekCalendar(this.userId).subscribe({
+      next: (cal) => {
+        // Si no devuelve nada o no tiene días, no hay plan
+        if (!cal || !cal.days || cal.days.length === 0) {
+          this.hasActivePlan = false;
+          this.loading = false;
+          this.cdr.detectChanges();
+        } else {
+          this.calendar = cal;
+          this.hasActivePlan = true;
+          
+          if (this.calendar?.days) {
+            this.calendar.days.forEach(day => {
+              this.connectedLists.push('day-list-' + day.idUserFoodPlanDaily);
+              this.loadDailyHeader(day.idUserFoodPlanDaily);
+            });
+          }
+          // Si hay plan, cargamos la cabecera y las recetas
+          this.loadRemainingData();
+        }
+      },
+      error: (err) => {
+        console.error("Error cargando calendario (posiblemente no hay plan):", err);
+        this.hasActivePlan = false;
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  loadRemainingData(): void {
     this.homeService.getWeeklyHeader(this.userId).subscribe({
-      next: (h) => { this.weeklyHeader = h; this.cdr.detectChanges(); },
-      error: (e) => console.error(e)
+      next: (header) => {
+        this.weeklyHeader = header;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Error cargando cabecera:", err)
     });
 
     this.homeService.getRecipesForUser(this.userId).subscribe({
-      next: (r) => { this.availableRecipes = r; this.cdr.detectChanges(); },
-      error: (e) => console.error(e)
-    });
-
-    this.homeService.getActiveWeekCalendar(this.userId).subscribe({
-      next: (cal) => {
-        this.calendar = cal;
-        this.cdr.detectChanges();
-        if (this.calendar?.days) {
-          this.calendar.days.forEach(day => {
-            this.connectedLists.push('day-list-' + day.idUserFoodPlanDaily);
-            this.loadDailyHeader(day.idUserFoodPlanDaily);
-          });
-        }
+      next: (recipes) => {
+        this.availableRecipes = recipes;
+        this.loading = false; // Terminamos de cargar todo
+        this.cdr.detectChanges(); 
       },
-      error: (e) => console.error(e)
+      error: (err) => {
+        console.error("Error cargando recetas:", err);
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
   loadDailyHeader(idDaily: number): void {
-    this.homeService.getDailyHeader(idDaily).subscribe(h => {
-      this.dailyHeaders[idDaily] = h;
-      this.cdr.detectChanges();
+    this.homeService.getDailyHeader(idDaily).subscribe(header => {
+      this.dailyHeaders[idDaily] = header;
+      this.cdr.detectChanges(); 
     });
   }
 
   drop(event: CdkDragDrop<any[]>, targetDayId?: number) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      if (targetDayId) {
+        this.saveDayConfiguration(targetDayId, event.container.data);
+      }
     } else {
-      transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
-      
-      if (targetDayId) this.saveDayConfiguration(targetDayId, event.container.data);
-      
-      const prevId = event.previousContainer.id;
-      if (prevId.startsWith('day-list-')) {
-        const oldId = parseInt(prevId.replace('day-list-', ''));
-        this.saveDayConfiguration(oldId, event.previousContainer.data);
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex,
+      );
+
+      if (targetDayId) {
+        this.saveDayConfiguration(targetDayId, event.container.data);
+      }
+
+      const previousListId = event.previousContainer.id;
+      if (previousListId.startsWith('day-list-')) {
+        const oldDayId = parseInt(previousListId.replace('day-list-', ''), 10);
+        this.saveDayConfiguration(oldDayId, event.previousContainer.data);
       }
     }
   }
 
   saveDayConfiguration(idDailyPlan: number, recipes: any[]): void {
     const recipeIds = recipes.map(r => r.idRecipe);
-    this.homeService.updateDailyRecipes({ idUserFoodPlanDaily: idDailyPlan, recipeIds })
-      .subscribe(() => this.loadDailyHeader(idDailyPlan));
+    
+    this.homeService.updateDailyRecipes({
+      idUserFoodPlanDaily: idDailyPlan,
+      recipeIds: recipeIds
+    }).subscribe(() => {
+      this.loadDailyHeader(idDailyPlan);
+    });
   }
-
+  
   getEmptySlots(day: any): any[] {
     if (!this.calendar || !day.assignedRecipes) return [];
     const count = this.calendar.mealsPerDay - day.assignedRecipes.length;
     return count > 0 ? new Array(count) : [];
   }
+
+  crearNuevoPlan() {
+    this.loading = true;
+    
+    this.homeService.createWeeklyPlan(this.userId).subscribe({
+      next: () => {
+        this.loadDashboardData();
+      },
+      error: (err) => {
+        console.error("Error al crear plan:", err);
+        
+        this.loading = false;
+        this.cdr.detectChanges();
+
+        if (err.status === 404 || err.status === 400 || err.status === 500) {
+           console.warn("Faltan datos del usuario. Redirigiendo al Onboarding...");
+           this.router.navigate(['/onboarding']); 
+        } else {
+           alert("Ha ocurrido un error inesperado al intentar crear tu plan.");
+        }
+      }
+    });
+  }
+  
 }

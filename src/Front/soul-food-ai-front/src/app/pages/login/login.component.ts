@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core'; // 1. NUEVO: Importar ChangeDetectorRef
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -18,7 +18,11 @@ export class LoginComponent {
   errorMessage = '';
   isSubmitting = false;
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(
+    private userService: UserService, 
+    private router: Router,
+    private cdr: ChangeDetectorRef // 2. NUEVO: Inyectarlo en el constructor
+  ) {}
 
   login() {
     if (!this.email || !this.password) {
@@ -31,19 +35,21 @@ export class LoginComponent {
 
     this.userService.login({ email: this.email, password: this.password }).subscribe({
       next: () => {
-        
         this.router.navigate(['/home']);
       },
       error: (err) => {
-        
         this.isSubmitting = false; 
         
         if (err.status === 401) {
           this.errorMessage = 'Email o contraseña incorrectos.';
         } else {
-          this.errorMessage = 'Ha ocurrido un error de conexión.';
+          this.errorMessage = 'Error al conectar con el servidor.';
         }
-        console.error(err);
+        
+        console.error(err); 
+
+        // 3. NUEVO: Obligamos a Angular a actualizar el HTML instantáneamente
+        this.cdr.detectChanges(); 
       }
     });
   }

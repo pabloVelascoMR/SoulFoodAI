@@ -50,4 +50,9 @@ export class HomeService {
   updateDailyRecipes(data: { idUserFoodPlanDaily: number, recipeIds: number[] }): Observable<any> {
     return this.http.post(`${this.baseUrl}/UserFoodPlanWeek/UpdateDailyRecipes`, data);
   }
+
+  createWeeklyPlan(userId: number): Observable<any> {
+    // CAMBIO AQUÍ: Usamos GenerateWeekPlan exactamente como está en C#
+    return this.http.post(`${this.baseUrl}/UserFoodPlanWeek/GenerateWeekPlan/${userId}`, {});
+  }
 }

@@ -6,7 +6,6 @@
   align-items: center;
 }
 
-
 .header-module, .calendar-wrapper, .catalog-module {
   max-width: 1800px;
   width: 98%; 
@@ -291,7 +290,6 @@
 .meals-dropzone.cdk-drop-list-dragging .recipe-card:not(.cdk-drag-placeholder) { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
 
 /* --- RESPONSIVE INTELIGENTE --- */
-
 @media (max-width: 1200px) {
   .calendar-grid {
     display: flex;
@@ -301,4 +299,90 @@
   .day-column { min-width: 280px; }
   .header-module { flex-direction: column; align-items: flex-start; }
   .header-macros { width: 100%; justify-content: space-around; }
+}
+
+/* ========================================================
+   ESTILOS NUEVOS: NO PLAN Y PANTALLA DE CARGA
+   ======================================================== */
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: var(--text-muted);
+}
+
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--bg-surface-hover);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin { 
+  to { transform: rotate(360deg); } 
+}
+
+.no-plan-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  width: 100%;
+}
+
+.no-plan-card {
+  background: var(--bg-surface);
+  padding: 50px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  max-width: 550px;
+}
+
+.no-plan-icon {
+  font-size: 5rem;
+  margin-bottom: 20px;
+}
+
+.no-plan-card h2 {
+  font-size: 2rem;
+  color: var(--text-dark);
+  margin-bottom: 15px;
+}
+
+.no-plan-card p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin-bottom: 30px;
+}
+
+.btn-create-plan-giant {
+  padding: 20px 40px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: white;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-create-plan-giant:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn-create-plan-giant:active {
+  transform: translateY(0);
 }
