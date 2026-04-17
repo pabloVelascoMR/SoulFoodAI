@@ -18,10 +18,10 @@ namespace SoulFoodAiBack.Models
 
         public int IdRecipe { get; set; }
         [ForeignKey("IdRecipe")]
-        public required Recipe Recipe { get; set; }
+        public Recipe? Recipe { get; set; }
 
         public int IdIngredient { get; set; }
         [ForeignKey("IdIngredient")]
-        public required Ingredient Ingredient { get; set; }
+        public Ingredient? Ingredient { get; set; }
     }
 }

@@ -27,11 +27,17 @@ namespace SoulFoodAiBack.Models
         public double Fat { get; set; }
 
         public int TotalKcal { get; set; }
+
+        public String? RecipeDescription { get; set; }
+
+        public int IdUser { get; set; }
+        [ForeignKey("IdUser")]
+        public User? User { get; set; }
+
         public int IdMeal { get; set; }
-
         [ForeignKey("IdMeal")]
-        public required Meal Meal { get; set; }
-
+        public Meal? Meal { get; set; }
+        
         public List<FoodPlanDailyRecipe> FoodPlanDailyRecipes { get; set; }
         public List<RecipeUserIngredient> RecipeUserIngredients { get; set; }
 
