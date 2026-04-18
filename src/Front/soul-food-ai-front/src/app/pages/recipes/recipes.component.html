@@ -1,0 +1,42 @@
+<div class="recipe-container">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="title-font">✨ Tu Chef Personal</h2>
+      <p class="subtitle">Crearemos una receta usando los ingredientes de tu despensa, ajustada a tu dieta y objetivos.</p>
+    </div>
+
+    <div class="card-body">
+      <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+      <div *ngIf="successMessage" class="alert alert-success">
+        <i class="fas fa-check-circle"></i> 
+        <strong>¡Éxito!</strong> {{ successMessage }}<br> 
+        Receta generada: <span class="badge">{{ generatedRecipeName }}</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">¿Para qué comida quieres la receta?</label>
+        <select [(ngModel)]="selectedMeal" class="form-input">
+          <option [ngValue]="null" disabled>Selecciona una opción...</option>
+          <option *ngFor="let meal of meals" [value]="meal.idMeal">{{ meal.mealName }}</option>
+        </select>
+      </div>
+
+      <div class="form-group mt-3">
+        <label class="form-label">Instrucciones Extra (Opcional)</label>
+        <textarea 
+          [(ngModel)]="promptText" 
+          rows="3" 
+          class="form-input" 
+          placeholder="Ej: Tengo ganas de algo dulce, hazla muy crujiente, que sea rápida..."></textarea>
+      </div>
+
+      <button class="btn-primary submit-btn mt-4" (click)="generateRecipe()" [disabled]="isLoading">
+        <ng-container *ngIf="!isLoading">COCINAR CON IA 🚀</ng-container>
+        <ng-container *ngIf="isLoading">
+          <span class="spinner"></span><span style="margin-left: 15px;">EL CHEF ESTÁ PENSANDO...</span>
+        </ng-container>
+      </button>
+
+    </div>
+  </div>
+</div>
