@@ -7,6 +7,15 @@ export interface CreateAiRecipeDto {
   idMeal: number;
 }
 
+export interface AddRecipeDto {
+  idMeal: number;
+  recipeName: string;
+  recipeDescription: string;
+  idIngredients: number[];
+  quantity: number[];
+  unit: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,7 +28,20 @@ export class RecipesService {
     return this.http.post(`${this.apiUrl}/Recipe/CreateRecipeAI/${idUser}`, dto);
   }
 
+  addRecipeManual(idUser: number, dto: AddRecipeDto): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Recipe/AddRecipesForUser/${idUser}`, dto);
+  }
+
+  
+  getUserRecipes(idUser: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/Recipe/GetRecipesForUser/${idUser}`);
+  }
+
   getMeals(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/Meal/GetAllMeals`);
+  }
+
+  getAllowedIngredients(idUser: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/Ingredient/GetAllIngredients/${idUser}`); 
   }
 }
