@@ -18,7 +18,6 @@
     <a routerLink="/ingredient-selection" class="nav-item" (click)="closeSidebar()">
       <span class="nav-icon">🥦</span> Mis Ingredientes
     </a>
-
     <a routerLink="/recipes" class="nav-item" (click)="closeSidebar()">
       <span class="nav-icon">🍳</span> Mis Recetas
     </a>
@@ -34,7 +33,7 @@
 
   <ng-container *ngIf="!loading && hasActivePlan">
     
-    <header class="surface-module header-module" *ngIf="weeklyHeader">
+    <header class="surface-module header-module" *ngIf="weeklyHeader && !selectedDayId">
       <div class="header-info">
         <p class="greeting-subtitle">¡Bienvenido a tu plan!</p>
         <h1 class="page-title" style="text-align: left; margin-bottom: 5px;">{{ weeklyHeader.dietName }}</h1>
@@ -61,12 +60,87 @@
       </div>
     </header>
 
+   <header class="surface-module header-module daily-active-header" *ngIf="selectedDayId && dailyHeaders[selectedDayId]">
+      
+      <div class="header-info">
+        <button class="btn-text-link mb-3" (click)="clearSelectedDay()" style="font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.2rem;">⬅</span> Volver a Vista Semanal
+        </button>
+        
+        <h1 class="page-title" style="text-align: left; margin-bottom: 5px;">Día: {{ getDayName(selectedDayId) }}</h1>
+        <p class="target-kcal-badge">🎯 Objetivo del día: {{ dailyHeaders[selectedDayId].targetKcal }} Kcal</p>
+        
+        <button class="btn-primary mt-4 ai-magic-btn" (click)="adjustMacrosForSelectedDay()" [disabled]="isAdjustingMacros">
+          <span *ngIf="!isAdjustingMacros">✨ Cuadrar Macros con IA</span>
+          <div *ngIf="isAdjustingMacros" class="loading-content">
+            <span class="spinner"></span> Ajustando raciones...
+          </div>
+        </button>
+      </div>
+
+      <div class="header-macros daily-macros-container">
+        <h3 class="daily-macros-title">Progreso de Macros</h3>
+        
+        <div class="daily-macros-grid">
+          <div class="macro-bar-item">
+            <div class="macro-bar-header">
+              <span>🔥 Calorías</span>
+              <strong>{{ dailyHeaders[selectedDayId].realKcal }} / {{ dailyHeaders[selectedDayId].targetKcal }}</strong>
+            </div>
+            <div class="daily-progress-bg">
+              <div class="daily-progress-fill" style="background-color: var(--text-dark);"
+                   [style.width.%]="(dailyHeaders[selectedDayId].realKcal / dailyHeaders[selectedDayId].targetKcal) * 100">
+              </div>
+            </div>
+          </div>
+
+          <div class="macro-bar-item">
+            <div class="macro-bar-header">
+              <span>🥩 Proteína</span>
+              <strong>{{ dailyHeaders[selectedDayId].realProtein }} / {{ dailyHeaders[selectedDayId].targetProtein }}g</strong>
+            </div>
+            <div class="daily-progress-bg">
+              <div class="daily-progress-fill" style="background-color: var(--primary-color);"
+                   [style.width.%]="(dailyHeaders[selectedDayId].realProtein / dailyHeaders[selectedDayId].targetProtein) * 100">
+              </div>
+            </div>
+          </div>
+
+          <div class="macro-bar-item">
+            <div class="macro-bar-header">
+              <span>🍞 Carbohidratos</span>
+              <strong>{{ dailyHeaders[selectedDayId].realCarbs }} / {{ dailyHeaders[selectedDayId].targetCarbs }}g</strong>
+            </div>
+            <div class="daily-progress-bg">
+              <div class="daily-progress-fill" style="background-color: var(--secondary-color);"
+                   [style.width.%]="(dailyHeaders[selectedDayId].realCarbs / dailyHeaders[selectedDayId].targetCarbs) * 100">
+              </div>
+            </div>
+          </div>
+
+          <div class="macro-bar-item">
+            <div class="macro-bar-header">
+              <span>🥑 Grasas</span>
+              <strong>{{ dailyHeaders[selectedDayId].realFat }} / {{ dailyHeaders[selectedDayId].targetFat }}g</strong>
+            </div>
+            <div class="daily-progress-bg">
+              <div class="daily-progress-fill" style="background-color: var(--tertiary-color);"
+                   [style.width.%]="(dailyHeaders[selectedDayId].realFat / dailyHeaders[selectedDayId].targetFat) * 100">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
     <div class="calendar-wrapper" *ngIf="calendar">
       <div class="calendar-grid">
         
         <div class="day-column surface-module" *ngFor="let day of calendar.days">
           
-          <div class="day-header">
+          <div class="day-header clickable-header" 
+               [class.selected-day-header]="selectedDayId === day.idUserFoodPlanDaily"
+               (click)="selectDay(day.idUserFoodPlanDaily)">
             <span class="day-name">{{ day.dayName }}</span>
             <div class="day-date-bubble">{{ day.dateNumber }}</div>
             
