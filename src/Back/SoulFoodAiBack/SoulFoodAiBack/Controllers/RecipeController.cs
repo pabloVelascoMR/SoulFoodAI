@@ -175,7 +175,7 @@ namespace SoulFoodAiBack.Controllers
         
         REGLA ESTRICTA DE INGREDIENTES: 
         SOLO PUEDES USAR INGREDIENTES DE ESTA LISTA EXACTA: {listIngredientesAviables}.
-        Bajo ninguna circunstancia incluyas un ingrediente que no esté en la lista (ni siquiera agua, sal, aceite o especias si no aparecen ahí).
+        Bajo ninguna circunstancia incluyas un ingrediente que no esté en la lista (solo se puede añadir agua y sal. El aceite si es imprescindible y las especias si no aparecen ahí solo se pueden añadir si son opcionales marcansolas con (opcional)).
         
         MANEJO DE CASOS IMPOSIBLES (¡MUY IMPORTANTE!):
         Si es físicamente IMPOSIBLE crear una receta que cumpla la dieta Y las intolerancias usando SOLO esos ingredientes (ej: si es celíaco y solo tiene pan de trigo), NO inventes la receta. Devuelve EXACTAMENTE este JSON:

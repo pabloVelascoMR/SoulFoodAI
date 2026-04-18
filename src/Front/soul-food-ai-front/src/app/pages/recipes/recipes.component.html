@@ -102,8 +102,11 @@
       </div>
       
       <button class="btn-primary w-100 mt-4" (click)="generateAiRecipe()" [disabled]="isLoadingAi">
-        <span *ngIf="!isLoadingAi">GENERAR 🚀</span>
-        <span *ngIf="isLoadingAi" class="spinner"></span>
+        <span *ngIf="!isLoadingAi">GENERAR 👨‍🍳</span>
+        <div *ngIf="isLoadingAi" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+          <span class="spinner"></span>
+          <span>Creando receta...</span>
+        </div>
       </button>
     </div>
   </div>
@@ -148,12 +151,15 @@
           </select>
           <button class="btn-danger-sm" (click)="removeIngredientRow(i)">🗑️</button>
         </div>
-        <button class="btn-secondary w-100 mt-2" (click)="addIngredientRow()">+ Añadir</button>
+        <button class="btn-secondary w-100 mt-2" style="margin-top: 40px;"(click)="addIngredientRow()">+ Añadir</button>
       </div>
       
       <button class="btn-primary w-100 mt-4" (click)="submitManualRecipe()" [disabled]="isLoadingManual">
         <span *ngIf="!isLoadingManual">GUARDAR RECETA 💾</span>
-        <span *ngIf="isLoadingManual" class="spinner"></span>
+        <div *ngIf="isLoadingManual" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+          <span class="spinner"></span>
+          <span>Guardando receta...</span>
+        </div>
       </button>
     </div>
   </div>

@@ -15,7 +15,6 @@
   </div>
   
   <nav class="sidebar-nav">
-
     <a routerLink="/ingredient-selection" class="nav-item" (click)="closeSidebar()">
       <span class="nav-icon">🥦</span> Mis Ingredientes
     </a>
@@ -25,6 +24,7 @@
     </a>
   </nav>
 </aside>
+
 <div class="dashboard-container page-layout">
 
   <div *ngIf="loading" class="loading-state">
@@ -89,16 +89,18 @@
                [cdkDropListConnectedTo]="connectedLists"
                (cdkDropListDropped)="drop($event, day.idUserFoodPlanDaily)">
             
-            <div class="recipe-card" 
+            <div class="recipe-card unified-card" 
                  *ngFor="let recipe of day.assignedRecipes" 
-                 cdkDrag>
-              <div class="card-header">
-                <span class="meal-tag">{{ recipe.mealType || recipe.mealName }}</span>
+                 cdkDrag
+                 [ngClass]="getMealClass(recipe.mealType || recipe.mealName)">
+              
+              <h3 class="recipe-title-sm">{{ recipe.recipeName }}</h3>
+              
+              <div class="meal-pill-sm">
+                <span>{{ recipe.mealType || recipe.mealName }}</span>
               </div>
-              <h4 class="recipe-title">{{ recipe.recipeName }}</h4>
-              <div class="recipe-meta">
-                <span class="meta-item kcal">🔥 {{ recipe.kcal }} kcal</span>
-              </div>
+
+              <div class="kcal-tag-sm">🔥 {{ recipe.kcal }} Kcal</div>
             </div>
 
             <div class="empty-slot" *ngFor="let empty of getEmptySlots(day)">
@@ -121,16 +123,23 @@
            cdkDropListOrientation="horizontal"
            (cdkDropListDropped)="drop($event)">
         
-        <div class="recipe-card catalog-card" 
+        <div class="recipe-card catalog-card unified-card" 
              *ngFor="let recipe of availableRecipes" 
-             cdkDrag>
-          <div class="card-header">
-            <span class="meal-tag">{{ recipe.mealName || recipe.mealType }}</span>
+             cdkDrag
+             [ngClass]="getMealClass(recipe.mealName || recipe.mealType)">
+          
+          <h3 class="recipe-title">{{ recipe.recipeName }}</h3>
+          
+          <div class="pill-group">
+            <div class="diet-pill" *ngIf="recipe.dietName || weeklyHeader?.dietName">
+              <span>{{ recipe.dietName || weeklyHeader?.dietName }}</span>
+            </div>
+            <div class="meal-pill">
+              <span>{{ recipe.mealName || recipe.mealType }}</span>
+            </div>
           </div>
-          <h4 class="recipe-title">{{ recipe.recipeName }}</h4>
-          <div class="recipe-meta">
-            <span class="meta-item kcal">🔥 {{ recipe.kcal }} kcal</span>
-          </div>
+
+          <div class="kcal-tag">🔥 {{ recipe.kcal }} Kcal</div>
         </div>
         
       </div>

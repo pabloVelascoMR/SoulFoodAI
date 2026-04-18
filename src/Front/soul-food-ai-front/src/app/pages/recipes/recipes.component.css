@@ -246,3 +246,29 @@
   display: inline-block;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ========================================================
+   ALERTAS DE MENSAJES (ÉXITO Y ERROR)
+   ======================================================== */
+.alert {
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-align: center;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.alert-danger {
+  background-color: #fee2e2;
+  color: var(--text-danger);
+  border: 1px solid #fca5a5;
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.1);
+}
+
+.alert-success {
+  background-color: var(--bg-surface-hover);
+  color: var(--primary-hover);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.1);
+}

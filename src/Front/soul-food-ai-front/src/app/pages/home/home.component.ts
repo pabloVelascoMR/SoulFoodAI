@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Router, RouterModule } from '@angular/router'; // Asegúrate de importar RouterModule
+import { Router, RouterModule } from '@angular/router'; 
 import { UserService } from '../../services/user.service';
 import { 
   HomeService, 
@@ -13,7 +13,7 @@ import {
 @Component({
   selector: 'app-home',
   standalone: true, 
-  imports: [CommonModule, DragDropModule, RouterModule], // Añadido RouterModule para el menú
+  imports: [CommonModule, DragDropModule, RouterModule], 
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -51,6 +51,22 @@ export class HomeComponent implements OnInit {
       this.userId = id;
       this.loadDashboardData();
     }
+  }
+
+  // --- FUNCIONES NUEVAS DE ESTÉTICA Y NAVEGACIÓN ---
+  getMealClass(mealName: string): string {
+    if (!mealName) return '';
+    const name = mealName.toLowerCase();
+    if (name.includes('desayuno')) return 'meal-yellow';
+    if (name.includes('almuerzo')) return 'meal-orange';
+    if (name.includes('comida')) return 'meal-red';
+    if (name.includes('merienda')) return 'meal-purple';
+    if (name.includes('cena')) return 'meal-blue';
+    return '';
+  }
+
+  viewRecipeDetails() {
+    this.router.navigate(['/recipes']);
   }
 
   // --- FUNCIONES DEL MENÚ LATERAL ---
@@ -172,7 +188,6 @@ export class HomeComponent implements OnInit {
     
     this.homeService.createWeeklyPlan(this.userId).subscribe({
       next: () => {
-        
         this.loadDashboardData();
       },
       error: (err) => {
@@ -180,7 +195,6 @@ export class HomeComponent implements OnInit {
         this.loading = false;
         this.cdr.detectChanges();
 
-        
         if (err.status === 404 || err.status === 400 || err.status === 500) {
            console.warn("Redirigiendo al Onboarding...");
            this.router.navigate(['/onboarding']); 
