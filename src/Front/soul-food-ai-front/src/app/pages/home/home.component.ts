@@ -33,6 +33,10 @@ export class HomeComponent implements OnInit {
   // --- VARIABLES DEL MENÚ LATERAL ---
   isSidebarOpen: boolean = false;
 
+  // --- VARIABLES NUEVAS: CABECERA DINÁMICA E IA ---
+  selectedDayId: number | null = null;
+  isAdjustingMacros: boolean = false;
+
   constructor(
     private homeService: HomeService,
     private userService: UserService,
@@ -53,7 +57,38 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  // --- FUNCIONES NUEVAS DE ESTÉTICA Y NAVEGACIÓN ---
+  // --- FUNCIONES DE SELECCIÓN DE DÍA E IA ---
+  selectDay(idDaily: number) {
+    this.selectedDayId = idDaily;
+  }
+
+  clearSelectedDay() {
+    this.selectedDayId = null;
+  }
+
+  getDayName(idDaily: number): string {
+    const day = this.calendar?.days.find(d => d.idUserFoodPlanDaily === idDaily);
+    return day ? day.dayName : '';
+  }
+
+  adjustMacrosForSelectedDay() {
+    if (!this.selectedDayId) return;
+    this.isAdjustingMacros = true;
+    
+    this.homeService.adjustDayMacros(this.selectedDayId).subscribe({
+      next: (res) => {
+        this.isAdjustingMacros = false;
+        alert("¡Magia! Macros cuadrados perfectamente.");
+        this.loadDashboardData(); 
+      },
+      error: (err) => {
+        this.isAdjustingMacros = false;
+        alert("La IA dice: " + (err.error || "Error al cuadrar macros"));
+      }
+    });
+  }
+
+  // --- FUNCIONES DE ESTÉTICA Y NAVEGACIÓN ---
   getMealClass(mealName: string): string {
     if (!mealName) return '';
     const name = mealName.toLowerCase();
@@ -94,7 +129,9 @@ export class HomeComponent implements OnInit {
           
           if (this.calendar?.days) {
             this.calendar.days.forEach(day => {
-              this.connectedLists.push('day-list-' + day.idUserFoodPlanDaily);
+              if (!this.connectedLists.includes('day-list-' + day.idUserFoodPlanDaily)) {
+                this.connectedLists.push('day-list-' + day.idUserFoodPlanDaily);
+              }
               this.loadDailyHeader(day.idUserFoodPlanDaily);
             });
           }
@@ -121,7 +158,8 @@ export class HomeComponent implements OnInit {
 
     this.homeService.getRecipesForUser(this.userId).subscribe({
       next: (recipes) => {
-        this.availableRecipes = recipes;
+        // Filtramos para que no salgan las recetas clonadas de ajuste en el catálogo
+        this.availableRecipes = recipes.filter(r => !r.recipeName.startsWith('[AJUSTADO]'));
         this.loading = false; 
         this.cdr.detectChanges(); 
       },

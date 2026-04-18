@@ -19,8 +19,17 @@ export interface WeekCalendarDto {
 
 export interface DailyHeaderDto {
   idUserFoodPlanDaily: number;
+  dietName: string;       // <-- Añadido de tu C#
+  dayName: string;        // <-- Añadido de tu C#
   targetKcal: number;
   realKcal: number;
+  targetProtein: number;
+  realProtein: number;
+  targetCarbs: number;
+  realCarbs: number;
+  targetFat: number;
+  realFat: number;
+  mealsPerDay: number;    // <-- Añadido de tu C#
 }
 
 @Injectable({
@@ -40,7 +49,7 @@ export class HomeService {
   }
 
   getDailyHeader(idDaily: number): Observable<DailyHeaderDto> {
-    return this.http.get<DailyHeaderDto>(`${this.baseUrl}/UserFoodPlanWeek/GetDailyHeader/${idDaily}`);
+    return this.http.get<DailyHeaderDto>(`${this.baseUrl}/UserFoodPlanDaily/GetDailyHeader/${idDaily}`);
   }
 
   getRecipesForUser(userId: number): Observable<any[]> {
@@ -54,5 +63,9 @@ export class HomeService {
   createWeeklyPlan(userId: number): Observable<any> {
     // CAMBIO AQUÍ: Usamos GenerateWeekPlan exactamente como está en C#
     return this.http.post(`${this.baseUrl}/UserFoodPlanWeek/GenerateWeekPlan/${userId}`, {});
+  }
+
+  adjustDayMacros(idDaily: number): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/UserFoodPlanDaily/AdjustDayMacros/${idDaily}`, {});
   }
 }
