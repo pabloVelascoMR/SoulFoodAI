@@ -37,6 +37,7 @@ namespace SoulFoodAiBack.Controllers
                 .Include(r => r.RecipeUserIngredients)
                     .ThenInclude(ri => ri.Ingredient)
                 .Where(r => r.IdUser == idUser)
+                .Where(r => r.IdUser == idUser && !r.RecipeName.StartsWith("[AJUSTADO]"))
                 .Select(r => new RecipeCardDto
                 {
                     IdRecipe = r.IdRecipe,
