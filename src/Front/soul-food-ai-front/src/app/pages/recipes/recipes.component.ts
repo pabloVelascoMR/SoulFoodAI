@@ -1,17 +1,19 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common'; // <-- Añadido isPlatformBrowser
 import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router'; // <-- Añadido Router y RouterModule
 import { RecipesService, CreateAiRecipeDto, AddRecipeDto } from '../../services/recipes.service';
+import { UserService } from '../../services/user.service'; // <-- Añadido tu UserService
 
 @Component({
   selector: 'app-recipes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule], // <-- Asegúrate de tener RouterModule aquí
   templateUrl: './recipes.component.html',
   styleUrls: ['./recipes.component.css']
 })
 export class RecipesComponent implements OnInit {
-  idUser: number = 1024;
+  idUser: number = 0; // Ahora empieza en 0 y se llena dinámicamente
 
   meals: any[] = [];
   availableIngredients: any[] = [];
@@ -40,11 +42,23 @@ export class RecipesComponent implements OnInit {
 
   constructor(
     private recipesService: RecipesService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private userService: UserService, 
+    private router: Router, 
+    @Inject(PLATFORM_ID) private platformId: Object 
   ) {}
 
   ngOnInit(): void {
-    this.loadInitialData();
+    
+    if (isPlatformBrowser(this.platformId)) {
+      const id = this.userService.getUserId();
+      if (!id) {
+        this.router.navigate(['/login']);
+        return;
+      }
+      this.idUser = id; // Asignamos el ID real del usuario
+      this.loadInitialData();
+    }
   }
 
   loadInitialData(): void {
