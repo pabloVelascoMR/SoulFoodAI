@@ -11,21 +11,22 @@ import { RecipesService, CreateAiRecipeDto, AddRecipeDto } from '../../services/
   styleUrls: ['./recipes.component.css']
 })
 export class RecipesComponent implements OnInit {
-  idUser: number = 1024; // Tu usuario de pruebas
+  idUser: number = 1024;
 
   meals: any[] = [];
   availableIngredients: any[] = [];
-  userRecipesList: any[] = []; 
+  userRecipesList: any[] = [];
 
   isAiModalOpen: boolean = false;
   isManualModalOpen: boolean = false;
+  isInfoModalOpen: boolean = false;
+  selectedRecipe: any = null;
 
   selectedMealAi: number | null = null;
   promptTextAi: string = '';
   isLoadingAi: boolean = false;
   errorAi: string = '';
   successAi: string = '';
-
 
   manualRecipe = {
     recipeName: '',
@@ -47,7 +48,6 @@ export class RecipesComponent implements OnInit {
   }
 
   loadInitialData(): void {
-  
     this.loadUserRecipes();
     this.recipesService.getMeals().subscribe(data => this.meals = data);
     this.recipesService.getAllowedIngredients(this.idUser).subscribe(data => this.availableIngredients = data);
@@ -59,8 +59,19 @@ export class RecipesComponent implements OnInit {
         this.userRecipesList = data;
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error cargando recetas del usuario', err)
+      error: (err) => console.error(err)
     });
+  }
+
+  getMealClass(mealName: string): string {
+    if (!mealName) return '';
+    const name = mealName.toLowerCase();
+    if (name.includes('desayuno')) return 'meal-yellow';
+    if (name.includes('almuerzo')) return 'meal-orange';
+    if (name.includes('comida')) return 'meal-red';
+    if (name.includes('merienda')) return 'meal-purple';
+    if (name.includes('cena')) return 'meal-blue';
+    return '';
   }
 
   openAiModal() { this.isAiModalOpen = true; }
@@ -78,31 +89,38 @@ export class RecipesComponent implements OnInit {
     this.errorManual = ''; this.successManual = '';
   }
 
+  openInfoModal(recipe: any) {
+    this.selectedRecipe = recipe;
+    this.isInfoModalOpen = true;
+    this.cdr.detectChanges();
+  }
+  closeInfoModal() {
+    this.isInfoModalOpen = false;
+    this.selectedRecipe = null;
+  }
+
   generateAiRecipe(): void {
     if (!this.selectedMealAi) {
       this.errorAi = 'Selecciona para qué comida es la receta.';
       return;
     }
-
     this.isLoadingAi = true;
     this.errorAi = ''; this.successAi = '';
-
     const dto: CreateAiRecipeDto = {
       promptDescription: this.promptTextAi,
       idMeal: Number(this.selectedMealAi)
     };
-
     this.recipesService.generateRecipeAI(this.idUser, dto).subscribe({
       next: (res) => {
         this.isLoadingAi = false;
-        this.successAi = res.message || 'Receta creada maravillosamente.';
+        this.successAi = res.message;
         this.promptTextAi = '';
-        this.loadUserRecipes(); // Refrescamos el panel de fondo
+        this.loadUserRecipes();
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoadingAi = false;
-        this.errorAi = err.error?.message || err.error || 'Error al conectar con el Chef AI.';
+        this.errorAi = err.error?.message || err.error;
         this.cdr.detectChanges();
       }
     });
@@ -111,20 +129,17 @@ export class RecipesComponent implements OnInit {
   addIngredientRow(): void {
     this.manualRecipe.ingredients.push({ idIngredient: null, quantity: 100, unit: 'g' });
   }
-
   removeIngredientRow(index: number): void {
     this.manualRecipe.ingredients.splice(index, 1);
   }
 
   submitManualRecipe(): void {
     if (!this.manualRecipe.recipeName || !this.manualRecipe.idMeal || this.manualRecipe.ingredients.length === 0) {
-      this.errorManual = 'Rellena el nombre, la comida y añade al menos un ingrediente.';
+      this.errorManual = 'Completa los campos obligatorios.';
       return;
     }
-
     this.isLoadingManual = true;
     this.errorManual = ''; this.successManual = '';
-
     const dto: AddRecipeDto = {
       idMeal: Number(this.manualRecipe.idMeal),
       recipeName: this.manualRecipe.recipeName,
@@ -133,18 +148,17 @@ export class RecipesComponent implements OnInit {
       quantity: this.manualRecipe.ingredients.map(i => i.quantity),
       unit: this.manualRecipe.ingredients.map(i => i.unit)
     };
-
     this.recipesService.addRecipeManual(this.idUser, dto).subscribe({
       next: () => {
         this.isLoadingManual = false;
-        this.successManual = 'Receta guardada con éxito.';
-        this.loadUserRecipes(); // Refrescamos el panel de fondo 
+        this.successManual = 'Receta guardada.';
+        this.loadUserRecipes();
         this.manualRecipe = { recipeName: '', recipeDescription: '', idMeal: null, ingredients: [] };
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoadingManual = false;
-        this.errorManual = typeof err.error === 'string' ? err.error : 'Error al guardar la receta.';
+        this.errorManual = err.error;
         this.cdr.detectChanges();
       }
     });

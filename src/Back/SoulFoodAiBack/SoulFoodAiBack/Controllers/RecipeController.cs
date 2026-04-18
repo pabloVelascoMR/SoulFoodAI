@@ -28,22 +28,34 @@ namespace SoulFoodAiBack.Controllers
         [Route("GetRecipesForUser/{idUser}")]
         public async Task<ActionResult<List<RecipeCardDto>>> GetRecipesForUser(int idUser)
         {
-            List<RecipeCardDto> userRecipes = await _context.Recipes
+            var userRecipes = await _context.Recipes
                 .Include(r => r.Meal)
                 .Include(r => r.User)
                     .ThenInclude(u => u.UserData)
                         .ThenInclude(ud => ud.FoodPlan)
+               
+                .Include(r => r.RecipeUserIngredients)
+                    .ThenInclude(ri => ri.Ingredient)
                 .Where(r => r.IdUser == idUser)
                 .Select(r => new RecipeCardDto
                 {
                     IdRecipe = r.IdRecipe,
                     RecipeName = r.RecipeName,
-                    Kcal = r.TotalKcal, 
+                    Kcal = r.TotalKcal,
                     MealName = r.Meal.MealName,
                     DietName = r.User.UserData.FoodPlan.FoodPlanName,
                     Protein = r.Protein,
                     Carbs = r.Carbs,
-                    Fat = r.Fat
+                    Fat = r.Fat,
+                    RecipeDescription = r.RecipeDescription,
+
+                    
+                    Ingredients = r.RecipeUserIngredients.Select(ri => new RecipeIngredientDetailDto
+                    {
+                        Name = ri.Ingredient.Name, 
+                        Quantity = ri.Quantity,
+                        Unit = ri.Unit
+                    }).ToList()
                 })
                 .ToListAsync();
 

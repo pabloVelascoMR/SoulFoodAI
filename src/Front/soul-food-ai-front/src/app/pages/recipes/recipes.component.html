@@ -5,55 +5,98 @@
     <h2 class="section-title">Mis Recetas</h2>
     
     <div class="recipes-grid" *ngIf="userRecipesList.length > 0">
-      <div class="recipe-card card" *ngFor="let recipe of userRecipesList">
-        <h3>{{ recipe.recipeName }}</h3>
+      <div class="recipe-card card" 
+           *ngFor="let recipe of userRecipesList"
+           [ngClass]="getMealClass(recipe.mealName)">
         
-        <p style="font-size: 0.85rem; color: #888; margin-bottom: 10px; font-weight: 500;">
-          {{ recipe.mealName }} • Dieta: {{ recipe.dietName }}
-        </p>
+        <h3 class="recipe-title">{{ recipe.recipeName }}</h3>
+        
+        <div class="diet-pill">
+          <span>{{ recipe.dietName }}</span>
+        </div>
 
-        <p class="recipe-macros">
-          🔥 {{ recipe.kcal }} kcal | 🥩 {{ recipe.protein }}g | 🍞 {{ recipe.carbs }}g | 🥑 {{ recipe.fat }}g
-        </p>
+        <div class="kcal-tag">🔥 {{ recipe.kcal }} Kcal</div>
+
+        <button class="btn-info-sm" (click)="openInfoModal(recipe)">
+          ➕ Más Info
+        </button>
       </div>
     </div>
 
     <div class="empty-state" *ngIf="userRecipesList.length === 0">
-      <p>Aún no tienes recetas. ¡Crea una para empezar!</p>
+      <p>Aún no tienes recetas creadas.</p>
     </div>
 
     <div class="btn-group centered-buttons">
-      <button class="btn-primary" (click)="openAiModal()">✨ Generar Receta con IA</button>
-      <button class="btn-secondary" (click)="openManualModal()">📝 Crear Mi Propia Receta</button>
+      <button class="btn-primary" (click)="openAiModal()">✨ Generar con IA</button>
+      <button class="btn-secondary" (click)="openManualModal()">📝 Crear Manual</button>
     </div>
   </section>
+
+  <div class="modal-overlay" *ngIf="isInfoModalOpen && selectedRecipe">
+    <div class="modal-content card detail-modal">
+      <button class="close-btn" (click)="closeInfoModal()">✖</button>
+      
+      <h2 class="title-font" style="color: var(--text-dark);">{{ selectedRecipe.recipeName }}</h2>
+      
+      <div class="meal-badge mb-extra" [ngClass]="getMealClass(selectedRecipe.mealName)">
+        {{ selectedRecipe.mealName }}
+      </div>
+
+      <div class="modal-body">
+        <div class="info-section">
+          <h4 class="section-heading">Ingredientes</h4>
+          <ul class="clean-ingredients-list">
+            <li *ngFor="let ing of selectedRecipe.ingredients">
+              <span class="ing-qty-highlight">{{ ing.quantity }}{{ ing.unit }}</span> de {{ ing.name }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="info-section mt-4">
+          <h4 class="section-heading">Preparación</h4>
+          <p class="recipe-desc-text">{{ selectedRecipe.recipeDescription || 'Sin descripción.' }}</p>
+        </div>
+
+        <div class="info-section mt-4">
+          <h4 class="section-heading">Valores Nutricionales</h4>
+          <div class="macro-grid">
+            <div class="macro-item"><strong>Calorías</strong><br><span class="macro-val">🔥 {{ selectedRecipe.kcal }}</span></div>
+            <div class="macro-item"><strong>Proteína</strong><br><span class="macro-val">🥩 {{ selectedRecipe.protein }}g</span></div>
+            <div class="macro-item"><strong>Carbos</strong><br><span class="macro-val">🍞 {{ selectedRecipe.carbs }}g</span></div>
+            <div class="macro-item"><strong>Grasas</strong><br><span class="macro-val">🥑 {{ selectedRecipe.fat }}g</span></div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn-primary mt-4 w-100" (click)="closeInfoModal()">CERRAR</button>
+    </div>
+  </div>
 
   <div class="modal-overlay" *ngIf="isAiModalOpen">
     <div class="modal-content card">
       <button class="close-btn" (click)="closeAiModal()">✖</button>
+      <h2 class="title-font">✨ Chef AI</h2>
       
-      <h2 class="title-font">✨ Tu Chef Personal</h2>
-      <p class="subtitle">Crearemos una receta usando tu despensa y respetando tu dieta e intolerancias.</p>
-
       <div *ngIf="errorAi" class="alert alert-danger mt-3">{{ errorAi }}</div>
       <div *ngIf="successAi" class="alert alert-success mt-3">{{ successAi }}</div>
-
+      
       <div class="form-group mt-3">
-        <label class="form-label">¿Para qué comida es?</label>
+        <label class="form-label">Tipo de Comida</label>
         <select [(ngModel)]="selectedMealAi" class="form-input">
-          <option [ngValue]="null" disabled>Selecciona una opción...</option>
+          <option [ngValue]="null" disabled>Selecciona...</option>
           <option *ngFor="let meal of meals" [value]="meal.idMeal">{{ meal.mealName }}</option>
         </select>
       </div>
-
+      
       <div class="form-group mt-3">
-        <label class="form-label">Instrucciones Extra (Opcional)</label>
-        <textarea [(ngModel)]="promptTextAi" rows="2" class="form-input" placeholder="Ej: Que sea crujiente..."></textarea>
+        <label class="form-label">Petición Especial</label>
+        <textarea [(ngModel)]="promptTextAi" rows="2" class="form-input" placeholder="Ej: Muy picante..."></textarea>
       </div>
-
-      <button class="btn-primary submit-btn mt-4" (click)="generateAiRecipe()" [disabled]="isLoadingAi">
-        <span *ngIf="!isLoadingAi">COCINAR CON IA 🚀</span>
-        <span *ngIf="isLoadingAi" class="spinner"></span><span *ngIf="isLoadingAi" style="margin-left:10px;">PENSANDO...</span>
+      
+      <button class="btn-primary w-100 mt-4" (click)="generateAiRecipe()" [disabled]="isLoadingAi">
+        <span *ngIf="!isLoadingAi">GENERAR 🚀</span>
+        <span *ngIf="isLoadingAi" class="spinner"></span>
       </button>
     </div>
   </div>
@@ -61,55 +104,47 @@
   <div class="modal-overlay" *ngIf="isManualModalOpen">
     <div class="modal-content card">
       <button class="close-btn" (click)="closeManualModal()">✖</button>
-      
-      <h2 class="title-font">📝 Crear Receta Manual</h2>
+      <h2 class="title-font">📝 Nueva Receta</h2>
       
       <div *ngIf="errorManual" class="alert alert-danger mt-3">{{ errorManual }}</div>
       <div *ngIf="successManual" class="alert alert-success mt-3">{{ successManual }}</div>
-
-      <div class="form-grid mt-3">
-        <div class="form-group">
-          <label class="form-label">Nombre de la Receta</label>
-          <input type="text" [(ngModel)]="manualRecipe.recipeName" class="form-input" placeholder="Ej: Ensalada César">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Tipo de Comida</label>
-          <select [(ngModel)]="manualRecipe.idMeal" class="form-input">
-            <option [ngValue]="null" disabled>Selecciona...</option>
-            <option *ngFor="let meal of meals" [value]="meal.idMeal">{{ meal.mealName }}</option>
-          </select>
-        </div>
+      
+      <div class="form-group mt-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" [(ngModel)]="manualRecipe.recipeName" class="form-input">
+      </div>
+      
+      <div class="form-group mt-3">
+        <label class="form-label">Comida</label>
+        <select [(ngModel)]="manualRecipe.idMeal" class="form-input">
+          <option *ngFor="let meal of meals" [value]="meal.idMeal">{{ meal.mealName }}</option>
+        </select>
       </div>
 
-      <div class="form-group">
+      <div class="form-group mt-3">
         <label class="form-label">Preparación (Opcional)</label>
         <textarea [(ngModel)]="manualRecipe.recipeDescription" rows="2" class="form-input"></textarea>
       </div>
-
-      <div class="ingredients-section mt-3">
+      
+      <div class="ingredients-list mt-3">
         <label class="form-label">Ingredientes</label>
-        
-        <div class="ingredient-row" *ngFor="let ing of manualRecipe.ingredients; let i = index">
-          <select [(ngModel)]="ing.idIngredient" class="form-input ing-select">
+        <div class="ingredient-row mt-2" *ngFor="let ing of manualRecipe.ingredients; let i = index">
+          <select [(ngModel)]="ing.idIngredient" class="form-input flex-3">
             <option [ngValue]="null" disabled>Elige ingrediente...</option>
             <option *ngFor="let opt of availableIngredients" [value]="opt.idIngredient">{{ opt.name || opt.ingredientName }}</option>
           </select>
-          
-          <input type="number" [(ngModel)]="ing.quantity" class="form-input ing-qty" min="1">
-          
-          <select [(ngModel)]="ing.unit" class="form-input ing-unit">
+          <input type="number" [(ngModel)]="ing.quantity" class="form-input flex-1" placeholder="Cant.">
+          <select [(ngModel)]="ing.unit" class="form-input flex-1">
             <option value="g">g</option>
             <option value="ml">ml</option>
             <option value="ud">ud</option>
           </select>
-
-          <button class="btn-danger-icon" (click)="removeIngredientRow(i)">🗑️</button>
+          <button class="btn-danger-sm" (click)="removeIngredientRow(i)">🗑️</button>
         </div>
-
-        <button class="btn-secondary add-ing-btn mt-2" (click)="addIngredientRow()">+ Añadir Ingrediente</button>
+        <button class="btn-secondary w-100 mt-2" (click)="addIngredientRow()">+ Añadir</button>
       </div>
-
-      <button class="btn-primary submit-btn mt-4" (click)="submitManualRecipe()" [disabled]="isLoadingManual">
+      
+      <button class="btn-primary w-100 mt-4" (click)="submitManualRecipe()" [disabled]="isLoadingManual">
         <span *ngIf="!isLoadingManual">GUARDAR RECETA 💾</span>
         <span *ngIf="isLoadingManual" class="spinner"></span>
       </button>
