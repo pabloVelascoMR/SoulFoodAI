@@ -26,33 +26,29 @@ namespace SoulFoodAiBack.Controllers
 
         [HttpGet]
         [Route("GetRecipesForUser/{idUser}")]
-        public async Task<IActionResult> GetRecipesForUser(int idUser)
+        public async Task<ActionResult<List<RecipeCardDto>>> GetRecipesForUser(int idUser)
         {
-            List<RecipeCardDto>? availableRecipes = await _context.FoodPlanDailyRecipes
-                .Include(r => r.Recipe)
-                    .ThenInclude(recipe => recipe.Meal) 
+            List<RecipeCardDto> userRecipes = await _context.Recipes
+                .Include(r => r.Meal)
                 .Include(r => r.User)
                     .ThenInclude(u => u.UserData)
-                        .ThenInclude(ud => ud.FoodPlan) 
+                        .ThenInclude(ud => ud.FoodPlan)
                 .Where(r => r.IdUser == idUser)
                 .Select(r => new RecipeCardDto
                 {
                     IdRecipe = r.IdRecipe,
-                    RecipeName = r.Recipe.RecipeName,
-                    Kcal = r.Recipe.TotalKcal, 
-                    MealName = r.Recipe.Meal.MealName,
-                    DietName = r.User.UserData.FoodPlan.FoodPlanName
+                    RecipeName = r.RecipeName,
+                    Kcal = r.TotalKcal, 
+                    MealName = r.Meal.MealName,
+                    DietName = r.User.UserData.FoodPlan.FoodPlanName,
+                    Protein = r.Protein,
+                    Carbs = r.Carbs,
+                    Fat = r.Fat
                 })
                 .ToListAsync();
 
-            if (availableRecipes == null || !availableRecipes.Any())
-            {
-                return Ok(new List<RecipeCardDto>());
-            }
-
-            return Ok(availableRecipes);
+            return Ok(userRecipes);
         }
-
 
         [HttpPost]
         [Route("AddRecipesForUser/{idUser}")]
