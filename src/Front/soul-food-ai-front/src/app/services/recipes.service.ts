@@ -42,6 +42,6 @@ export class RecipesService {
   }
 
   getAllowedIngredients(idUser: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/Ingredient/GetAllIngredients/${idUser}`); 
+    return this.http.get<any[]>(`${this.apiUrl}/Ingredient/GetAllowedIngredients/${idUser}`);
   }
 }
