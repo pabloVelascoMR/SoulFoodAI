@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
 import { Router, RouterModule } from '@angular/router'; 
 import { UserService } from '../../services/user.service';
 import { 
@@ -19,7 +19,6 @@ import {
 })
 export class HomeComponent implements OnInit {
   
-  // --- VARIABLES DE DATOS ---
   userId: number = 0; 
   hasActivePlan: boolean = false;
   loading: boolean = true;
@@ -30,10 +29,8 @@ export class HomeComponent implements OnInit {
   connectedLists: string[] = ['recipe-catalog'];
   dailyHeaders: { [key: number]: DailyHeaderDto } = {};
 
-  // --- VARIABLES DEL MENÚ LATERAL ---
+  
   isSidebarOpen: boolean = false;
-
-  // --- VARIABLES NUEVAS: CABECERA DINÁMICA E IA ---
   selectedDayId: number | null = null;
   isAdjustingMacros: boolean = false;
 
@@ -57,7 +54,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  // --- FUNCIONES DE SELECCIÓN DE DÍA E IA ---
+  // --- FUNCIONES DE SELECCIÓN DE DÍA  IA ---
   selectDay(idDaily: number) {
     this.selectedDayId = idDaily;
   }
@@ -180,40 +177,63 @@ export class HomeComponent implements OnInit {
 
   // --- DRAG AND DROP ---
   drop(event: CdkDragDrop<any[]>, targetDayId?: number) {
+    
+    // 1. Si mueves una tarjeta dentro del mismo día o dentro del catálogo
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       if (targetDayId) {
         this.saveDayConfiguration(targetDayId, event.container.data);
       }
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
+    } 
+    else {
+      if (event.previousContainer.id === 'recipe-catalog') {
+        copyArrayItem(
+          event.previousContainer.data,
+          event.container.data,
+          event.previousIndex,
+          event.currentIndex
+        );
+        
+        event.container.data[event.currentIndex] = { ...event.container.data[event.currentIndex] };
 
-      if (targetDayId) {
-        this.saveDayConfiguration(targetDayId, event.container.data);
-      }
+        if (targetDayId) {
+          this.saveDayConfiguration(targetDayId, event.container.data);
+        }
+      } 
+     
+      else if (event.container.id === 'recipe-catalog') {
+        event.previousContainer.data.splice(event.previousIndex, 1); // Borra la tarjeta visualmente
+        
+        const oldDayId = parseInt(event.previousContainer.id.replace('day-list-', ''), 10);
+        this.saveDayConfiguration(oldDayId, event.previousContainer.data); // Guarda el día sin esa receta
+      } 
 
-      const previousListId = event.previousContainer.id;
-      if (previousListId.startsWith('day-list-')) {
+      else {
+        transferArrayItem(
+          event.previousContainer.data,
+          event.container.data,
+          event.previousIndex,
+          event.currentIndex,
+        );
+
+        if (targetDayId) {
+          this.saveDayConfiguration(targetDayId, event.container.data); // Guarda el día destino
+        }
+
+        const previousListId = event.previousContainer.id;
         const oldDayId = parseInt(previousListId.replace('day-list-', ''), 10);
-        this.saveDayConfiguration(oldDayId, event.previousContainer.data);
+        this.saveDayConfiguration(oldDayId, event.previousContainer.data); // Guarda el día origen
       }
     }
   }
 
   saveDayConfiguration(idDailyPlan: number, recipes: any[]): void {
-    // 👇 1. ACTUALIZACIÓN VISUAL INSTANTÁNEA (Para que las barras se muevan solas) 👇
     if (this.dailyHeaders[idDailyPlan]) {
       let totalKcal = 0; 
       let totalProt = 0; 
       let totalCarbs = 0; 
       let totalFat = 0;
 
-      // Sumamos los macros de todas las tarjetas que hay ahora mismo en el día
       recipes.forEach(r => {
         totalKcal += r.kcal || 0;
         totalProt += r.protein || 0;
@@ -221,24 +241,20 @@ export class HomeComponent implements OnInit {
         totalFat += r.fat || 0;
       });
 
-      // Se lo inyectamos a la cabecera diaria en tiempo real
       this.dailyHeaders[idDailyPlan].realKcal = totalKcal;
       this.dailyHeaders[idDailyPlan].realProtein = Number(totalProt.toFixed(1));
       this.dailyHeaders[idDailyPlan].realCarbs = Number(totalCarbs.toFixed(1));
       this.dailyHeaders[idDailyPlan].realFat = Number(totalFat.toFixed(1));
       
-      // Le decimos a Angular que repinte la pantalla inmediatamente
       this.cdr.detectChanges(); 
     }
 
-    // 👇 2. GUARDADO REAL EN BASE DE DATOS 👇
+    
     const recipeIds = recipes.map(r => r.idRecipe);
     this.homeService.updateDailyRecipes({
       idUserFoodPlanDaily: idDailyPlan,
       recipeIds: recipeIds
     }).subscribe(() => {
-      // Cuando el backend termina de guardar, recargamos los datos oficiales
-      // por si hubiera alguna pequeña diferencia de decimales
       this.loadDailyHeader(idDailyPlan);
     });
   }
