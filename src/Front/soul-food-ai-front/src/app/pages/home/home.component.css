@@ -718,40 +718,40 @@
 /* Contenedor de las barras de macros */
 .daily-macros-container {
   background: white;
-  padding: 25px;
+  padding: 30px; /* Un poco más de aire por dentro */
   border-radius: 20px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
-  min-width: 350px;
-  flex: 1;
-  max-width: 450px;
+  min-width: 400px;
+  flex: 1; /* Esto hace que intente rellenar el espacio */
+  max-width: 700px; /* 🔥 ¡AQUÍ ESTÁ LA CLAVE! Ampliamos el límite para que se estiren las líneas */
 }
 
 .daily-macros-title {
   font-family: var(--font-headline);
-  font-size: 1.3rem;
-  margin-bottom: 20px;
+  font-size: 1.5rem; /* Título más grande */
+  margin-bottom: 25px;
   color: var(--text-dark);
   border-bottom: 2px solid var(--bg-surface-hover);
-  padding-bottom: 10px;
+  padding-bottom: 12px;
 }
 
 .daily-macros-grid {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 22px; /* Más separación entre cada bloque de Kcal, Proteínas, etc. */
 }
 
 .macro-bar-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px; /* Separación entre el texto y la barra */
 }
 
 .macro-bar-header {
   display: flex;
   justify-content: space-between;
-  font-size: 0.95rem;
+  font-size: 1.1rem; /* Texto de "Proteína", "Carbohidratos" más grande */
   color: var(--text-muted);
   font-weight: 700;
 }
@@ -759,13 +759,13 @@
 .macro-bar-header strong {
   color: var(--text-dark);
   font-family: var(--font-headline);
-  font-size: 1.05rem;
+  font-size: 1.25rem; /* Números bastante más grandes para que destaquen */
 }
 
 /* La barra de fondo gris clarito */
 .daily-progress-bg {
   width: 100%;
-  height: 10px;
+  height: 14px; /* 🔥 Barras más gruesas (antes 10px) */
   background-color: var(--bg-surface-hover);
   border-radius: 10px;
   overflow: hidden;
@@ -777,7 +777,7 @@
   height: 100%;
   border-radius: 10px;
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-  max-width: 100%; /* Evita que la barra se salga si te pasas de macros */
+  max-width: 100%;
 }
 
 /* --- Mejoras para el botón de la IA --- */
