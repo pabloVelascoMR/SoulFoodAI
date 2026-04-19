@@ -206,11 +206,39 @@ export class HomeComponent implements OnInit {
   }
 
   saveDayConfiguration(idDailyPlan: number, recipes: any[]): void {
+    // 👇 1. ACTUALIZACIÓN VISUAL INSTANTÁNEA (Para que las barras se muevan solas) 👇
+    if (this.dailyHeaders[idDailyPlan]) {
+      let totalKcal = 0; 
+      let totalProt = 0; 
+      let totalCarbs = 0; 
+      let totalFat = 0;
+
+      // Sumamos los macros de todas las tarjetas que hay ahora mismo en el día
+      recipes.forEach(r => {
+        totalKcal += r.kcal || 0;
+        totalProt += r.protein || 0;
+        totalCarbs += r.carbs || 0;
+        totalFat += r.fat || 0;
+      });
+
+      // Se lo inyectamos a la cabecera diaria en tiempo real
+      this.dailyHeaders[idDailyPlan].realKcal = totalKcal;
+      this.dailyHeaders[idDailyPlan].realProtein = Number(totalProt.toFixed(1));
+      this.dailyHeaders[idDailyPlan].realCarbs = Number(totalCarbs.toFixed(1));
+      this.dailyHeaders[idDailyPlan].realFat = Number(totalFat.toFixed(1));
+      
+      // Le decimos a Angular que repinte la pantalla inmediatamente
+      this.cdr.detectChanges(); 
+    }
+
+    // 👇 2. GUARDADO REAL EN BASE DE DATOS 👇
     const recipeIds = recipes.map(r => r.idRecipe);
     this.homeService.updateDailyRecipes({
       idUserFoodPlanDaily: idDailyPlan,
       recipeIds: recipeIds
     }).subscribe(() => {
+      // Cuando el backend termina de guardar, recargamos los datos oficiales
+      // por si hubiera alguna pequeña diferencia de decimales
       this.loadDailyHeader(idDailyPlan);
     });
   }
