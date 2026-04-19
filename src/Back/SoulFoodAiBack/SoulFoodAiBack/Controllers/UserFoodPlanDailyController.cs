@@ -73,13 +73,15 @@ namespace SoulFoodAiBack.Controllers
         [Route("UpdateDailyRecipes")]
         public async Task<IActionResult> UpdateDailyRecipes([FromBody] UpdateDailyRecipesDto dto)
         {
-            UserFoodPlanDaily? targetDay = await _context.UserFoodPlansDaily
+         
+            var targetDay = await _context.UserFoodPlansDaily
                 .FirstOrDefaultAsync(d => d.IdUserFoodPlanDaily == dto.IdUserFoodPlanDaily);
 
             if (targetDay == null)
                 return NotFound("No se encontró el día especificado.");
 
-            List<FoodPlanDailyRecipe> existingRecipes = await _context.FoodPlanDailyRecipes
+           
+            var existingRecipes = await _context.FoodPlanDailyRecipes
                 .Where(dr => dr.IdUserFoodPlanDaily == dto.IdUserFoodPlanDaily)
                 .ToListAsync();
 
@@ -93,9 +95,10 @@ namespace SoulFoodAiBack.Controllers
             double totalRealCarbs = 0;
             double totalRealFat = 0;
 
+            
             foreach (int recipeId in dto.RecipeIds)
             {
-                Recipe? recipeInfo = await _context.Recipes.FindAsync(recipeId);
+                var recipeInfo = await _context.Recipes.FindAsync(recipeId);
 
                 if (recipeInfo != null)
                 {
@@ -103,7 +106,8 @@ namespace SoulFoodAiBack.Controllers
                     {
                         IdUserFoodPlanDaily = dto.IdUserFoodPlanDaily,
                         IdRecipe = recipeId,
-                        IdUser = targetDay.IdUser 
+                        IdUser = targetDay.IdUser, 
+                        IsActive = true           
                     });
 
                     totalRealKcal += recipeInfo.TotalKcal;
@@ -112,13 +116,15 @@ namespace SoulFoodAiBack.Controllers
                     totalRealFat += recipeInfo.Fat;
                 }
             }
+
             targetDay.RealKcal = (int)totalRealKcal;
             targetDay.RealProtein = Math.Round(totalRealProtein, 1);
             targetDay.RealCarbs = Math.Round(totalRealCarbs, 1);
             targetDay.RealFat = Math.Round(totalRealFat, 1);
 
             await _context.SaveChangesAsync();
-            return Ok(new { Message = "Día actualizado correctamente con las nuevas recetas." });
+
+            return Ok(new { Message = "Día actualizado y guardado correctamente." });
         }
 
         [HttpPost("AdjustDayMacros/{idUserFoodPlanDaily}")]
