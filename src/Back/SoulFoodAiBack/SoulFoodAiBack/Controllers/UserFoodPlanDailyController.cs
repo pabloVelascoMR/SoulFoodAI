@@ -130,7 +130,6 @@ namespace SoulFoodAiBack.Controllers
         [HttpPost("AdjustDayMacros/{idUserFoodPlanDaily}")]
         public async Task<IActionResult> AdjustDayMacros(int idUserFoodPlanDaily)
         {
-            
             UserFoodPlanDaily? dailyPlan = await _context.UserFoodPlansDaily
                 .Include(d => d.FoodPlanDailyRecipes)
                     .ThenInclude(f => f.Recipe)
@@ -191,6 +190,11 @@ namespace SoulFoodAiBack.Controllers
             string aiResponseJson = JsonDocument.Parse(await response.Content.ReadAsStringAsync())
                 .RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
 
+            if (aiResponseJson != null)
+            {
+                aiResponseJson = aiResponseJson.Replace("```json", "").Replace("```", "").Trim();
+            }
+
             DayAdjustmentAiResponseDto aiResult = JsonSerializer.Deserialize<DayAdjustmentAiResponseDto>(aiResponseJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (!aiResult.isPossible) return BadRequest(aiResult.errorMessage);
@@ -226,7 +230,6 @@ namespace SoulFoodAiBack.Controllers
                 }
                 await _context.SaveChangesAsync();
 
-              
                 var clonedIngs = await _context.RecipeUserIngredients.Include(ri => ri.Ingredient).Where(ri => ri.IdRecipe == clonedRecipe.IdRecipe).ToListAsync();
                 clonedRecipe.Protein = Math.Round(clonedIngs.Sum(ri => (ri.Quantity * ri.Ingredient.Protein) / 100.0), 2);
                 clonedRecipe.Carbs = Math.Round(clonedIngs.Sum(ri => (ri.Quantity * ri.Ingredient.Carbs) / 100.0), 2);
@@ -236,8 +239,24 @@ namespace SoulFoodAiBack.Controllers
 
                 originalFpdr.IdRecipe = clonedRecipe.IdRecipe;
             }
-
+           
             await _context.SaveChangesAsync();
+
+            var dayToUpdate = await _context.UserFoodPlansDaily
+                .Include(d => d.FoodPlanDailyRecipes)
+                    .ThenInclude(f => f.Recipe)
+                .FirstOrDefaultAsync(d => d.IdUserFoodPlanDaily == idUserFoodPlanDaily);
+
+            if (dayToUpdate != null)
+            {
+                dayToUpdate.RealKcal = dayToUpdate.FoodPlanDailyRecipes.Sum(f => f.Recipe.TotalKcal);
+                dayToUpdate.RealProtein = Math.Round(dayToUpdate.FoodPlanDailyRecipes.Sum(f => f.Recipe.Protein), 1);
+                dayToUpdate.RealCarbs = Math.Round(dayToUpdate.FoodPlanDailyRecipes.Sum(f => f.Recipe.Carbs), 1);
+                dayToUpdate.RealFat = Math.Round(dayToUpdate.FoodPlanDailyRecipes.Sum(f => f.Recipe.Fat), 1);
+
+                await _context.SaveChangesAsync(); 
+            }
+           
             return Ok(new { message = "Macros ajustados correctamente." });
         }
     }
