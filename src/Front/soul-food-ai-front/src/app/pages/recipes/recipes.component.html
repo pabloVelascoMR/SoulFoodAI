@@ -7,6 +7,7 @@
   </div>
 
   <h1 class="main-title title-font">SOUL FOOD AI</h1>
+  <h2 class="sub-title">Módulo de Creación de Recetas</h2>
 
   <section class="recipes-section">
     <h2 class="section-title">Mis Recetas</h2>
@@ -35,15 +36,14 @@
     </div>
 
     <div class="btn-group centered-buttons">
-      <button class="btn-primary" (click)="openAiModal()">✨ Generar con IA</button>
+      <button class="btn-primary" (click)="openAiModal()">🍳 Generar con IA</button>
       <button class="btn-secondary" (click)="openManualModal()">📝 Crear Manual</button>
     </div>
   </section>
 
   <div class="modal-overlay" *ngIf="isInfoModalOpen && selectedRecipe">
     <div class="modal-content card detail-modal">
-      <button class="close-btn" (click)="closeInfoModal()">✖</button>
-      
+
       <h2 class="title-font" style="color: var(--text-dark);">{{ selectedRecipe.recipeName }}</h2>
       
       <div class="meal-badge mb-extra" [ngClass]="getMealClass(selectedRecipe.mealName)">
@@ -66,7 +66,7 @@
         </div>
 
         <div class="info-section mt-4">
-          <h4 class="section-heading">Valores Nutricionales</h4>
+          <h4 class="section-heading">Valores Nutricionales por 100g</h4>
           <div class="macro-grid">
             <div class="macro-item"><strong>Calorías</strong><br><span class="macro-val">🔥 {{ selectedRecipe.kcal }}</span></div>
             <div class="macro-item"><strong>Proteína</strong><br><span class="macro-val">🥩 {{ selectedRecipe.protein }}g</span></div>
@@ -83,7 +83,7 @@
   <div class="modal-overlay" *ngIf="isAiModalOpen">
     <div class="modal-content card">
       <button class="close-btn" (click)="closeAiModal()">✖</button>
-      <h2 class="title-font">✨ Chef AI</h2>
+      <h2 class="title-font">👨‍🍳 Chef AI</h2>
       
       <div *ngIf="errorAi" class="alert alert-danger mt-3">{{ errorAi }}</div>
       <div *ngIf="successAi" class="alert alert-success mt-3">{{ successAi }}</div>
@@ -102,7 +102,7 @@
       </div>
       
       <button class="btn-primary w-100 mt-4" (click)="generateAiRecipe()" [disabled]="isLoadingAi">
-        <span *ngIf="!isLoadingAi">GENERAR 👨‍🍳</span>
+        <span *ngIf="!isLoadingAi">GENERAR</span>
         <div *ngIf="isLoadingAi" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
           <span class="spinner"></span>
           <span>Creando receta...</span>
