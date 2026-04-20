@@ -277,17 +277,36 @@
 
 .catalog-card { min-width: 250px; margin-bottom: 0; flex-shrink: 0; }
 
-/* --- EFECTOS DRAG & DROP ANGULAR --- */
+/* --- EFECTOS DRAG & DROP  --- */
+
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
+  border-radius: 20px !important; /* Mismo radio que tu unified-card */
+  box-shadow: 0 15px 35px rgba(46, 204, 113, 0.4) !important; /* Sombra verde destacada */
   background: white;
-  border: 2px solid var(--primary-color);
+  border: 2px solid var(--primary-color) !important;
+  opacity: 0.95;
+  cursor: grabbing !important;
 }
-.cdk-drag-placeholder { opacity: 0; }
-.cdk-drag-animating { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
-.meals-dropzone.cdk-drop-list-dragging .recipe-card:not(.cdk-drag-placeholder) { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
+
+.cdk-drag-placeholder { 
+  opacity: 0.3;
+  border: 2px dashed var(--primary-color) !important;
+  background: var(--bg-surface-hover);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.cdk-drag-animating { 
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1); 
+}
+
+.meals-dropzone.cdk-drop-list-dragging .recipe-card:not(.cdk-drag-placeholder) { 
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1); 
+}
+
+body.cdk-drop-list-dragging {
+  cursor: grabbing !important;
+}
 
 /* --- RESPONSIVE INTELIGENTE --- */
 @media (max-width: 1200px) {
