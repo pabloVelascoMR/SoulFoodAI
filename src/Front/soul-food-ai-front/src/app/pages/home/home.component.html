@@ -60,7 +60,7 @@
       </div>
     </header>
 
-   <header class="surface-module header-module daily-active-header" *ngIf="selectedDayId && dailyHeaders[selectedDayId]">
+    <header class="surface-module header-module daily-active-header" *ngIf="selectedDayId && dailyHeaders[selectedDayId]">
       
       <div class="header-info">
         <button class="btn-text-link mb-3" (click)="clearSelectedDay()" style="font-size: 1rem; display: flex; align-items: center; gap: 8px;">
@@ -73,12 +73,16 @@
         <button class="btn-primary mt-4 ai-magic-btn" (click)="adjustMacrosForSelectedDay()" [disabled]="isAdjustingMacros">
           <span *ngIf="!isAdjustingMacros">✨ Cuadrar Macros con IA</span>
           <div *ngIf="isAdjustingMacros" class="loading-content">
-            <span class="spinner"></span> Ajustando raciones...
+            <span class="spinner"></span> Ajustando raciones puede tardar un rato...
           </div>
         </button>
-      </div>
 
-      <div class="header-macros daily-macros-container">
+        <div *ngIf="aiMessage" 
+             class="ai-status-message mt-3" 
+             [ngClass]="{'msg-success': aiMessageType === 'success', 'msg-error': aiMessageType === 'error'}">
+          {{ aiMessage }}
+        </div>
+      </div> <div class="header-macros daily-macros-container">
         <h3 class="daily-macros-title">Progreso de Macros</h3>
         
         <div class="daily-macros-grid">
@@ -129,9 +133,10 @@
               </div>
             </div>
           </div>
+          
         </div>
       </div>
-    </header>
+    </header> 
 
     <div class="calendar-wrapper" *ngIf="calendar">
       <div class="calendar-grid">

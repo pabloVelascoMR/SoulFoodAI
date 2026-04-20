@@ -3,12 +3,15 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
 import { Router, RouterModule } from '@angular/router'; 
 import { UserService } from '../../services/user.service';
+import { finalize, timeout, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 import { 
   HomeService, 
   WeekCalendarDto, 
   WeeklyHeaderDto, 
   DailyHeaderDto,
 } from '../../services/home.service';
+
 
 @Component({
   selector: 'app-home',
@@ -33,6 +36,9 @@ export class HomeComponent implements OnInit {
   isSidebarOpen: boolean = false;
   selectedDayId: number | null = null;
   isAdjustingMacros: boolean = false;
+
+  aiMessage: string = '';
+  aiMessageType: 'success' | 'error' | '' = '';
 
   constructor(
     private homeService: HomeService,
@@ -70,21 +76,62 @@ export class HomeComponent implements OnInit {
 
   adjustMacrosForSelectedDay() {
     if (!this.selectedDayId) return;
-    this.isAdjustingMacros = true;
     
-    this.homeService.adjustDayMacros(this.selectedDayId).subscribe({
-      next: (res) => {
-        this.isAdjustingMacros = false;
-        alert("¡Magia! Macros cuadrados perfectamente.");
-        this.loadDashboardData(); 
-      },
-      error: (err) => {
-        this.isAdjustingMacros = false;
-        alert("La IA dice: " + (err.error || "Error al cuadrar macros"));
-      }
-    });
-  }
+    this.isAdjustingMacros = true;
+    this.aiMessage = ''; 
+    this.aiMessageType = ''; 
+    this.cdr.detectChanges(); 
+    
+    this.homeService.adjustDayMacros(this.selectedDayId)
+      .pipe(
+        timeout(20000), 
+        catchError((err) => {
+          return throwError(() => err);
+        }),
+        finalize(() => {
+          this.isAdjustingMacros = false;
+          this.cdr.detectChanges(); 
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.aiMessageType = 'success';
+          this.aiMessage = "✨ ¡Magia! Raciones cuadradas perfectamente.";
+          this.loadDashboardData(); 
+          
+          this.cdr.detectChanges(); 
+          
+          setTimeout(() => {
+            this.aiMessage = '';
+            this.cdr.detectChanges();
+          }, 4000);
+        },
+        error: (err) => {
+          console.error("Error capturado de la IA:", err);
+          
+          this.aiMessageType = 'error';
+          
+          if (err.name === 'TimeoutError') {
+             this.aiMessage = "La IA está tardando demasiado en responder. Los servidores deben estar muy saturados. Por favor, inténtalo más tarde.";
+          }
+          else if (err.status === 503 || (typeof err.error === 'string' && err.error.includes("high demand"))) {
+            this.aiMessage = "Servidores de IA saturados por alta demanda. Por favor, espera unos segundos y vuelve a intentarlo.";
+          } 
+          else if (err.error && typeof err.error === 'string') {
+            this.aiMessage = err.error; 
+          } 
+          else if (err.error && err.error.message) {
+            this.aiMessage = err.error.message;
+          }
+          else {
+            this.aiMessage = "Error de conexión con la IA. Inténtalo de nuevo.";
+          }
 
+          this.cdr.detectChanges(); 
+        }
+      });
+  }
+  
   // --- FUNCIONES DE ESTÉTICA Y NAVEGACIÓN ---
   getMealClass(mealName: string): string {
     if (!mealName) return '';
