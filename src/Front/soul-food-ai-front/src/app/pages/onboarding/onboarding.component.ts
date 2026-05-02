@@ -26,9 +26,7 @@ export class OnboardingComponent implements OnInit {
     height: null as number | null,
     weight: null as number | null,
     mealsPerDay: 3,
-    
-    // Nivel de actividad y medidas corporales
-    levelOfActivity: 1, // 1 por defecto (sedentario)
+    levelOfActivity: 1,
     chestMeasure: null as number | null,
     waistMeasure: null as number | null,
     hipMeasure: null as number | null,
@@ -36,7 +34,6 @@ export class OnboardingComponent implements OnInit {
     rightBicepMeasure: null as number | null,
     leftCuadricepsMeasure: null as number | null,
     rightCuadricepsMeasure: null as number | null,
-    
     idUser: 0, 
     idGoal: 0,
     idIntolerances: [] as number[], 
@@ -61,6 +58,10 @@ export class OnboardingComponent implements OnInit {
     this.onboardingService.getGoals().subscribe(res => this.goals = res);
     this.onboardingService.getIntolerances().subscribe(res => this.intolerances = res);
     this.onboardingService.getFoodPlans().subscribe(res => this.foodPlans = res);
+  }
+
+  get currentActivity() {
+    return this.activityLevels.find(a => a.id == this.userData.levelOfActivity) || this.activityLevels[0];
   }
 
   decrementAge() {
@@ -109,7 +110,6 @@ export class OnboardingComponent implements OnInit {
     }
 
     if (this.currentStep === 3) {
-
       if (this.userData.chestMeasure !== null && (this.userData.chestMeasure < 30 || this.userData.chestMeasure > 200)) {
         alert('ERROR: Si introduces el pecho, debe estar entre 30 y 200 cm.'); return;
       }
@@ -190,11 +190,9 @@ export class OnboardingComponent implements OnInit {
 
     this.onboardingService.saveUserData(onboardingData).subscribe({
       next: () => {
-        console.log('Datos de salud guardados con éxito.');
         this.router.navigate(['/ingredient-selection']);
       },
       error: (err) => {
-        console.error('Error al guardar onboarding:', err);
         alert('Hubo un problema al guardar tus datos.');
       }
     });
@@ -246,7 +244,6 @@ export class OnboardingComponent implements OnInit {
       11: '🌿',
       12: '❤️'
     };
-
     return emojis[id] || '🎯';
   }
 }
