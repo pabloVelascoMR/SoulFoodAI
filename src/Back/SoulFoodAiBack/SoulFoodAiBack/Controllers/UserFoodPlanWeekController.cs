@@ -74,42 +74,9 @@ namespace SoulFoodAiBack.Controllers
             if (finalDailyKcal < 1200) finalDailyKcal = 1200;
 
             
-            double proteinPercent = 0.25; 
-            double carbPercent = 0.45;    
-            double fatPercent = 0.30;    
-
-            switch (userData.IdFoodPlan)
-            {
-                case 1: // Dieta Estándar
-                case 2: // Dieta Equilibrada
-                case 9: // Dieta Pescetariana
-                case 11: // Dieta Baja en FODMAPs
-                    proteinPercent = 0.25; carbPercent = 0.45; fatPercent = 0.30;
-                    break;
-                case 3: 
-                    proteinPercent = 0.20; carbPercent = 0.40; fatPercent = 0.40;
-                    break;
-                case 4: 
-                    proteinPercent = 0.20; carbPercent = 0.05; fatPercent = 0.75;
-                    break;
-                case 5: 
-                    proteinPercent = 0.25; carbPercent = 0.10; fatPercent = 0.65;
-                    break;
-                case 6: 
-                    proteinPercent = 0.30; carbPercent = 0.20; fatPercent = 0.50;
-                    break;
-                case 7: 
-                case 12: 
-                    proteinPercent = 0.20; carbPercent = 0.55; fatPercent = 0.25;
-                    break;
-                case 8: 
-                    proteinPercent = 0.20; carbPercent = 0.50; fatPercent = 0.30;
-                    break;
-                case 10: 
-                    proteinPercent = 0.20; carbPercent = 0.45; fatPercent = 0.35;
-                    break;
-            }
-
+            double proteinPercent = userData.FoodPlan.ProteinPercent; 
+            double carbPercent = userData.FoodPlan.CarbPercent;    
+            double fatPercent = userData.FoodPlan.FatPercent;    
             
             double dailyProteinGrams = (finalDailyKcal * proteinPercent) / 4.0;
             double dailyCarbsGrams = (finalDailyKcal * carbPercent) / 4.0;
