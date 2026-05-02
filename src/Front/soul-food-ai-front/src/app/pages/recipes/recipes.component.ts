@@ -125,12 +125,16 @@ export class RecipesComponent implements OnInit {
       idMeal: Number(this.selectedMealAi)
     };
     this.recipesService.generateRecipeAI(this.idUser, dto).subscribe({
-      next: (res) => {
+     next: (res) => {
         this.isLoadingAi = false;
         this.successAi = res.message;
         this.promptTextAi = '';
         this.loadUserRecipes();
         this.cdr.detectChanges();
+        setTimeout(() => {
+          this.closeAiModal();
+          this.cdr.detectChanges(); 
+        }, 0); 
       },
       error: (err) => {
         this.isLoadingAi = false;
@@ -169,6 +173,11 @@ export class RecipesComponent implements OnInit {
         this.loadUserRecipes();
         this.manualRecipe = { recipeName: '', recipeDescription: '', idMeal: null, ingredients: [] };
         this.cdr.detectChanges();
+
+        setTimeout(() => {
+          this.closeManualModal();
+          this.cdr.detectChanges(); 
+        }, 0);
       },
       error: (err) => {
         this.isLoadingManual = false;
