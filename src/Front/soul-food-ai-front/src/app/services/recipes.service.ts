@@ -32,7 +32,6 @@ export class RecipesService {
     return this.http.post(`${this.apiUrl}/Recipe/AddRecipesForUser/${idUser}`, dto);
   }
 
-  
   getUserRecipes(idUser: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/Recipe/GetRecipesForUser/${idUser}`);
   }
@@ -44,4 +43,8 @@ export class RecipesService {
   getAllowedIngredients(idUser: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/Ingredient/GetAllowedIngredients/${idUser}`);
   }
+
+  archiveRecipe(idRecipe: number) {
+  return this.http.put(`${this.apiUrl}/Recipe/ArchiveRecipe/${idRecipe}`, {});
+}
 }

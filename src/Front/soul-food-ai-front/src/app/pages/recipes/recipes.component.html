@@ -16,6 +16,8 @@
       <div class="recipe-card card" 
            *ngFor="let recipe of userRecipesList"
            [ngClass]="getMealClass(recipe.mealName)">
+
+        <button class="btn-delete-recipe" (click)="openDeleteModal(recipe.idRecipe, $event)" title="Borrar Receta">🗑️</button>
         
         <h3 class="recipe-title">{{ recipe.recipeName }}</h3>
         
@@ -163,4 +165,31 @@
       </button>
     </div>
   </div>
+
+  <div class="modal-overlay" *ngIf="isDeleteModalOpen">
+    <div class="modal-content card" style="max-width: 450px; text-align: center; padding: 3rem 2rem;">
+      
+      <div style="font-size: 4rem; margin-bottom: 10px; animation: pulse 2s infinite;">⚠️</div>
+      <h2 class="title-font" style="color: var(--text-dark); margin-bottom: 15px;">¿Borrar Receta?</h2>
+      
+      <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.5; margin-bottom: 30px;">
+        ¿Estás seguro de que quieres borrarla?<br>
+        No aparecerá más, pero se mantendrá en tus planes históricos y en tu plan semanal si esta dentro de algun dia para no perder tus datos.
+      </p>
+
+      <div style="display: flex; gap: 15px; justify-content: center;">
+        <button class="btn-secondary" style="flex: 1; padding: 12px;" (click)="closeDeleteModal()">
+          Cancelar
+        </button>
+        <button class="btn-danger-large" style="flex: 1; padding: 12px;" (click)="confirmDeleteRecipe()" [disabled]="isDeleting">
+          <span *ngIf="!isDeleting">Sí, Borrar</span>
+          <div *ngIf="isDeleting" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span class="spinner" style="width: 15px; height: 15px; border-width: 2px;"></span>
+          </div>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
 </div>

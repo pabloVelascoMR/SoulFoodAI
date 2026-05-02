@@ -28,7 +28,7 @@ namespace SoulFoodAiBack.Controllers
         [Route("GetRecipesForUser/{idUser}")]
         public async Task<ActionResult<List<RecipeCardDto>>> GetRecipesForUser(int idUser)
         {
-            var userRecipes = await _context.Recipes
+            List<RecipeCardDto>? userRecipes = await _context.Recipes
                 .Include(r => r.Meal)
                 .Include(r => r.User)
                     .ThenInclude(u => u.UserData)
@@ -36,8 +36,7 @@ namespace SoulFoodAiBack.Controllers
                
                 .Include(r => r.RecipeUserIngredients)
                     .ThenInclude(ri => ri.Ingredient)
-                .Where(r => r.IdUser == idUser)
-                .Where(r => r.IdUser == idUser && !r.RecipeName.StartsWith("[AJUSTADO]"))
+                .Where(r => r.IdUser == idUser && r.IsActive == true && !r.RecipeName.StartsWith("[AJUSTADO]"))
                 .Select(r => new RecipeCardDto
                 {
                     IdRecipe = r.IdRecipe,
@@ -306,6 +305,19 @@ namespace SoulFoodAiBack.Controllers
                 RecipeId = recipeAdd.IdRecipe,
                 RecipeName = recipeAdd.RecipeName
             });
+        }
+
+        [HttpPut("ArchiveRecipe/{idRecipe}")]
+        public async Task<IActionResult> ArchiveRecipe(int idRecipe)
+        {
+            Recipe? recipe = await _context.Recipes.FindAsync(idRecipe);
+
+            if (recipe == null){return NotFound(new { message = "Receta no encontrada." });}
+
+            recipe.IsActive = false;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Receta eliminada correctamente." });
         }
     }
 }

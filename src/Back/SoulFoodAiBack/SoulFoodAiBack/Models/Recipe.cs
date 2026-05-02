@@ -30,6 +30,8 @@ namespace SoulFoodAiBack.Models
 
         public String? RecipeDescription { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
         public int IdUser { get; set; }
         [ForeignKey("IdUser")]
         public User? User { get; set; }

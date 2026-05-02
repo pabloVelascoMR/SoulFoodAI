@@ -23,6 +23,9 @@ export class RecipesComponent implements OnInit {
   isManualModalOpen: boolean = false;
   isInfoModalOpen: boolean = false;
   selectedRecipe: any = null;
+  isDeleteModalOpen: boolean = false;
+  recipeToDeleteId: number | null = null;
+  isDeleting: boolean = false;
 
   selectedMealAi: number | null = null;
   promptTextAi: string = '';
@@ -182,6 +185,57 @@ export class RecipesComponent implements OnInit {
       error: (err) => {
         this.isLoadingManual = false;
         this.errorManual = err.error;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  archiveRecipe(idRecipe: number, event: Event): void {
+    event.stopPropagation(); 
+
+    if (confirm('¿Estás seguro de que quieres borrar esta receta? No aparecerá más, pero se mantendrá en tus planes históricos.')) {
+      this.recipesService.archiveRecipe(idRecipe).subscribe({
+        next: (res) => {
+          
+          this.loadUserRecipes(); 
+          console.log("Receta archivada con éxito.");
+        },
+        error: (err) => {
+          console.error("Error al archivar la receta:", err);
+          alert("Hubo un error al intentar borrar la receta.");
+        }
+      });
+    }
+  }
+
+  openDeleteModal(idRecipe: number, event: Event): void {
+    event.stopPropagation(); // Evita que se abra la otra modal de info
+    this.recipeToDeleteId = idRecipe;
+    this.isDeleteModalOpen = true;
+  }
+
+  closeDeleteModal(): void {
+    this.isDeleteModalOpen = false;
+    this.recipeToDeleteId = null;
+  }
+  
+  confirmDeleteRecipe(): void {
+    if (!this.recipeToDeleteId) return;
+
+    this.isDeleting = true; // Activamos el spinner
+
+    this.recipesService.archiveRecipe(this.recipeToDeleteId).subscribe({
+      next: (res) => {
+        this.isDeleting = false;
+        this.loadUserRecipes(); // Recargamos para que desaparezca
+        this.closeDeleteModal(); // Cerramos la modal
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error("Error al archivar la receta:", err);
+        this.isDeleting = false;
+        alert("Hubo un error al intentar borrar la receta."); // Por si falla el servidor
+        this.closeDeleteModal();
         this.cdr.detectChanges();
       }
     });

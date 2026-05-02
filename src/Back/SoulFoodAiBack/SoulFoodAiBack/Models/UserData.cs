@@ -25,6 +25,23 @@ namespace SoulFoodAiBack.Models
         [Range(1, 5)]
         public int MealsPerDay { get; set; }
 
+        [Range(1, 5)]
+        public int LevelOfActivity { get; set; }
+
+        public double ChestMeasure { get; set; }
+
+        public double WaistMeasure { get; set; }
+
+        public double HipMeasure { get; set; }
+
+        public double LeftBicepMeasure { get; set; }
+
+        public double RightBicepMeasure { get;  set; }  
+
+        public double LeftCuadricepsMeasure { get; set; }
+
+        public double RightCuadricepsMeasure { get; set; }
+
         [Required]
         public int IdUser { get; set; }
 

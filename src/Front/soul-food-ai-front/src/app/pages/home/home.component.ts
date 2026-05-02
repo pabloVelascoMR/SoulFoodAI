@@ -225,7 +225,7 @@ export class HomeComponent implements OnInit {
   // --- DRAG AND DROP ---
   drop(event: CdkDragDrop<any[]>, targetDayId?: number) {
     
-    // 1. Si mueves una tarjeta dentro del mismo día o dentro del catálogo
+    
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       if (targetDayId) {
@@ -249,10 +249,10 @@ export class HomeComponent implements OnInit {
       } 
      
       else if (event.container.id === 'recipe-catalog') {
-        event.previousContainer.data.splice(event.previousIndex, 1); // Borra la tarjeta visualmente
+        event.previousContainer.data.splice(event.previousIndex, 1); 
         
         const oldDayId = parseInt(event.previousContainer.id.replace('day-list-', ''), 10);
-        this.saveDayConfiguration(oldDayId, event.previousContainer.data); // Guarda el día sin esa receta
+        this.saveDayConfiguration(oldDayId, event.previousContainer.data); 
       } 
 
       else {
