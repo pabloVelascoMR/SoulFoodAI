@@ -1201,3 +1201,5 @@ body.cdk-drop-list-dragging {
   background: linear-gradient(135deg, #27ae60, #229954);
 }
 
+.text-danger-macro { color: #e74c3c !important; }
+
