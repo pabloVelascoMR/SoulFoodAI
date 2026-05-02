@@ -149,7 +149,7 @@
             <option value="ml">ml</option>
             <option value="ud">ud</option>
           </select>
-          <button class="btn-danger-sm" (click)="removeIngredientRow(i)">🗑️</button>
+          <button class="btn-danger-sm" *ngIf="manualRecipe.ingredients.length > 1" (click)="removeIngredientRow(i)">🗑️</button>
         </div>
         <button class="btn-secondary w-100 mt-2" style="margin-top: 40px;"(click)="addIngredientRow()">+ Añadir</button>
       </div>
