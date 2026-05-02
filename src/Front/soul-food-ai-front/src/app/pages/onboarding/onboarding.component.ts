@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 })
 export class OnboardingComponent implements OnInit {
   currentStep = 1;
-  totalSteps = 5;
+  totalSteps = 6;
 
   goals: any[] = [];
   intolerances: any[] = [];
@@ -26,12 +26,27 @@ export class OnboardingComponent implements OnInit {
     height: null as number | null,
     weight: null as number | null,
     mealsPerDay: 3,
+    levelOfActivity: 1,
+    chestMeasure: null as number | null,
+    waistMeasure: null as number | null,
+    hipMeasure: null as number | null,
+    leftBicepMeasure: null as number | null,
+    rightBicepMeasure: null as number | null,
+    leftCuadricepsMeasure: null as number | null,
+    rightCuadricepsMeasure: null as number | null,
     idUser: 0, 
     idGoal: 0,
-    // 👇 CAMBIO 1: Ahora es un array vacío en lugar de un 0
     idIntolerances: [] as number[], 
     idFoodPlan: 0
   };
+
+  activityLevels = [
+    { id: 1, title: 'Sedentario', desc: 'Poco o ningún ejercicio, trabajo de oficina.' },
+    { id: 2, title: 'Ligeramente Activo', desc: 'Ejercicio ligero o deportes 1-3 días a la semana.' },
+    { id: 3, title: 'Moderadamente Activo', desc: 'Ejercicio moderado o deportes 3-5 días a la semana.' },
+    { id: 4, title: 'Muy Activo', desc: 'Ejercicio duro o deportes 6-7 días a la semana.' },
+    { id: 5, title: 'Extra Activo', desc: 'Ejercicio muy duro o trabajo físico.' }
+  ];
 
   constructor(
     private userService: UserService,
@@ -90,6 +105,31 @@ export class OnboardingComponent implements OnInit {
       }
     }
 
+    if (this.currentStep === 3) {
+      // Validamos los opcionales SOLO si el usuario ha escrito algo
+      if (this.userData.chestMeasure !== null && (this.userData.chestMeasure < 30 || this.userData.chestMeasure > 200)) {
+        alert('ERROR: Si introduces el pecho, debe estar entre 30 y 200 cm.'); return;
+      }
+      if (this.userData.waistMeasure !== null && (this.userData.waistMeasure < 30 || this.userData.waistMeasure > 200)) {
+        alert('ERROR: Si introduces la cintura, debe estar entre 30 y 200 cm.'); return;
+      }
+      if (this.userData.hipMeasure !== null && (this.userData.hipMeasure < 30 || this.userData.hipMeasure > 200)) {
+        alert('ERROR: Si introduces la cadera, debe estar entre 30 y 200 cm.'); return;
+      }
+      if (this.userData.leftBicepMeasure !== null && (this.userData.leftBicepMeasure < 10 || this.userData.leftBicepMeasure > 100)) {
+        alert('ERROR: Si introduces el bíceps izquierdo, debe estar entre 10 y 100 cm.'); return;
+      }
+      if (this.userData.rightBicepMeasure !== null && (this.userData.rightBicepMeasure < 10 || this.userData.rightBicepMeasure > 100)) {
+        alert('ERROR: Si introduces el bíceps derecho, debe estar entre 10 y 100 cm.'); return;
+      }
+      if (this.userData.leftCuadricepsMeasure !== null && (this.userData.leftCuadricepsMeasure < 20 || this.userData.leftCuadricepsMeasure > 150)) {
+        alert('ERROR: Si introduces el cuádriceps izquierdo, debe estar entre 20 y 150 cm.'); return;
+      }
+      if (this.userData.rightCuadricepsMeasure !== null && (this.userData.rightCuadricepsMeasure < 20 || this.userData.rightCuadricepsMeasure > 150)) {
+        alert('ERROR: Si introduces el cuádriceps derecho, debe estar entre 20 y 150 cm.'); return;
+      }
+    }
+
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
     }
@@ -110,14 +150,15 @@ export class OnboardingComponent implements OnInit {
     this.nextStep(); 
   }
 
-  // 👇 CAMBIO 2: Lógica para añadir o quitar el ID de la lista
+  selectActivityLevel(level: number) {
+    this.userData.levelOfActivity = level;
+  }
+
   selectIntolerance(id: number) {
     const index = this.userData.idIntolerances.indexOf(id);
     if (index > -1) {
-      // Si ya estaba seleccionado, lo quitamos del array (desmarcar)
       this.userData.idIntolerances.splice(index, 1);
     } else {
-      // Si no estaba, lo añadimos al array (marcar)
       this.userData.idIntolerances.push(id);
     }
   }
