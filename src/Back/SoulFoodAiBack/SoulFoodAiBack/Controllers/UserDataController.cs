@@ -61,6 +61,15 @@ namespace SoulFoodAiBack.Controllers
                 Height = dto.Height,
                 Weight = dto.Weight,
                 MealsPerDay = dto.MealsPerDay > 0 ? dto.MealsPerDay : 3,
+                LevelOfActivity = dto.LevelOfActivity > 0 ? dto.LevelOfActivity : 1,
+                ChestMeasure = dto.ChestMeasure ?? 0,
+                WaistMeasure = dto.WaistMeasure ?? 0,
+                HipMeasure = dto.HipMeasure ?? 0,
+                LeftBicepMeasure = dto.LeftBicepMeasure ?? 0,
+                RightBicepMeasure = dto.RightBicepMeasure ?? 0,
+                LeftCuadricepsMeasure = dto.LeftCuadricepsMeasure ?? 0,
+                RightCuadricepsMeasure = dto.RightCuadricepsMeasure ?? 0,
+
                 IdUser = dto.IdUser,
                 IdFoodPlan = dto.IdFoodPlan > 0 ? dto.IdFoodPlan : 2,
                 IdGoal = dto.IdGoal > 0 ? dto.IdGoal : 6,
@@ -114,6 +123,14 @@ namespace SoulFoodAiBack.Controllers
             userDataEdit.Height = dto.Height;
             userDataEdit.Weight = dto.Weight;
             userDataEdit.MealsPerDay = dto.MealsPerDay;
+            userDataEdit.LevelOfActivity = dto.LevelOfActivity;
+            userDataEdit.ChestMeasure = dto.ChestMeasure ?? 0;
+            userDataEdit.WaistMeasure = dto.WaistMeasure ?? 0;
+            userDataEdit.HipMeasure = dto.HipMeasure ?? 0;
+            userDataEdit.LeftBicepMeasure = dto.LeftBicepMeasure ?? 0;
+            userDataEdit.RightBicepMeasure = dto.RightBicepMeasure ?? 0;
+            userDataEdit.LeftCuadricepsMeasure = dto.LeftCuadricepsMeasure ?? 0;
+            userDataEdit.RightCuadricepsMeasure = dto.RightCuadricepsMeasure ?? 0;
             userDataEdit.IdUser = dto.IdUser;
             userDataEdit.IdFoodPlan = dto.IdFoodPlan ;
             userDataEdit.IdGoal = dto.IdGoal ;
@@ -151,6 +168,14 @@ namespace SoulFoodAiBack.Controllers
                 Height = userData.Height,
                 Weight = userData.Weight,
                 MealsPerDay = userData.MealsPerDay,
+                LevelOfActivity = userData.LevelOfActivity,
+                ChestMeasure = userData.ChestMeasure,
+                WaistMeasure = userData.WaistMeasure,
+                HipMeasure = userData.HipMeasure,
+                LeftBicepMeasure = userData.LeftBicepMeasure,
+                RightBicepMeasure = userData.RightBicepMeasure,
+                LeftCuadricepsMeasure = userData.LeftCuadricepsMeasure,
+                RightCuadricepsMeasure = userData.RightCuadricepsMeasure,
                 IdUser = userData.IdUser,
                 IdFoodPlan = userData.IdFoodPlan,
                 IdGoal = userData.IdGoal,

@@ -18,6 +18,22 @@ namespace SoulFoodAiBack.Dtos
 
         public int MealsPerDay { get; set; }
 
+        public int LevelOfActivity { get; set; }
+
+        public double? ChestMeasure { get; set; }
+
+        public double? WaistMeasure { get; set; }
+
+        public double? HipMeasure { get; set; }
+
+        public double? LeftBicepMeasure { get; set; }
+
+        public double? RightBicepMeasure { get; set; }
+
+        public double? LeftCuadricepsMeasure { get; set; }
+
+        public double? RightCuadricepsMeasure { get; set; }
+
         public required int IdUser { get; set; }
 
         public required int IdFoodPlan { get; set; }
