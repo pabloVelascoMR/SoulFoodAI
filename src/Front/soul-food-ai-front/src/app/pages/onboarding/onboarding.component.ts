@@ -26,7 +26,9 @@ export class OnboardingComponent implements OnInit {
     height: null as number | null,
     weight: null as number | null,
     mealsPerDay: 3,
-    levelOfActivity: 1,
+    
+    // Nivel de actividad y medidas corporales
+    levelOfActivity: 1, // 1 por defecto (sedentario)
     chestMeasure: null as number | null,
     waistMeasure: null as number | null,
     hipMeasure: null as number | null,
@@ -34,6 +36,7 @@ export class OnboardingComponent implements OnInit {
     rightBicepMeasure: null as number | null,
     leftCuadricepsMeasure: null as number | null,
     rightCuadricepsMeasure: null as number | null,
+    
     idUser: 0, 
     idGoal: 0,
     idIntolerances: [] as number[], 
@@ -106,7 +109,7 @@ export class OnboardingComponent implements OnInit {
     }
 
     if (this.currentStep === 3) {
-      // Validamos los opcionales SOLO si el usuario ha escrito algo
+
       if (this.userData.chestMeasure !== null && (this.userData.chestMeasure < 30 || this.userData.chestMeasure > 200)) {
         alert('ERROR: Si introduces el pecho, debe estar entre 30 y 200 cm.'); return;
       }
@@ -172,29 +175,29 @@ export class OnboardingComponent implements OnInit {
   }
 
   finishOnboarding() {
-  const userId = this.userService.getUserId();
-  
-  if (!userId) {
-    alert('Error: No se ha detectado tu sesión de usuario.');
-    this.router.navigate(['/login']);
-    return;
-  }
-
-  const onboardingData = {
-    ...this.userData, 
-    idUser: userId    
-  };
-
-  this.onboardingService.saveUserData(onboardingData).subscribe({
-    next: () => {
-      console.log('Datos de salud guardados con éxito.');
-      this.router.navigate(['/ingredient-selection']);
-    },
-    error: (err) => {
-      console.error('Error al guardar onboarding:', err);
-      alert('Hubo un problema al guardar tus datos.');
+    const userId = this.userService.getUserId();
+    
+    if (!userId) {
+      alert('Error: No se ha detectado tu sesión de usuario.');
+      this.router.navigate(['/login']);
+      return;
     }
-  });
+
+    const onboardingData = {
+      ...this.userData, 
+      idUser: userId    
+    };
+
+    this.onboardingService.saveUserData(onboardingData).subscribe({
+      next: () => {
+        console.log('Datos de salud guardados con éxito.');
+        this.router.navigate(['/ingredient-selection']);
+      },
+      error: (err) => {
+        console.error('Error al guardar onboarding:', err);
+        alert('Hubo un problema al guardar tus datos.');
+      }
+    });
   }
   
   getGoalEmoji(idGoal: number): string {
@@ -210,24 +213,24 @@ export class OnboardingComponent implements OnInit {
   }
 
   getIntoleranceEmoji(idIntolerance: number): string {
-  const emojis: { [key: number]: string } = {
-    1: '🥛', 
-    2: '🌾',
-    3: '🌰', 
-    4: '🦐', 
-    5: '🥚', 
-    6: '🌱', 
-    7: '🐟', 
-    8: '𓇢', 
-    9: '🌭',
-    10: '🥜', 
-    11: '🍯', 
-    13: '🍚' 
-  };
-  return emojis[idIntolerance] || '⚠️';
-}
+    const emojis: { [key: number]: string } = {
+      1: '🥛', 
+      2: '🌾',
+      3: '🌰', 
+      4: '🦐', 
+      5: '🥚', 
+      6: '🌱', 
+      7: '🐟', 
+      8: '𓇢', 
+      9: '🌭',
+      10: '🥜', 
+      11: '🍯', 
+      13: '🍚' 
+    };
+    return emojis[idIntolerance] || '⚠️';
+  }
 
-getDietEmoji(idFoodPlan: any): string {
+  getDietEmoji(idFoodPlan: any): string {
     const id = Number(idFoodPlan);
     const emojis: { [key: number]: string } = {
       1: '🍽️', 
