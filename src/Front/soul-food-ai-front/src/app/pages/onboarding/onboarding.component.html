@@ -103,6 +103,76 @@
     </div>
 
     <div class="surface-module" *ngIf="currentStep === 3">
+      <h2 class="page-title">Un poco más sobre ti</h2>
+      <p class="page-subtitle">Estos datos nos ayudan a precisar más, pero son <strong>opcionales</strong>.</p>
+      
+      <!-- NIVEL DE ACTIVIDAD (Selector visual) -->
+      <div class="form-group" style="margin-top: 2rem;">
+        <label class="form-label">NIVEL DE ACTIVIDAD FÍSICA</label>
+        
+        <!-- Opciones de actividad -->
+        <div class="activity-grid">
+          <div class="activity-card" 
+               *ngFor="let level of activityLevels" 
+               [class.selected]="userData.levelOfActivity === level.id"
+               (click)="selectActivityLevel(level.id)">
+            
+            <div class="activity-number">{{ level.id }}</div>
+            <div class="activity-info">
+              <h3>{{ level.title }}</h3>
+              <p>{{ level.desc }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr style="border: 0; border-top: 1px dashed rgba(0,0,0,0.1); margin: 2.5rem 0;">
+
+      <!-- MEDIDAS CORPORALES -->
+      <div class="form-group">
+        <label class="form-label">MEDIDAS CORPORALES (En centímetros)</label>
+        
+        <div class="measures-grid">
+          <div class="measure-item">
+            <label>Pecho</label>
+            <input type="number" class="form-input" [(ngModel)]="userData.chestMeasure" placeholder="Ej. 95">
+          </div>
+          <div class="measure-item">
+            <label>Cintura</label>
+            <input type="number" class="form-input" [(ngModel)]="userData.waistMeasure" placeholder="Ej. 80">
+          </div>
+          <div class="measure-item">
+            <label>Cadera</label>
+            <input type="number" class="form-input" [(ngModel)]="userData.hipMeasure" placeholder="Ej. 100">
+          </div>
+          
+          <div class="measure-item">
+            <label>Bíceps Izq.</label>
+            <input type="number" class="form-input" [(ngModel)]="userData.leftBicepMeasure" placeholder="Ej. 35">
+          </div>
+          <div class="measure-item">
+            <label>Bíceps Der.</label>
+            <input type="number" class="form-input" [(ngModel)]="userData.rightBicepMeasure" placeholder="Ej. 35">
+          </div>
+          
+          <div class="measure-item">
+            <label>Cuádriceps Izq.</label>
+            <input type="number" class="form-input" [(ngModel)]="userData.leftCuadricepsMeasure" placeholder="Ej. 55">
+          </div>
+          <div class="measure-item">
+            <label>Cuádriceps Der.</label>
+            <input type="number" class="form-input" [(ngModel)]="userData.rightCuadricepsMeasure" placeholder="Ej. 55">
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group" style="margin-top: 3rem;">
+        <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
+        <button class="btn-primary" (click)="nextStep()">CONTINUAR</button>
+      </div>
+    </div>
+
+    <div class="surface-module" *ngIf="currentStep === 4">
       <h2 class="page-title">¿Cuál es tu objetivo principal?</h2>
       <div class="grid-auto-fit">
         <div class="selection-card" *ngFor="let goal of goals" 
@@ -122,7 +192,7 @@
       </div>
     </div>
 
-    <div class="surface-module" *ngIf="currentStep === 4">
+    <div class="surface-module" *ngIf="currentStep === 5">
       <h2 class="page-title">¿Tienes alguna intolerancia?</h2>
       
       <div class="grid-auto-fit">
@@ -146,7 +216,7 @@
       </div>
     </div>
 
-    <div class="surface-module" *ngIf="currentStep === 5">
+    <div class="surface-module" *ngIf="currentStep === 6">
       <h2 class="page-title">¿Qué tipo de dieta prefieres?</h2>
       
       <div class="grid-auto-fit">
