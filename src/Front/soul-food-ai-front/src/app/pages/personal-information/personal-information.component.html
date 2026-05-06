@@ -1,44 +1,86 @@
+<div class="toast-notification" *ngIf="showSuccessMessage">
+  <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+  </svg>
+  <div style="display: flex; flex-direction: column;">
+    <span>Cambios guardados correctamente</span>
+    <small style="font-size: 0.85rem; font-weight: 600; opacity: 0.9; margin-top: 4px;">Estos cambios se aplicarán cuando crees un nuevo plan semanal.</small>
+  </div>
+</div>
+
 <div class="page-layout" *ngIf="userData">
   <h1 class="app-header-title">TU PERFIL NUTRICIONAL</h1>
   
-  <div class="step-content" style="flex-direction: column; align-items: center; gap: 30px;">
+  <div class="step-content" style="flex-direction: column; align-items: center;">
     
-    <div class="surface-module profile-card">
+    <div class="surface-module profile-card unified-card">
+      
       <div class="profile-header">
-        <div class="gender-avatar">
-          <img [src]="userData.gender === 'Mujer' ? 'assets/ingredientes_imagenes/bodyF.jpg' : 'assets/ingredientes_imagenes/bodyM.jpg'" alt="Avatar">
+        <div class="gender-avatar" [ngClass]="userData.gender === 'Mujer' ? 'female-avatar' : 'male-avatar'">
+          <span class="gender-symbol">{{ userData.gender === 'Mujer' ? '♀' : '♂' }}</span>
         </div>
         <div class="profile-title">
           <h2>Información Básica</h2>
-          <p>{{ userData.gender }} • {{ userData.age }} años</p>
+          <p style="letter-spacing: 2px;">{{ userData.gender }}</p>
         </div>
       </div>
 
       <div class="basic-stats-grid">
         <div class="stat-box">
-          <span class="stat-label">ALTURA</span>
-          <span class="stat-value">{{ userData.height }} <small>m</small></span>
+          <span class="stat-label">EDAD</span>
+          <span class="stat-value" *ngIf="!isEditing">{{ userData.age }} <small>años</small></span>
+          <input type="number" class="edit-input" *ngIf="isEditing" 
+                 [(ngModel)]="editedData.age" name="age" #ageCtrl="ngModel" required min="1" max="120"
+                 [class.is-modified]="editedData.age !== userData.age">
+          <div *ngIf="isEditing && (editedData.age < 1 || editedData.age > 120 || !editedData.age)" style="color: #e74c3c; font-size: 0.7rem; font-weight: bold; margin-top: 5px;">Límite: 1 - 120</div>
         </div>
+
         <div class="stat-box">
-          <span class="stat-label">PESO</span>
-          <span class="stat-value">{{ userData.weight }} <small>kg</small></span>
+          <span class="stat-label">ALTURA (m)</span>
+          <span class="stat-value" *ngIf="!isEditing">{{ userData.height }}</span>
+          <input type="number" step="0.01" class="edit-input" *ngIf="isEditing" 
+                 [(ngModel)]="editedData.height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0"
+                 [class.is-modified]="editedData.height !== userData.height">
+          <div *ngIf="isEditing && (editedData.height < 0.5 || editedData.height > 3.0 || !editedData.height)" style="color: #e74c3c; font-size: 0.7rem; font-weight: bold; margin-top: 5px;">Límite: 0.5m - 3.0m</div>
         </div>
+
+        <div class="stat-box">
+          <span class="stat-label">PESO (kg)</span>
+          <span class="stat-value" *ngIf="!isEditing">{{ userData.weight }}</span>
+          <input type="number" class="edit-input" *ngIf="isEditing" 
+                 [(ngModel)]="editedData.weight" name="weight" #weightCtrl="ngModel" required min="20" max="300"
+                 [class.is-modified]="editedData.weight !== userData.weight">
+          <div *ngIf="isEditing && (editedData.weight < 20 || editedData.weight > 300 || !editedData.weight)" style="color: #e74c3c; font-size: 0.7rem; font-weight: bold; margin-top: 5px;">Límite: 20kg - 300kg</div>
+        </div>
+
         <div class="stat-box">
           <span class="stat-label">COMIDAS/DÍA</span>
-          <span class="stat-value">{{ userData.mealsPerDay }}</span>
+          <span class="stat-value" *ngIf="!isEditing">{{ userData.mealsPerDay }}</span>
+          <input type="number" class="edit-input" *ngIf="isEditing" 
+                 [(ngModel)]="editedData.mealsPerDay" name="meals" #mealsCtrl="ngModel" required min="1" max="5"
+                 [class.is-modified]="editedData.mealsPerDay !== userData.mealsPerDay">
+          <div *ngIf="isEditing && (editedData.mealsPerDay < 1 || editedData.mealsPerDay > 5 || !editedData.mealsPerDay)" style="color: #e74c3c; font-size: 0.7rem; font-weight: bold; margin-top: 5px;">Límite: 1 - 5</div>
         </div>
-        <div class="stat-box">
+
+        <div class="stat-box" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
           <span class="stat-label">ACTIVIDAD</span>
-          <span class="stat-value">{{ getActivityInfo().emoji }} <small style="font-size: 0.8rem; display:block;">{{ getActivityInfo().title }}</small></span>
+          <div *ngIf="!isEditing">
+            <span class="stat-value">{{ getActivityInfo(userData.levelOfActivity).emoji }}</span>
+            <small style="font-size: 0.8rem; display:block; font-weight: 700;">{{ getActivityInfo(userData.levelOfActivity).title }}</small>
+          </div>
+          <select class="edit-input" *ngIf="isEditing" [(ngModel)]="editedData.levelOfActivity" 
+                  [class.is-modified]="editedData.levelOfActivity !== userData.levelOfActivity" style="width: 100%;">
+            <option *ngFor="let act of activityLevels" [ngValue]="act.id">{{ act.title }}</option>
+          </select>
         </div>
       </div>
-    </div>
 
-    <div class="surface-module profile-card">
+      <hr class="section-divider">
+
       <h2 style="text-align: center; margin-bottom: 2rem;">Tus Medidas Corporales</h2>
       
       <div class="body-map-container">
-        
         <div class="body-silhouette">
           <img [src]="userData.gender === 'Mujer' ? 'assets/ingredientes_imagenes/bodyF.jpg' : 'assets/ingredientes_imagenes/bodyM.jpg'" alt="Silueta corporal">
         </div>
@@ -46,61 +88,68 @@
         <div class="measure-row" style="top: 29%;">
           <div class="cross-line center-line" style="width: 220px;"></div>
           <div class="track-line track-left-far"></div>
-          <div class="measure-display-box box-left-far">
+          <div class="measure-display-box box-left-far" [class.is-editing-box]="isEditing">
             <label>Pecho</label>
-            <span class="measure-val">{{ userData.chestMeasure || '--' }} <small>cm</small></span>
+            <span class="measure-val" *ngIf="!isEditing">{{ userData.chestMeasure > 0 ? userData.chestMeasure : '--' }} <small>cm</small></span>
+            <input type="number" class="edit-input measure-input-edit" *ngIf="isEditing" [(ngModel)]="editedData.chestMeasure" [class.is-modified]="editedData.chestMeasure !== userData.chestMeasure" placeholder="cm">
           </div>
         </div>
 
         <div class="measure-row" style="top: 35%;">
           <div class="cross-line center-line" style="width: 480px;"></div>
           <div class="track-line track-left-near"></div>
-          <div class="measure-display-box box-left-near">
+          <div class="measure-display-box box-left-near" [class.is-editing-box]="isEditing">
             <label>Bíceps Izq.</label>
-            <span class="measure-val">{{ userData.leftBicepMeasure || '--' }} <small>cm</small></span>
+            <span class="measure-val" *ngIf="!isEditing">{{ userData.leftBicepMeasure > 0 ? userData.leftBicepMeasure : '--' }} <small>cm</small></span>
+            <input type="number" class="edit-input measure-input-edit" *ngIf="isEditing" [(ngModel)]="editedData.leftBicepMeasure" [class.is-modified]="editedData.leftBicepMeasure !== userData.leftBicepMeasure" placeholder="cm">
           </div>
           <div class="track-line track-right-near"></div>
-          <div class="measure-display-box box-right-near">
+          <div class="measure-display-box box-right-near" [class.is-editing-box]="isEditing">
             <label>Bíceps Der.</label>
-            <span class="measure-val">{{ userData.rightBicepMeasure || '--' }} <small>cm</small></span>
+            <span class="measure-val" *ngIf="!isEditing">{{ userData.rightBicepMeasure > 0 ? userData.rightBicepMeasure : '--' }} <small>cm</small></span>
+            <input type="number" class="edit-input measure-input-edit" *ngIf="isEditing" [(ngModel)]="editedData.rightBicepMeasure" [class.is-modified]="editedData.rightBicepMeasure !== userData.rightBicepMeasure" placeholder="cm">
           </div>
         </div>
 
-        <div class="measure-row" style="top: 45%;">
+        <div class="measure-row" style="top: 47.5%;">
           <div class="cross-line center-line" style="width: 180px;"></div>
           <div class="track-line track-right-far"></div>
-          <div class="measure-display-box box-right-far">
+          <div class="measure-display-box box-right-far" [class.is-editing-box]="isEditing">
             <label>Cintura</label>
-            <span class="measure-val">{{ userData.waistMeasure || '--' }} <small>cm</small></span>
+            <span class="measure-val" *ngIf="!isEditing">{{ userData.waistMeasure > 0 ? userData.waistMeasure : '--' }} <small>cm</small></span>
+            <input type="number" class="edit-input measure-input-edit" *ngIf="isEditing" [(ngModel)]="editedData.waistMeasure" [class.is-modified]="editedData.waistMeasure !== userData.waistMeasure" placeholder="cm">
           </div>
         </div>
 
         <div class="measure-row" style="top: 52%;">
           <div class="cross-line center-line" style="width: 260px;"></div>
           <div class="track-line track-left-far"></div>
-          <div class="measure-display-box box-left-far">
+          <div class="measure-display-box box-left-far" [class.is-editing-box]="isEditing">
             <label>Cadera</label>
-            <span class="measure-val">{{ userData.hipMeasure || '--' }} <small>cm</small></span>
+            <span class="measure-val" *ngIf="!isEditing">{{ userData.hipMeasure > 0 ? userData.hipMeasure : '--' }} <small>cm</small></span>
+            <input type="number" class="edit-input measure-input-edit" *ngIf="isEditing" [(ngModel)]="editedData.hipMeasure" [class.is-modified]="editedData.hipMeasure !== userData.hipMeasure" placeholder="cm">
           </div>
         </div>
 
         <div class="measure-row" style="top: 61%;">
           <div class="cross-line center-line" style="width: 350px;"></div>
           <div class="track-line track-left-near"></div>
-          <div class="measure-display-box box-left-near">
+          <div class="measure-display-box box-left-near" [class.is-editing-box]="isEditing">
             <label>Cuád. Izq.</label>
-            <span class="measure-val">{{ userData.leftCuadricepsMeasure || '--' }} <small>cm</small></span>
+            <span class="measure-val" *ngIf="!isEditing">{{ userData.leftCuadricepsMeasure > 0 ? userData.leftCuadricepsMeasure : '--' }} <small>cm</small></span>
+            <input type="number" class="edit-input measure-input-edit" *ngIf="isEditing" [(ngModel)]="editedData.leftCuadricepsMeasure" [class.is-modified]="editedData.leftCuadricepsMeasure !== userData.leftCuadricepsMeasure" placeholder="cm">
           </div>
           <div class="track-line track-right-near"></div>
-          <div class="measure-display-box box-right-near">
+          <div class="measure-display-box box-right-near" [class.is-editing-box]="isEditing">
             <label>Cuád. Der.</label>
-            <span class="measure-val">{{ userData.rightCuadricepsMeasure || '--' }} <small>cm</small></span>
+            <span class="measure-val" *ngIf="!isEditing">{{ userData.rightCuadricepsMeasure > 0 ? userData.rightCuadricepsMeasure : '--' }} <small>cm</small></span>
+            <input type="number" class="edit-input measure-input-edit" *ngIf="isEditing" [(ngModel)]="editedData.rightCuadricepsMeasure" [class.is-modified]="editedData.rightCuadricepsMeasure !== userData.rightCuadricepsMeasure" placeholder="cm">
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="surface-module profile-card">
+      <hr class="section-divider">
+
       <h2 style="text-align: center; margin-bottom: 2rem;">Preferencias y Objetivos</h2>
       
       <div class="preferences-grid">
@@ -108,7 +157,10 @@
           <div class="pref-icon">{{ getGoalEmoji(userData.idGoal) }}</div>
           <div class="pref-info">
             <label>OBJETIVO PRINCIPAL</label>
-            <span>{{ getGoalName() }}</span>
+            <span *ngIf="!isEditing">{{ getGoalName(userData.idGoal) }}</span>
+            <select class="edit-input" *ngIf="isEditing" [(ngModel)]="editedData.idGoal" [class.is-modified]="editedData.idGoal !== userData.idGoal" style="width: 100%; font-size: 1rem;">
+              <option *ngFor="let g of goals" [ngValue]="g.idGoal">{{ g.goalName }}</option>
+            </select>
           </div>
         </div>
 
@@ -116,23 +168,52 @@
           <div class="pref-icon">{{ getDietEmoji(userData.idFoodPlan) }}</div>
           <div class="pref-info">
             <label>TIPO DE DIETA</label>
-            <span>{{ getFoodPlanName() }}</span>
+            <span *ngIf="!isEditing">{{ getFoodPlanName(userData.idFoodPlan) }}</span>
+            <select class="edit-input" *ngIf="isEditing" [(ngModel)]="editedData.idFoodPlan" [class.is-modified]="editedData.idFoodPlan !== userData.idFoodPlan" style="width: 100%; font-size: 1rem;">
+              <option *ngFor="let p of foodPlans" [ngValue]="p.idFoodPlan">{{ p.foodPlanName }}</option>
+            </select>
           </div>
         </div>
       </div>
 
       <div class="intolerances-section">
         <label>INTOLERANCIAS REGISTRADAS</label>
-        <div class="tags-container">
-          <span class="intolerance-tag" *ngFor="let intName of getIntolerancesNames()">{{ intName }}</span>
+        
+        <div class="tags-container" *ngIf="!isEditing">
+          <span class="intolerance-tag tag-readonly" *ngIf="getIntolerancesNames().length === 0">Ninguna</span>
+          <span class="intolerance-tag tag-readonly" *ngFor="let intName of getIntolerancesNames()">
+            {{ intName }}
+          </span>
+        </div>
+
+        <div class="tags-container edit-tags-container" *ngIf="isEditing">
+          <span class="intolerance-tag editable-tag" 
+                *ngFor="let int of intolerances" 
+                [ngClass]="hasIntolerance(int.idIntolerance) ? 'selected-green' : 'unselected-red'"
+                (click)="toggleIntolerance(int.idIntolerance)">
+            <span *ngIf="hasIntolerance(int.idIntolerance)">✓</span>
+            <span *ngIf="!hasIntolerance(int.idIntolerance)">✗</span>
+            {{ int.intoleranceName }}
+          </span>
         </div>
       </div>
-    </div>
 
-    <div class="action-footer">
-      <button class="btn-primary" (click)="editData()" style="width: 100%; max-width: 400px; padding: 20px; font-size: 1.2rem;">
+    </div> <div class="action-footer">
+      <button class="btn-primary" *ngIf="!isEditing" (click)="startEditing()" style="width: 100%; max-width: 400px; padding: 20px; font-size: 1.2rem;">
         EDITAR MIS DATOS
       </button>
+
+      <div *ngIf="isEditing" style="display: flex; gap: 20px; width: 100%; max-width: 500px;">
+        <button class="btn-secondary" (click)="cancelEditing()" style="flex: 1; padding: 15px; font-size: 1.1rem; border-radius: 30px;">
+          CANCELAR
+        </button>
+        <button class="btn-primary" 
+                (click)="saveData()" 
+                [disabled]="!editedData || editedData.age < 1 || editedData.age > 120 || editedData.height < 0.5 || editedData.height > 3.0 || editedData.weight < 20 || editedData.weight > 300 || editedData.mealsPerDay < 1 || editedData.mealsPerDay > 5"
+                style="flex: 1; padding: 15px; font-size: 1.1rem; background: #e74c3c; border-color: #e74c3c; box-shadow: 0 5px 15px rgba(231,76,60,0.3);">
+          GUARDAR CAMBIOS
+        </button>
+      </div>
     </div>
 
   </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PersonalInformationService } from '../../services/personal-information.service';
 import { UserService } from '../../services/user.service';
@@ -7,12 +8,16 @@ import { UserService } from '../../services/user.service';
 @Component({
   selector: 'app-personal-information',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './personal-information.component.html',
   styleUrls: ['./personal-information.component.css']
 })
 export class PersonalInformationComponent implements OnInit {
   userData: any = null;
+  editedData: any = null;
+  isEditing: boolean = false;
+  showSuccessMessage: boolean = false;
+
   goals: any[] = [];
   intolerances: any[] = [];
   foodPlans: any[] = [];
@@ -29,101 +34,112 @@ export class PersonalInformationComponent implements OnInit {
     private personalInfoService: PersonalInformationService,
     private userService: UserService,
     private router: Router,
-    private cdr: ChangeDetectorRef // <--- CLAVE PARA QUE SE QUITE EL "CARGANDO..."
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     const userId = this.userService.getUserId();
-    console.log("-> 1. Iniciando carga para el usuario:", userId);
-    
     if (!userId) {
       this.router.navigate(['/login']);
       return;
     }
 
-    // Cargamos los catálogos
-    this.personalInfoService.getGoals().subscribe((res: any) => {
-      this.goals = res?.['$values'] || res || [];
-      console.log("-> 2. Objetivos cargados");
-    });
+    this.personalInfoService.getGoals().subscribe((res: any) => this.goals = res?.['$values'] || res || []);
+    this.personalInfoService.getIntolerances().subscribe((res: any) => this.intolerances = res?.['$values'] || res || []);
+    this.personalInfoService.getFoodPlans().subscribe((res: any) => this.foodPlans = res?.['$values'] || res || []);
 
-    this.personalInfoService.getIntolerances().subscribe((res: any) => {
-      this.intolerances = res?.['$values'] || res || [];
-    });
+    this.loadProfile(userId);
+  }
 
-    this.personalInfoService.getFoodPlans().subscribe((res: any) => {
-      this.foodPlans = res?.['$values'] || res || [];
-    });
-
-    // Búsqueda del perfil
-    this.personalInfoService.getAllUserDatas().subscribe({
+  loadProfile(userId: number) {
+    this.personalInfoService.getUserDataById(userId).subscribe({
       next: (res: any) => {
-        console.log("-> 3. Respuesta cruda UserData recibida:", res);
-
-        if (!res) {
+       
+        if (!res || !res.age) {
           this.router.navigate(['/onboarding']);
           return;
         }
 
-        let dataArray: any[] = [];
-        if (Array.isArray(res)) {
-          dataArray = res;
-        } else if (res['$values']) { 
-          dataArray = res['$values'];
-        } else if (res['data']) {
-          dataArray = res['data'];
-        }
-
-        console.log("-> 4. Array de perfiles listo. Total:", dataArray.length);
-
-        const userProfile = dataArray.find((d: any) => 
-          d.idUser == userId || 
-          d.userId == userId || 
-          d.idUserData == userId || 
-          d.IdUser == userId
-        );
-
-        console.log("-> 5. Perfil encontrado:", userProfile);
-
-        if (userProfile) {
-          this.userData = userProfile;
-          this.cdr.detectChanges(); 
-        } else {
-          alert('Aún no tienes medidas guardadas. ¡Vamos al onboarding a crearlas!');
-          this.router.navigate(['/onboarding']);
-        }
+        this.userData = res;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error("-> ERROR FATAL al obtener los UserData:", err);
+        console.error("Error al cargar el perfil:", err);
       }
     });
   }
 
-  editData(): void {
-    this.router.navigate(['/onboarding']);
+  startEditing(): void {
+    this.editedData = JSON.parse(JSON.stringify(this.userData)); 
+    if (!this.editedData.idIntolerances) {
+      this.editedData.idIntolerances = [];
+    }
+    this.isEditing = true;
   }
 
-  getActivityInfo() {
-    if (!this.userData) return this.activityLevels[0];
-    return this.activityLevels.find(a => a.id == this.userData.levelOfActivity) || this.activityLevels[0];
+  cancelEditing(): void {
+    this.isEditing = false;
+    this.editedData = null;
   }
 
-  getGoalName(): string {
-    if (!this.userData || !Array.isArray(this.goals)) return 'No especificado';
-    const goal = this.goals.find(g => g.idGoal == this.userData.idGoal);
+  // --- INTOLERANCIAS ---
+  toggleIntolerance(id: number): void {
+    if (!this.editedData.idIntolerances) this.editedData.idIntolerances = [];
+    const index = this.editedData.idIntolerances.indexOf(id);
+    if (index > -1) {
+      this.editedData.idIntolerances.splice(index, 1);
+    } else {
+      this.editedData.idIntolerances.push(id);
+    }
+  }
+
+  hasIntolerance(id: number): boolean {
+    return this.editedData?.idIntolerances?.includes(id) || false;
+  }
+
+  saveData(): void {
+    this.editedData.levelOfActivity = Number(this.editedData.levelOfActivity);
+    this.editedData.idGoal = Number(this.editedData.idGoal);
+    this.editedData.idFoodPlan = Number(this.editedData.idFoodPlan);
+
+    this.personalInfoService.updateUserData(this.editedData).subscribe({
+      next: () => {
+        this.userData = { ...this.editedData };
+        this.isEditing = false;
+        
+        this.showSuccessMessage = true;
+        this.cdr.detectChanges();
+
+        setTimeout(() => {
+          this.showSuccessMessage = false;
+          this.cdr.detectChanges();
+        }, 5000);
+      },
+      error: (err) => {
+        console.error('Error al guardar', err);
+        alert('Hubo un problema al guardar tus datos.');
+      }
+    });
+  }
+
+  getActivityInfo(levelId: number) {
+    return this.activityLevels.find(a => a.id == levelId) || this.activityLevels[0];
+  }
+
+  getGoalName(idGoal: number): string {
+    if (!this.goals || this.goals.length === 0) return '';
+    const goal = this.goals.find(g => g.idGoal == idGoal);
     return goal ? goal.goalName : 'No especificado';
   }
 
-  getFoodPlanName(): string {
-    if (!this.userData || !Array.isArray(this.foodPlans)) return 'No especificado';
-    const plan = this.foodPlans.find(p => p.idFoodPlan == this.userData.idFoodPlan);
+  getFoodPlanName(idFoodPlan: number): string {
+    if (!this.foodPlans || this.foodPlans.length === 0) return '';
+    const plan = this.foodPlans.find(p => p.idFoodPlan == idFoodPlan);
     return plan ? plan.foodPlanName : 'No especificado';
   }
 
   getIntolerancesNames(): string[] {
-    if (!this.userData || !this.userData.idIntolerances || !Array.isArray(this.intolerances)) {
-      return ['Ninguna'];
-    }
+    if (!this.userData || !this.userData.idIntolerances) return ['Ninguna'];
     return this.userData.idIntolerances.map((id: number) => {
       const int = this.intolerances.find(i => i.idIntolerance == id);
       return int ? int.intoleranceName : '';

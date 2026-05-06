@@ -21,35 +21,57 @@
   margin: 0 auto;
 }
 
-.profile-card {
+/* --- TARJETA UNIFICADA --- */
+.unified-card {
   width: 100%;
-  padding: 40px;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.section-divider {
+  border: none;
+  border-top: 2px dashed rgba(0, 0, 0, 0.08);
+  margin: 40px 0;
+  width: 100%;
 }
 
 .profile-header {
   display: flex;
   align-items: center;
   gap: 25px;
-  margin-bottom: 30px;
-  padding-bottom: 30px;
-  border-bottom: 1px dashed rgba(0,0,0,0.1);
+  margin-bottom: 20px;
 }
 
 .gender-avatar {
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  overflow: hidden;
-  background: var(--bg-surface-hover);
-  border: 3px solid var(--primary-color);
-  box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.gender-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
+.gender-symbol {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.male-avatar {
+  background: rgba(52, 152, 219, 0.1);
+  border: 3px solid #3498db;
+  color: #3498db;
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.female-avatar {
+  background: rgba(233, 30, 99, 0.1);
+  border: 3px solid #e91e63;
+  color: #e91e63;
+  box-shadow: 0 5px 15px rgba(233, 30, 99, 0.3);
 }
 
 .profile-title h2 {
@@ -157,16 +179,6 @@
   gap: 10px;
 }
 
-.intolerance-tag {
-  background: rgba(231, 76, 60, 0.1);
-  color: #e74c3c;
-  border: 1px solid rgba(231, 76, 60, 0.3);
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
 .body-map-container {
   position: relative;
   width: 100%;
@@ -272,7 +284,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 20px 0 60px 0;
+  padding: 40px 0 60px 0;
 }
 
 @media (max-width: 768px) {
@@ -301,4 +313,148 @@
     transform: none !important;
     width: 100% !important;
   }
+}
+
+/* --- NOTIFICACIÓN CENTRAL --- */
+.toast-notification {
+  position: fixed;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2ecc71;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+  z-index: 9999;
+  animation: slideDownToast 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideDownToast {
+  from { top: -60px; opacity: 0; }
+  to { top: 40px; opacity: 1; }
+}
+
+
+.edit-input {
+  width: 100px;
+  padding: 8px 12px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--primary-color);
+  background: transparent;
+  border: 1px dashed rgba(46, 204, 113, 0.5);
+  border-radius: 12px;
+  text-align: center;
+  margin-top: 5px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.edit-input:focus {
+  background: rgba(46, 204, 113, 0.1);
+  border: 1px solid var(--primary-color);
+}
+
+.edit-input.is-modified {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.08);
+  border: 2px solid #e74c3c;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.2);
+  transform: scale(1.05);
+}
+
+select.edit-input {
+  width: 90%;
+  font-size: 0.95rem;
+  padding: 10px;
+  text-align: center;
+}
+
+select.edit-input.is-modified {
+  color: #e74c3c;
+  font-weight: 800;
+}
+
+.edit-input::-webkit-outer-spin-button,
+.edit-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.edit-input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* --- Ajustes para Editar Medidas Corporales --- */
+.measure-input-edit {
+  width: 100%;
+  font-size: 1.2rem;
+  padding: 4px;
+}
+
+.is-editing-box {
+  transform: scale(1.05);
+  border-color: var(--primary-color);
+  z-index: 11;
+  box-shadow: 0 12px 35px rgba(46, 204, 113, 0.25), inset 0 0 0 1px var(--primary-color);
+}
+
+/* --- ESTILOS PARA EDICIÓN DE INTOLERANCIAS  --- */
+.edit-tags-container {
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.editable-tag {
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.editable-tag:hover {
+  transform: scale(1.05);
+}
+
+.unselected-red {
+  background: rgba(231, 76, 60, 0.05);
+  color: #e74c3c;
+  border: 1px dashed rgba(231, 76, 60, 0.4);
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.unselected-red:hover {
+  background: rgba(231, 76, 60, 0.15);
+  opacity: 1;
+}
+
+.selected-green {
+  background: rgba(46, 204, 113, 0.15);
+  color: #27ae60;
+  border: 2px solid #2ecc71;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+}
+
+.tag-readonly {
+  background: rgba(46, 204, 113, 0.1);
+  color: #1e8449;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
 }
