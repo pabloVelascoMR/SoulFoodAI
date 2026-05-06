@@ -5,7 +5,7 @@
 .app-header-title {
   width: 100%;
   font-size: 2.8rem;
-  font-weight: 800;
+  font-weight: 800; 
   color: var(--text-dark);
   letter-spacing: -1px;
   text-align: center;
