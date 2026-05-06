@@ -184,5 +184,28 @@ namespace SoulFoodAiBack.Controllers
 
             return Ok(userDataDto);
         }
+
+        [HttpPut]
+        [Route("UpdateBodyMeasures")]
+        public async Task<IActionResult> UpdateBodyMeasures([FromBody] UpdateBodyMeasuresDto dto)
+        {
+            UserData? userData = await _context.UserDatas.FirstOrDefaultAsync(u => u.IdUser == dto.IdUser);
+
+            if (userData == null)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            userData.ChestMeasure = dto.ChestMeasure;
+            userData.WaistMeasure = dto.WaistMeasure;
+            userData.HipMeasure = dto.HipMeasure;
+            userData.LeftBicepMeasure = dto.LeftBicepMeasure;
+            userData.RightBicepMeasure = dto.RightBicepMeasure;
+            userData.LeftCuadricepsMeasure = dto.LeftCuadricepsMeasure;
+            userData.RightCuadricepsMeasure = dto.RightCuadricepsMeasure;
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
