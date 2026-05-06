@@ -76,7 +76,6 @@ export class PersonalInformationComponent implements OnInit {
 
         console.log("-> 4. Array de perfiles listo. Total:", dataArray.length);
 
-        // Búsqueda super flexible que cubre cualquier forma en la que C# envíe el ID
         const userProfile = dataArray.find((d: any) => 
           d.idUser == userId || 
           d.userId == userId || 
@@ -88,7 +87,7 @@ export class PersonalInformationComponent implements OnInit {
 
         if (userProfile) {
           this.userData = userProfile;
-          this.cdr.detectChanges(); // <--- OBLIGAMOS A ANGULAR A PINTAR EL HTML
+          this.cdr.detectChanges(); 
         } else {
           alert('Aún no tienes medidas guardadas. ¡Vamos al onboarding a crearlas!');
           this.router.navigate(['/onboarding']);
