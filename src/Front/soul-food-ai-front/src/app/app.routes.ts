@@ -5,6 +5,7 @@ import { OnboardingComponent } from './pages/onboarding/onboarding.component';
 import { IngredientSelectionComponent } from './pages/ingredient-selection/ingredient-selection.component';
 import { HomeComponent } from './pages/home/home.component';
 import { RecipesComponent } from './pages/recipes/recipes.component';
+import { PersonalInformationComponent } from './pages/personal-information/personal-information.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -13,4 +14,5 @@ export const routes: Routes = [
   { path: 'ingredient-selection', component: IngredientSelectionComponent },
   { path: 'home', component: HomeComponent },
   { path: 'recipes', component: RecipesComponent },
+  { path: 'personal-information', component: PersonalInformationComponent },
 ];
