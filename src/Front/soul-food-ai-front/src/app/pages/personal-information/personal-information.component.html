@@ -1,0 +1,145 @@
+<div class="page-layout" *ngIf="userData">
+  <h1 class="app-header-title">TU PERFIL NUTRICIONAL</h1>
+  
+  <div class="step-content" style="flex-direction: column; align-items: center; gap: 30px;">
+    
+    <div class="surface-module profile-card">
+      <div class="profile-header">
+        <div class="gender-avatar">
+          <img [src]="userData.gender === 'Mujer' ? 'assets/ingredientes_imagenes/bodyF.jpg' : 'assets/ingredientes_imagenes/bodyM.jpg'" alt="Avatar">
+        </div>
+        <div class="profile-title">
+          <h2>Información Básica</h2>
+          <p>{{ userData.gender }} • {{ userData.age }} años</p>
+        </div>
+      </div>
+
+      <div class="basic-stats-grid">
+        <div class="stat-box">
+          <span class="stat-label">ALTURA</span>
+          <span class="stat-value">{{ userData.height }} <small>m</small></span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">PESO</span>
+          <span class="stat-value">{{ userData.weight }} <small>kg</small></span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">COMIDAS/DÍA</span>
+          <span class="stat-value">{{ userData.mealsPerDay }}</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">ACTIVIDAD</span>
+          <span class="stat-value">{{ getActivityInfo().emoji }} <small style="font-size: 0.8rem; display:block;">{{ getActivityInfo().title }}</small></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="surface-module profile-card">
+      <h2 style="text-align: center; margin-bottom: 2rem;">Tus Medidas Corporales</h2>
+      
+      <div class="body-map-container">
+        
+        <div class="body-silhouette">
+          <img [src]="userData.gender === 'Mujer' ? 'assets/ingredientes_imagenes/bodyF.jpg' : 'assets/ingredientes_imagenes/bodyM.jpg'" alt="Silueta corporal">
+        </div>
+
+        <div class="measure-row" style="top: 29%;">
+          <div class="cross-line center-line" style="width: 220px;"></div>
+          <div class="track-line track-left-far"></div>
+          <div class="measure-display-box box-left-far">
+            <label>Pecho</label>
+            <span class="measure-val">{{ userData.chestMeasure || '--' }} <small>cm</small></span>
+          </div>
+        </div>
+
+        <div class="measure-row" style="top: 35%;">
+          <div class="cross-line center-line" style="width: 480px;"></div>
+          <div class="track-line track-left-near"></div>
+          <div class="measure-display-box box-left-near">
+            <label>Bíceps Izq.</label>
+            <span class="measure-val">{{ userData.leftBicepMeasure || '--' }} <small>cm</small></span>
+          </div>
+          <div class="track-line track-right-near"></div>
+          <div class="measure-display-box box-right-near">
+            <label>Bíceps Der.</label>
+            <span class="measure-val">{{ userData.rightBicepMeasure || '--' }} <small>cm</small></span>
+          </div>
+        </div>
+
+        <div class="measure-row" style="top: 45%;">
+          <div class="cross-line center-line" style="width: 180px;"></div>
+          <div class="track-line track-right-far"></div>
+          <div class="measure-display-box box-right-far">
+            <label>Cintura</label>
+            <span class="measure-val">{{ userData.waistMeasure || '--' }} <small>cm</small></span>
+          </div>
+        </div>
+
+        <div class="measure-row" style="top: 52%;">
+          <div class="cross-line center-line" style="width: 260px;"></div>
+          <div class="track-line track-left-far"></div>
+          <div class="measure-display-box box-left-far">
+            <label>Cadera</label>
+            <span class="measure-val">{{ userData.hipMeasure || '--' }} <small>cm</small></span>
+          </div>
+        </div>
+
+        <div class="measure-row" style="top: 61%;">
+          <div class="cross-line center-line" style="width: 350px;"></div>
+          <div class="track-line track-left-near"></div>
+          <div class="measure-display-box box-left-near">
+            <label>Cuád. Izq.</label>
+            <span class="measure-val">{{ userData.leftCuadricepsMeasure || '--' }} <small>cm</small></span>
+          </div>
+          <div class="track-line track-right-near"></div>
+          <div class="measure-display-box box-right-near">
+            <label>Cuád. Der.</label>
+            <span class="measure-val">{{ userData.rightCuadricepsMeasure || '--' }} <small>cm</small></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="surface-module profile-card">
+      <h2 style="text-align: center; margin-bottom: 2rem;">Preferencias y Objetivos</h2>
+      
+      <div class="preferences-grid">
+        <div class="pref-item">
+          <div class="pref-icon">{{ getGoalEmoji(userData.idGoal) }}</div>
+          <div class="pref-info">
+            <label>OBJETIVO PRINCIPAL</label>
+            <span>{{ getGoalName() }}</span>
+          </div>
+        </div>
+
+        <div class="pref-item">
+          <div class="pref-icon">{{ getDietEmoji(userData.idFoodPlan) }}</div>
+          <div class="pref-info">
+            <label>TIPO DE DIETA</label>
+            <span>{{ getFoodPlanName() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intolerances-section">
+        <label>INTOLERANCIAS REGISTRADAS</label>
+        <div class="tags-container">
+          <span class="intolerance-tag" *ngFor="let intName of getIntolerancesNames()">{{ intName }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-footer">
+      <button class="btn-primary" (click)="editData()" style="width: 100%; max-width: 400px; padding: 20px; font-size: 1.2rem;">
+        EDITAR MIS DATOS
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="page-layout" *ngIf="!userData">
+  <div style="text-align: center; padding: 50px;">
+    <h2>Cargando tu perfil...</h2>
+  </div>
+</div>
