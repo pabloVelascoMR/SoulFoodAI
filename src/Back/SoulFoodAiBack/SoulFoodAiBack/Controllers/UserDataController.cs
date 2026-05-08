@@ -24,7 +24,10 @@ namespace SoulFoodAiBack.Controllers
 
         public async Task<IActionResult> GetAllUserDatas()
         {
-            List<UserData> userDatas = await _context.UserDatas.ToListAsync();
+        
+            List<UserData> userDatas = await _context.UserDatas
+                .Include(ud => ud.UserIntolerances)
+                .ToListAsync();
 
             List<UserDataDto> allUserDatas = userDatas.
 
@@ -39,15 +42,14 @@ namespace SoulFoodAiBack.Controllers
                     IdUser =ud.IdUser,
                     IdFoodPlan =ud.IdFoodPlan,
                     IdGoal =ud.IdGoal,
-                    IdIntolerance =ud.IdIntolerance,
-                 }).ToList();
+                    IdIntolerances = ud.UserIntolerances.Select(ui => ui.IdIntolerance).ToList()
+                }).ToList();
 
             return Ok(allUserDatas);
         }
 
         [HttpPost]
         [Route("AddUserData")]
-
         public async Task<IActionResult> AddUserData(CreateUserDataDto dto)
         {
             
@@ -59,12 +61,32 @@ namespace SoulFoodAiBack.Controllers
                 Height = dto.Height,
                 Weight = dto.Weight,
                 MealsPerDay = dto.MealsPerDay > 0 ? dto.MealsPerDay : 3,
+                LevelOfActivity = dto.LevelOfActivity > 0 ? dto.LevelOfActivity : 1,
+                ChestMeasure = dto.ChestMeasure ?? 0,
+                WaistMeasure = dto.WaistMeasure ?? 0,
+                HipMeasure = dto.HipMeasure ?? 0,
+                LeftBicepMeasure = dto.LeftBicepMeasure ?? 0,
+                RightBicepMeasure = dto.RightBicepMeasure ?? 0,
+                LeftCuadricepsMeasure = dto.LeftCuadricepsMeasure ?? 0,
+                RightCuadricepsMeasure = dto.RightCuadricepsMeasure ?? 0,
+
                 IdUser = dto.IdUser,
                 IdFoodPlan = dto.IdFoodPlan > 0 ? dto.IdFoodPlan : 2,
                 IdGoal = dto.IdGoal > 0 ? dto.IdGoal : 6,
-                IdIntolerance = dto.IdIntolerance > 0 ? dto.IdIntolerance : 12
+                UserIntolerances = new List<UserIntolerance>()
             };
 
+            if (dto.IdIntolerances != null && dto.IdIntolerances.Any())
+            {
+                foreach (var idIntolerance in dto.IdIntolerances)
+                {
+                    userDataAdd.UserIntolerances.Add(new UserIntolerance
+                    {
+                        IdIntolerance = idIntolerance,
+                        IdUser = dto.IdUser 
+                    });
+                }
+            }
             await _context.UserDatas.AddAsync(userDataAdd);
             await _context.SaveChangesAsync();
             return Ok();
@@ -89,7 +111,9 @@ namespace SoulFoodAiBack.Controllers
 
         public async Task<IActionResult> EditUserData(UserDataDto dto)
         {
-            UserData? userDataEdit = await _context.UserDatas.FirstOrDefaultAsync(u => u.IdUser == dto.IdUser);
+            UserData? userDataEdit = await _context.UserDatas
+                .Include(u => u.UserIntolerances)
+                .FirstOrDefaultAsync(u => u.IdUser == dto.IdUser);
 
             if (userDataEdit is null) { return NotFound("Objetivo no existe en la base de datos."); }
 
@@ -99,10 +123,27 @@ namespace SoulFoodAiBack.Controllers
             userDataEdit.Height = dto.Height;
             userDataEdit.Weight = dto.Weight;
             userDataEdit.MealsPerDay = dto.MealsPerDay;
+            userDataEdit.LevelOfActivity = dto.LevelOfActivity;
+            userDataEdit.ChestMeasure = dto.ChestMeasure ?? 0;
+            userDataEdit.WaistMeasure = dto.WaistMeasure ?? 0;
+            userDataEdit.HipMeasure = dto.HipMeasure ?? 0;
+            userDataEdit.LeftBicepMeasure = dto.LeftBicepMeasure ?? 0;
+            userDataEdit.RightBicepMeasure = dto.RightBicepMeasure ?? 0;
+            userDataEdit.LeftCuadricepsMeasure = dto.LeftCuadricepsMeasure ?? 0;
+            userDataEdit.RightCuadricepsMeasure = dto.RightCuadricepsMeasure ?? 0;
             userDataEdit.IdUser = dto.IdUser;
             userDataEdit.IdFoodPlan = dto.IdFoodPlan ;
             userDataEdit.IdGoal = dto.IdGoal ;
-            userDataEdit.IdIntolerance = dto.IdIntolerance;
+            _context.UserIntolerances.RemoveRange(userDataEdit.UserIntolerances);
+
+            if(dto.IdIntolerances != null && dto.IdIntolerances.Any())
+            {
+                userDataEdit.UserIntolerances = dto.IdIntolerances.Select(id => new UserIntolerance
+                {
+                    IdUser = dto.IdUser,
+                    IdIntolerance = id
+                }).ToList();
+            }
 
             await _context.SaveChangesAsync();
             return Ok();
@@ -112,7 +153,10 @@ namespace SoulFoodAiBack.Controllers
         [Route("GetUserDataById/{id}")]
         public async Task<IActionResult> GetUserDataById(int id)
         {
-            UserData? userData = await _context.UserDatas.AsNoTracking().Where(ud => ud.IdUser == id).FirstOrDefaultAsync();
+            UserData? userData = await _context.UserDatas
+                 .Include(ud => ud.UserIntolerances)
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(ud => ud.IdUser == id);
 
             if (userData is null) {return Ok(new { IdFoodPlan = 1 });}
 
@@ -124,13 +168,44 @@ namespace SoulFoodAiBack.Controllers
                 Height = userData.Height,
                 Weight = userData.Weight,
                 MealsPerDay = userData.MealsPerDay,
+                LevelOfActivity = userData.LevelOfActivity,
+                ChestMeasure = userData.ChestMeasure,
+                WaistMeasure = userData.WaistMeasure,
+                HipMeasure = userData.HipMeasure,
+                LeftBicepMeasure = userData.LeftBicepMeasure,
+                RightBicepMeasure = userData.RightBicepMeasure,
+                LeftCuadricepsMeasure = userData.LeftCuadricepsMeasure,
+                RightCuadricepsMeasure = userData.RightCuadricepsMeasure,
                 IdUser = userData.IdUser,
                 IdFoodPlan = userData.IdFoodPlan,
                 IdGoal = userData.IdGoal,
-                IdIntolerance = userData.IdIntolerance,
+                IdIntolerances = userData.UserIntolerances.Select(ui => ui.IdIntolerance).ToList()
             };
 
             return Ok(userDataDto);
+        }
+
+        [HttpPut]
+        [Route("UpdateBodyMeasures")]
+        public async Task<IActionResult> UpdateBodyMeasures([FromBody] UpdateBodyMeasuresDto dto)
+        {
+            UserData? userData = await _context.UserDatas.FirstOrDefaultAsync(u => u.IdUser == dto.IdUser);
+
+            if (userData == null)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            userData.ChestMeasure = dto.ChestMeasure;
+            userData.WaistMeasure = dto.WaistMeasure;
+            userData.HipMeasure = dto.HipMeasure;
+            userData.LeftBicepMeasure = dto.LeftBicepMeasure;
+            userData.RightBicepMeasure = dto.RightBicepMeasure;
+            userData.LeftCuadricepsMeasure = dto.LeftCuadricepsMeasure;
+            userData.RightCuadricepsMeasure = dto.RightCuadricepsMeasure;
+
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }

@@ -7,7 +7,8 @@ namespace SoulFoodAiBack.Models
     {
         public Recipe()
         {
-            UserFoodPlanMeals = new List<UserFoodPlanDaily>();
+            FoodPlanDailyRecipes = new List<FoodPlanDailyRecipe>();
+            RecipeUserIngredients = new List<RecipeUserIngredient>();
             this.CreationDate = DateTime.Now;
         }
 
@@ -19,9 +20,6 @@ namespace SoulFoodAiBack.Models
         [StringLength(500)]
         public required string RecipeName { get; set; }
 
-        [Required]
-        public required string IngredientsJson { get; set; }
-
         public double Protein { get; set; }
 
         public double Carbs { get; set; }
@@ -30,7 +28,20 @@ namespace SoulFoodAiBack.Models
 
         public int TotalKcal { get; set; }
 
-        public List<UserFoodPlanDaily> UserFoodPlanMeals { get; set; }
+        public String? RecipeDescription { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public int IdUser { get; set; }
+        [ForeignKey("IdUser")]
+        public User? User { get; set; }
+
+        public int IdMeal { get; set; }
+        [ForeignKey("IdMeal")]
+        public Meal? Meal { get; set; }
+        
+        public List<FoodPlanDailyRecipe> FoodPlanDailyRecipes { get; set; }
+        public List<RecipeUserIngredient> RecipeUserIngredients { get; set; }
 
         public DateTime CreationDate { get; set; }
     }

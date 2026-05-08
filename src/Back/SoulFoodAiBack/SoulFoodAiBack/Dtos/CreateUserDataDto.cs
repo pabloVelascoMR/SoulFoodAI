@@ -21,12 +21,36 @@ namespace SoulFoodAiBack.Dtos
 
         public int MealsPerDay { get; set; }
 
+        [Range(1, 5, ErrorMessage = "El nivel de actividad debe ser un valor entre 1 y 5.")]
+        public int LevelOfActivity { get; set; }
+
+        [Range(30.0, 200.0, ErrorMessage = "La medida del pecho debe estar entre 30 y 300 cm.")]
+        public double? ChestMeasure { get; set; }
+
+        [Range(30.0, 200.0, ErrorMessage = "La medida de la cintura debe estar entre 30 y 300 cm.")]
+        public double? WaistMeasure { get; set; }
+
+        [Range(30.0, 200.0, ErrorMessage = "La medida de la cadera debe estar entre 30 y 300 cm.")]
+        public double? HipMeasure { get; set; }
+
+        [Range(10.0, 100.0, ErrorMessage = "La medida del bíceps izquierdo debe estar entre 10 y 200 cm.")]
+        public double? LeftBicepMeasure { get; set; }
+
+        [Range(10.0, 100.0, ErrorMessage = "La medida del bíceps derecho debe estar entre 10 y 200 cm.")]
+        public double? RightBicepMeasure { get; set; }
+
+        [Range(20.0, 150.0, ErrorMessage = "La medida del cuádriceps izquierdo debe estar entre 20 y 250 cm.")]
+        public double? LeftCuadricepsMeasure { get; set; }
+
+        [Range(20.0, 150.0, ErrorMessage = "La medida del cuádriceps derecho debe estar entre 20 y 250 cm.")]
+        public double? RightCuadricepsMeasure { get; set; }
+
         public required int IdUser { get; set; }
 
         public required int IdFoodPlan { get; set; }
 
         public required int IdGoal { get; set; }
 
-        public int IdIntolerance { get; set; }
+        public List <int>? IdIntolerances { get; set; }
     }
 }

@@ -59,42 +59,38 @@ namespace SoulFoodAiBack.Migrations
                     b.ToTable("FoodPlans");
                 });
 
-            modelBuilder.Entity("SoulFoodAiBack.Models.FoodPlanMeal", b =>
+            modelBuilder.Entity("SoulFoodAiBack.Models.FoodPlanDailyRecipe", b =>
                 {
-                    b.Property<int>("IdFoodPlanMeal")
+                    b.Property<int>("IdFoodPlanDailyRecipe")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdFoodPlanMeal"));
-
-                    b.Property<double>("CarbPercent")
-                        .HasColumnType("float");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdFoodPlanDailyRecipe"));
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("FatPercent")
-                        .HasColumnType("float");
-
-                    b.Property<int>("IdFoodPlan")
+                    b.Property<int>("IdRecipe")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdMeal")
+                    b.Property<int>("IdUser")
                         .HasColumnType("int");
 
-                    b.Property<double>("ProteinPercent")
-                        .HasColumnType("float");
+                    b.Property<int>("IdUserFoodPlanDaily")
+                        .HasColumnType("int");
 
-                    b.Property<double>("VegetableminPercent")
-                        .HasColumnType("float");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
-                    b.HasKey("IdFoodPlanMeal");
+                    b.HasKey("IdFoodPlanDailyRecipe");
 
-                    b.HasIndex("IdFoodPlan");
+                    b.HasIndex("IdRecipe");
 
-                    b.HasIndex("IdMeal");
+                    b.HasIndex("IdUser");
 
-                    b.ToTable("FoodPlanMeals");
+                    b.HasIndex("IdUserFoodPlanDaily");
+
+                    b.ToTable("FoodPlanDailyRecipes");
                 });
 
             modelBuilder.Entity("SoulFoodAiBack.Models.Goal", b =>
@@ -245,12 +241,20 @@ namespace SoulFoodAiBack.Migrations
                     b.Property<double>("Fat")
                         .HasColumnType("float");
 
-                    b.Property<string>("IngredientsJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("IdMeal")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUser")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<double>("Protein")
                         .HasColumnType("float");
+
+                    b.Property<string>("RecipeDescription")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipeName")
                         .IsRequired()
@@ -262,7 +266,42 @@ namespace SoulFoodAiBack.Migrations
 
                     b.HasKey("IdRecipe");
 
+                    b.HasIndex("IdMeal");
+
+                    b.HasIndex("IdUser");
+
                     b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("SoulFoodAiBack.Models.RecipeUserIngredient", b =>
+                {
+                    b.Property<int>("IdRecipeUserIngredient")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRecipeUserIngredient"));
+
+                    b.Property<int>("IdIngredient")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdRecipe")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Quantity")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("IdRecipeUserIngredient");
+
+                    b.HasIndex("IdIngredient");
+
+                    b.HasIndex("IdRecipe");
+
+                    b.ToTable("RecipeUserIngredients");
                 });
 
             modelBuilder.Entity("SoulFoodAiBack.Models.User", b =>
@@ -305,6 +344,9 @@ namespace SoulFoodAiBack.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
+                    b.Property<double>("ChestMeasure")
+                        .HasColumnType("float");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
@@ -313,6 +355,9 @@ namespace SoulFoodAiBack.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Height")
+                        .HasColumnType("float");
+
+                    b.Property<double>("HipMeasure")
                         .HasColumnType("float");
 
                     b.Property<int>("IdFoodPlan")
@@ -327,8 +372,26 @@ namespace SoulFoodAiBack.Migrations
                     b.Property<int>("IdUser")
                         .HasColumnType("int");
 
+                    b.Property<double>("LeftBicepMeasure")
+                        .HasColumnType("float");
+
+                    b.Property<double>("LeftCuadricepsMeasure")
+                        .HasColumnType("float");
+
+                    b.Property<int>("LevelOfActivity")
+                        .HasColumnType("int");
+
                     b.Property<int>("MealsPerDay")
                         .HasColumnType("int");
+
+                    b.Property<double>("RightBicepMeasure")
+                        .HasColumnType("float");
+
+                    b.Property<double>("RightCuadricepsMeasure")
+                        .HasColumnType("float");
+
+                    b.Property<double>("WaistMeasure")
+                        .HasColumnType("float");
 
                     b.Property<double>("Weight")
                         .HasColumnType("float");
@@ -338,8 +401,6 @@ namespace SoulFoodAiBack.Migrations
                     b.HasIndex("IdFoodPlan");
 
                     b.HasIndex("IdGoal");
-
-                    b.HasIndex("IdIntolerance");
 
                     b.HasIndex("IdUser")
                         .IsUnique();
@@ -385,59 +446,69 @@ namespace SoulFoodAiBack.Migrations
 
             modelBuilder.Entity("SoulFoodAiBack.Models.UserFoodPlanDaily", b =>
                 {
-                    b.Property<int>("IdFoodPlanMeal")
+                    b.Property<int>("IdUserFoodPlanDaily")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdFoodPlanMeal"));
-
-                    b.Property<double>("CarbPercent")
-                        .HasColumnType("float");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUserFoodPlanDaily"));
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("FatPercent")
-                        .HasColumnType("float");
-
                     b.Property<int>("IdFoodPlan")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdMeal")
+                    b.Property<int>("IdUser")
                         .HasColumnType("int");
 
-                    b.Property<double>("ProteinPercent")
+                    b.Property<int>("IdUserFoodPlanWeek")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("RealCarbs")
                         .HasColumnType("float");
 
-                    b.Property<int?>("RecipeIdRecipe")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UserFoodPlanWeekIdUserFoodPlan")
-                        .HasColumnType("int");
-
-                    b.Property<double>("VegetablePercent")
+                    b.Property<double>("RealFat")
                         .HasColumnType("float");
 
-                    b.HasKey("IdFoodPlanMeal");
+                    b.Property<int>("RealKcal")
+                        .HasColumnType("int");
+
+                    b.Property<double>("RealProtein")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TargetCarbs")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TargetFat")
+                        .HasColumnType("float");
+
+                    b.Property<int>("TargetKcal")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TargetProtein")
+                        .HasColumnType("float");
+
+                    b.HasKey("IdUserFoodPlanDaily");
 
                     b.HasIndex("IdFoodPlan");
 
-                    b.HasIndex("IdMeal");
+                    b.HasIndex("IdUser");
 
-                    b.HasIndex("RecipeIdRecipe");
-
-                    b.HasIndex("UserFoodPlanWeekIdUserFoodPlan");
+                    b.HasIndex("IdUserFoodPlanWeek");
 
                     b.ToTable("UserFoodPlansDaily");
                 });
 
             modelBuilder.Entity("SoulFoodAiBack.Models.UserFoodPlanWeek", b =>
                 {
-                    b.Property<int>("IdUserFoodPlan")
+                    b.Property<int>("IdUserFoodPlanWeek")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUserFoodPlan"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUserFoodPlanWeek"));
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
@@ -448,22 +519,68 @@ namespace SoulFoodAiBack.Migrations
                     b.Property<int>("IdFoodPlan")
                         .HasColumnType("int");
 
+                    b.Property<int>("IdGoal")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdUser")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MealsPerDay")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TotalDailyKcal")
+                    b.Property<double>("TotalWeeklyCarbs")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TotalWeeklyFat")
+                        .HasColumnType("float");
+
+                    b.Property<int>("TotalWeeklyKcal")
                         .HasColumnType("int");
 
-                    b.HasKey("IdUserFoodPlan");
+                    b.Property<double>("TotalWeeklyProtein")
+                        .HasColumnType("float");
+
+                    b.HasKey("IdUserFoodPlanWeek");
 
                     b.HasIndex("IdFoodPlan");
+
+                    b.HasIndex("IdGoal");
 
                     b.HasIndex("IdUser");
 
                     b.ToTable("UserFoodPlansWeek");
+                });
+
+            modelBuilder.Entity("SoulFoodAiBack.Models.UserFoodPlanWeekIntolerance", b =>
+                {
+                    b.Property<int>("IdUserFoodPlanWeekIntolerance")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUserFoodPlanWeekIntolerance"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdIntolerance")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUserFoodPlanWeek")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdUserFoodPlanWeekIntolerance");
+
+                    b.HasIndex("IdIntolerance");
+
+                    b.HasIndex("IdUserFoodPlanWeek");
+
+                    b.ToTable("UserFoodPlanWeekIntolerances");
                 });
 
             modelBuilder.Entity("SoulFoodAiBack.Models.UserIngredient", b =>
@@ -492,23 +609,100 @@ namespace SoulFoodAiBack.Migrations
                     b.ToTable("UserIngredients");
                 });
 
-            modelBuilder.Entity("SoulFoodAiBack.Models.FoodPlanMeal", b =>
+            modelBuilder.Entity("SoulFoodAiBack.Models.UserIntolerance", b =>
                 {
-                    b.HasOne("SoulFoodAiBack.Models.FoodPlan", "FoodPlan")
-                        .WithMany("FoodPlanMeals")
-                        .HasForeignKey("IdFoodPlan")
+                    b.Property<int>("IdUserIntolerance")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUserIntolerance"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdIntolerance")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUser")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserDataIdUserData")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdUserIntolerance");
+
+                    b.HasIndex("IdIntolerance");
+
+                    b.HasIndex("IdUser");
+
+                    b.HasIndex("UserDataIdUserData");
+
+                    b.ToTable("UserIntolerances");
+                });
+
+            modelBuilder.Entity("SoulFoodAiBack.Models.FoodPlanDailyRecipe", b =>
+                {
+                    b.HasOne("SoulFoodAiBack.Models.Recipe", "Recipe")
+                        .WithMany("FoodPlanDailyRecipes")
+                        .HasForeignKey("IdRecipe")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SoulFoodAiBack.Models.Meal", "Meal")
+                    b.HasOne("SoulFoodAiBack.Models.User", "User")
                         .WithMany()
+                        .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SoulFoodAiBack.Models.UserFoodPlanDaily", "UserFoodPlanDaily")
+                        .WithMany("FoodPlanDailyRecipes")
+                        .HasForeignKey("IdUserFoodPlanDaily")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Recipe");
+
+                    b.Navigation("User");
+
+                    b.Navigation("UserFoodPlanDaily");
+                });
+
+            modelBuilder.Entity("SoulFoodAiBack.Models.Recipe", b =>
+                {
+                    b.HasOne("SoulFoodAiBack.Models.Meal", "Meal")
+                        .WithMany("Recipes")
                         .HasForeignKey("IdMeal")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("FoodPlan");
+                    b.HasOne("SoulFoodAiBack.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Meal");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SoulFoodAiBack.Models.RecipeUserIngredient", b =>
+                {
+                    b.HasOne("SoulFoodAiBack.Models.Ingredient", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IdIngredient")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SoulFoodAiBack.Models.Recipe", "Recipe")
+                        .WithMany("RecipeUserIngredients")
+                        .HasForeignKey("IdRecipe")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("SoulFoodAiBack.Models.UserData", b =>
@@ -525,12 +719,6 @@ namespace SoulFoodAiBack.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SoulFoodAiBack.Models.Intolerance", "Intolerance")
-                        .WithMany()
-                        .HasForeignKey("IdIntolerance")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("SoulFoodAiBack.Models.User", "User")
                         .WithOne("UserData")
                         .HasForeignKey("SoulFoodAiBack.Models.UserData", "IdUser")
@@ -540,8 +728,6 @@ namespace SoulFoodAiBack.Migrations
                     b.Navigation("FoodPlan");
 
                     b.Navigation("Goal");
-
-                    b.Navigation("Intolerance");
 
                     b.Navigation("User");
                 });
@@ -565,23 +751,23 @@ namespace SoulFoodAiBack.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SoulFoodAiBack.Models.Meal", "Meal")
+                    b.HasOne("SoulFoodAiBack.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("IdMeal")
+                        .HasForeignKey("IdUser")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SoulFoodAiBack.Models.Recipe", null)
+                    b.HasOne("SoulFoodAiBack.Models.UserFoodPlanWeek", "UserFoodPlanWeek")
                         .WithMany("UserFoodPlanMeals")
-                        .HasForeignKey("RecipeIdRecipe");
-
-                    b.HasOne("SoulFoodAiBack.Models.UserFoodPlanWeek", null)
-                        .WithMany("UserFoodPlanMeals")
-                        .HasForeignKey("UserFoodPlanWeekIdUserFoodPlan");
+                        .HasForeignKey("IdUserFoodPlanWeek")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("FoodPlan");
 
-                    b.Navigation("Meal");
+                    b.Navigation("User");
+
+                    b.Navigation("UserFoodPlanWeek");
                 });
 
             modelBuilder.Entity("SoulFoodAiBack.Models.UserFoodPlanWeek", b =>
@@ -589,6 +775,12 @@ namespace SoulFoodAiBack.Migrations
                     b.HasOne("SoulFoodAiBack.Models.FoodPlan", "FoodPlan")
                         .WithMany()
                         .HasForeignKey("IdFoodPlan")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SoulFoodAiBack.Models.Goal", "Goal")
+                        .WithMany()
+                        .HasForeignKey("IdGoal")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -600,7 +792,28 @@ namespace SoulFoodAiBack.Migrations
 
                     b.Navigation("FoodPlan");
 
+                    b.Navigation("Goal");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SoulFoodAiBack.Models.UserFoodPlanWeekIntolerance", b =>
+                {
+                    b.HasOne("SoulFoodAiBack.Models.Intolerance", "Intolerance")
+                        .WithMany("UserFoodPlanWeekIntolerances")
+                        .HasForeignKey("IdIntolerance")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SoulFoodAiBack.Models.UserFoodPlanWeek", "UserFoodPlanWeek")
+                        .WithMany("UserFoodPlanWeekIntolerances")
+                        .HasForeignKey("IdUserFoodPlanWeek")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Intolerance");
+
+                    b.Navigation("UserFoodPlanWeek");
                 });
 
             modelBuilder.Entity("SoulFoodAiBack.Models.UserIngredient", b =>
@@ -622,9 +835,27 @@ namespace SoulFoodAiBack.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SoulFoodAiBack.Models.FoodPlan", b =>
+            modelBuilder.Entity("SoulFoodAiBack.Models.UserIntolerance", b =>
                 {
-                    b.Navigation("FoodPlanMeals");
+                    b.HasOne("SoulFoodAiBack.Models.Intolerance", "Intolerance")
+                        .WithMany("UserIntolerances")
+                        .HasForeignKey("IdIntolerance")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SoulFoodAiBack.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SoulFoodAiBack.Models.UserData", null)
+                        .WithMany("UserIntolerances")
+                        .HasForeignKey("UserDataIdUserData");
+
+                    b.Navigation("Intolerance");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SoulFoodAiBack.Models.Ingredient", b =>
@@ -632,9 +863,23 @@ namespace SoulFoodAiBack.Migrations
                     b.Navigation("UserIngredients");
                 });
 
+            modelBuilder.Entity("SoulFoodAiBack.Models.Intolerance", b =>
+                {
+                    b.Navigation("UserFoodPlanWeekIntolerances");
+
+                    b.Navigation("UserIntolerances");
+                });
+
+            modelBuilder.Entity("SoulFoodAiBack.Models.Meal", b =>
+                {
+                    b.Navigation("Recipes");
+                });
+
             modelBuilder.Entity("SoulFoodAiBack.Models.Recipe", b =>
                 {
-                    b.Navigation("UserFoodPlanMeals");
+                    b.Navigation("FoodPlanDailyRecipes");
+
+                    b.Navigation("RecipeUserIngredients");
                 });
 
             modelBuilder.Entity("SoulFoodAiBack.Models.User", b =>
@@ -646,9 +891,21 @@ namespace SoulFoodAiBack.Migrations
                     b.Navigation("UserIngredients");
                 });
 
+            modelBuilder.Entity("SoulFoodAiBack.Models.UserData", b =>
+                {
+                    b.Navigation("UserIntolerances");
+                });
+
+            modelBuilder.Entity("SoulFoodAiBack.Models.UserFoodPlanDaily", b =>
+                {
+                    b.Navigation("FoodPlanDailyRecipes");
+                });
+
             modelBuilder.Entity("SoulFoodAiBack.Models.UserFoodPlanWeek", b =>
                 {
                     b.Navigation("UserFoodPlanMeals");
+
+                    b.Navigation("UserFoodPlanWeekIntolerances");
                 });
 #pragma warning restore 612, 618
         }

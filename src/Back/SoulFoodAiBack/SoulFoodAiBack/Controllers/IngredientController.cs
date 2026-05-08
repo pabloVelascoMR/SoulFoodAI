@@ -431,6 +431,23 @@ namespace SoulFoodAiBack.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { message = $"{ingredients.Count} imágenes actualizadas correctamente." });
         }
+
+        [HttpGet]
+        [Route("GetAllowedIngredients/{idUser}")]
+        public async Task<IActionResult> GetAllowedIngredients(int idUser)
+        {
+            var userIngredients = await _context.UserIngredients
+                .Include(ui => ui.Ingredient)
+                .Where(ui => ui.IdUser == idUser && !ui.Ingredient.IsDeleted)
+                .Select(ui => new
+                {
+                    idIngredient = ui.Ingredient.IdIngredient,
+                    name = ui.Ingredient.Name
+                })
+                .ToListAsync();
+
+            return Ok(userIngredients);
+        }
     }
 }
 

@@ -171,7 +171,6 @@
       </div>
 
       <div class="off-results-container">
-        
         <div *ngIf="isSearchingOFF" class="loading-container">
           <div class="spinner"></div>
           <p class="loading-text-animated">Buscando en la base de datos...</p>
@@ -192,7 +191,6 @@
             </div>
             <button class="btn-add-off" (click)="selectOFFIngredient(prod)">Añadir</button>
           </div>
-          
           <p *ngIf="offSearchResults.length === 0 && offSearchQuery !== '' && !isSearchingOFF" class="no-results">
             No se han encontrado productos.
           </p>
@@ -204,5 +202,4 @@
       </div>
     </div>
   </div>
-
 </div>
