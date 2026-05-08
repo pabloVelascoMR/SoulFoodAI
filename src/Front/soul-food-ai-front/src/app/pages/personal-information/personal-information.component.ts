@@ -158,11 +158,12 @@ export class PersonalInformationComponent implements OnInit {
   }
 
   logout(): void {
-    
     localStorage.clear();
     sessionStorage.clear();
-    
-    
     this.router.navigate(['/']);
+  }
+
+  goHome(): void {
+    this.router.navigate(['/home']);
   }
 }

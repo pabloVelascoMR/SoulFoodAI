@@ -208,10 +208,17 @@
         </div>
       </div>
 
-    </div> <div class="action-footer">
-      <button class="btn-primary" *ngIf="!isEditing" (click)="startEditing()" style="width: 100%; max-width: 400px; padding: 20px; font-size: 1.2rem;">
-        EDITAR MIS DATOS
-      </button>
+    </div> 
+    
+    <div class="action-footer">
+      <div *ngIf="!isEditing" style="display: flex; gap: 20px; width: 100%; max-width: 500px;">
+        <button class="btn-secondary" (click)="goHome()" style="flex: 1; padding: 15px; font-size: 1.1rem; border-radius: 30px;">
+          VOLVER AL INICIO
+        </button>
+        <button class="btn-primary" (click)="startEditing()" style="flex: 1; padding: 15px; font-size: 1.1rem; border-radius: 30px;">
+          EDITAR MIS DATOS
+        </button>
+      </div>
 
       <div *ngIf="isEditing" style="display: flex; gap: 20px; width: 100%; max-width: 500px;">
         <button class="btn-secondary" (click)="cancelEditing()" style="flex: 1; padding: 15px; font-size: 1.1rem; border-radius: 30px;">
