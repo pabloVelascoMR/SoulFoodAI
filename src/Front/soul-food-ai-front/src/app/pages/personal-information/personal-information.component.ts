@@ -156,4 +156,13 @@ export class PersonalInformationComponent implements OnInit {
     const emojis: { [key: number]: string } = { 1: '🍽️', 2: '🥗', 3: '🫒', 4: '🥑', 5: '🧀', 6: '🥩', 7: '🌱', 8: '🥦🥚', 9: '🐟', 10: '🫐', 11: '🌿', 12: '❤️' };
     return emojis[id] || '🎯';
   }
+
+  logout(): void {
+    
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    
+    this.router.navigate(['/']);
+  }
 }
