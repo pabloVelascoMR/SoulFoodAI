@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using SoulFoodAiBack.Data;
 using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Models;
-using static SoulFoodAiBack.Dtos.WeeklyReportDto;
+using System.Text;
+using System.Text.Json;
 
 namespace SoulFoodAiBack.Controllers
 {
@@ -12,10 +13,13 @@ namespace SoulFoodAiBack.Controllers
     public class UserDiaryController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly IConfiguration _config;
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(3) };
 
-        public UserDiaryController(DataContext context)
+        public UserDiaryController(DataContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         [HttpPost]
@@ -35,6 +39,104 @@ namespace SoulFoodAiBack.Controllers
                 if (userData == null)
                     return NotFound(new { message = "Usuario no encontrado." });
 
+                int finalDailyKcal = 0;
+                double proteinPercent = userData.FoodPlan.ProteinPercent;
+                double carbPercent = userData.FoodPlan.CarbPercent;
+                double fatPercent = userData.FoodPlan.FatPercent;
+                string aiMessage = string.Empty;
+
+                double weightToUse = (dto.NewWeight.HasValue && dto.NewWeight.Value > 0) ? dto.NewWeight.Value : userData.Weight;
+
+                if (!dto.UseAiAdjustment)
+                {
+                    double bmr = userData.Gender == "Hombre"
+                        ? (10 * weightToUse) + (6.25 * (userData.Height * 100)) - (5 * userData.Age) + 5
+                        : (10 * weightToUse) + (6.25 * (userData.Height * 100)) - (5 * userData.Age) - 161;
+
+                    double tdee = bmr * 1.3;
+                    double dailyKcalTarget = tdee;
+
+                    switch (userData.IdGoal)
+                    {
+                        case 1: dailyKcalTarget -= 400; break;
+                        case 2: dailyKcalTarget += 300; break;
+                        case 4: dailyKcalTarget -= 200; break;
+                        case 5: dailyKcalTarget += 250; break;
+                    }
+
+                    finalDailyKcal = (int)Math.Round(dailyKcalTarget);
+                    if (finalDailyKcal < 1200) finalDailyKcal = 1200;
+                }
+                else
+                {
+                    int oldDailyKcal = (activePlan != null) ? (activePlan.TotalWeeklyKcal / 7) : 0;
+                    double oldProteinGrams = (activePlan != null) ? Math.Round(activePlan.TotalWeeklyProtein / 7) : 0;
+                    double oldCarbsGrams = (activePlan != null) ? Math.Round(activePlan.TotalWeeklyCarbs / 7) : 0;
+                    double oldFatGrams = (activePlan != null) ? Math.Round(activePlan.TotalWeeklyFat / 7) : 0;
+
+                    string prompt = $@"
+            Actúa como un Nutricionista Deportivo de Élite. Ajusta el plan de este paciente basándote en su reporte.
+
+            DIETA ANTERIOR (Semana pasada):
+            - Calorías: {oldDailyKcal} kcal/día
+            - Macros: {oldProteinGrams}g Proteína, {oldCarbsGrams}g Carbohidratos, {oldFatGrams}g Grasas.
+
+            FEEDBACK DEL PACIENTE:
+            - Saciedad/Hambre (1-10): {dto.HungerLevel} 
+            - Energía (1-10): {dto.EnergyLevel} 
+            - Sueño (1-10): {dto.SleepQuality}/10
+            - Adherencia: {dto.DietAdherence}/10
+            - Peso actual: {weightToUse} kg
+            - OBSERVACIONES CLAVE: ""{dto.Description ?? "Sin comentarios"}""
+
+            INSTRUCCIONES OBLIGATORIAS:
+            1. En 'AnalysisMessage', DEBES escribir un informe técnico explicando los CAMBIOS EXACTOS EN GRAMOS Y KCAL.
+            2. Ejemplo de cómo debes redactar: 'Al notar en tus observaciones...'
+            3. Devuelve ESTRICTAMENTE este JSON válido. No uses saltos de línea (usa \n si lo necesitas).
+
+            {{
+                ""AnalysisMessage"": ""Tu informe detallado aquí..."",
+                ""suggestedKcal"": 2200,
+                ""suggestedProteinPercentage"": 0.30,
+                ""suggestedCarbsPercentage"": 0.45,
+                ""suggestedFatPercentage"": 0.25
+            }}";
+
+                    string apiKey = _config["Gemini:ApiKey"];
+                    string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}";
+
+                    var requestBody = new
+                    {
+                        contents = new[] { new { parts = new[] { new { text = prompt } } } },
+                        generationConfig = new { responseMimeType = "application/json", temperature = 0.7 }
+                    };
+
+                    var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await _httpClient.PostAsync(url, content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string errorApi = await response.Content.ReadAsStringAsync();
+                        return StatusCode(500, new { message = $"Error de los servidores de Google Gemini: {errorApi}" });
+                    }
+
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    using JsonDocument doc = JsonDocument.Parse(responseString);
+                    string aiResponseJson = doc.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString() ?? "";
+                    aiResponseJson = aiResponseJson.Replace("```json", "").Replace("```", "").Trim();
+
+                    var aiData = JsonSerializer.Deserialize<FoodPlanAdjustmentAIDto>(aiResponseJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    if (aiData != null)
+                    {
+                        finalDailyKcal = aiData.SuggestedKcal;
+                        proteinPercent = aiData.SuggestedProteinPercentage;
+                        carbPercent = aiData.SuggestedCarbsPercentage;
+                        fatPercent = aiData.SuggestedFatPercentage;
+                        aiMessage = aiData.AnalysisMessage ?? aiResponseJson;
+                    }
+                }
+
                 if (activePlan != null)
                 {
                     var diaryEntry = new UserDiary
@@ -44,7 +146,7 @@ namespace SoulFoodAiBack.Controllers
                         SleepQuality = dto.SleepQuality,
                         DietAdherence = dto.DietAdherence,
                         Description = dto.Description,
-                        AiReportResponse = string.Empty, 
+                        AiReportResponse = aiMessage,  
                         IdUserFoodPlan = activePlan.IdUserFoodPlanWeek,
                         UserFoodPlan = activePlan,
                         CreationDate = DateTime.Now
@@ -53,6 +155,7 @@ namespace SoulFoodAiBack.Controllers
                     activePlan.IsActive = false;
                 }
 
+             
                 if (dto.NewWeight.HasValue && dto.NewWeight.Value > 0) userData.Weight = dto.NewWeight.Value;
                 if (dto.NewMeasures != null)
                 {
@@ -67,7 +170,11 @@ namespace SoulFoodAiBack.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { Success = true, Message = "Diario y perfil guardados correctamente." });
+                return Ok(new { Success = true, Message = "Cálculo realizado y base de datos actualizada.", AiAnalysis = aiMessage });
+            }
+            catch (TaskCanceledException)
+            {
+                return StatusCode(500, new { message = "Los servidores de IA están muy saturados." });
             }
             catch (Exception ex)
             {
