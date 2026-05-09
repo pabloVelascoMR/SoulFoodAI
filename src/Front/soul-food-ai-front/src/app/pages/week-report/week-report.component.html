@@ -1,0 +1,150 @@
+<div class="page-layout">
+  
+  <div class="page-header">
+    <h1 class="app-header-title">CHECK-IN SEMANAL</h1>
+    <button class="btn-secondary back-home-btn" (click)="goHome()" [disabled]="isLoading">
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><polyline points="12 19 5 12 12 5"></polyline></svg>
+      VOLVER AL INICIO
+    </button>
+  </div>
+
+  <div class="step-content">
+
+    <div class="error-toast" *ngIf="errorMessage">
+      <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <div class="surface-module profile-card unified-card" *ngIf="step === 1">
+      <h2 style="text-align: center; margin-bottom: 2rem;">¿Cómo ha ido tu semana?</h2>
+      
+      <div class="report-sliders-grid">
+        
+        <div class="slider-box">
+          <label>Nivel de Saciedad / Hambre</label>
+          <div class="slider-labels"><small>Mucha hambre</small><small>Muy saciado</small></div>
+          <input type="range" min="1" max="10" [(ngModel)]="report.hungerLevel" class="modern-slider">
+          <span class="slider-value">{{ report.hungerLevel }} / 10</span>
+        </div>
+
+        <div class="slider-box">
+          <label>Nivel de Energía</label>
+          <div class="slider-labels"><small>Agotado</small><small>A tope</small></div>
+          <input type="range" min="1" max="10" [(ngModel)]="report.energyLevel" class="modern-slider">
+          <span class="slider-value">{{ report.energyLevel }} / 10</span>
+        </div>
+
+        <div class="slider-box">
+          <label>Calidad del Sueño</label>
+          <div class="slider-labels"><small>Pésimo</small><small>Perfecto</small></div>
+          <input type="range" min="1" max="10" [(ngModel)]="report.sleepQuality" class="modern-slider">
+          <span class="slider-value">{{ report.sleepQuality }} / 10</span>
+        </div>
+
+        <div class="slider-box">
+          <label>Adherencia a la Dieta</label>
+          <div class="slider-labels"><small>Me lo salté todo</small><small>100% Estricto</small></div>
+          <input type="range" min="1" max="10" [(ngModel)]="report.dietAdherence" class="modern-slider">
+          <span class="slider-value">{{ report.dietAdherence }} / 10</span>
+        </div>
+
+      </div>
+
+      <div class="notes-section">
+        <label>Observaciones o Notas Adicionales</label>
+        <textarea [(ngModel)]="report.notes" class="edit-input notes-input" placeholder="Ej: He tenido ansiedad por la tarde, me costó comer tanta proteína..."></textarea>
+      </div>
+
+      <hr class="section-divider">
+
+      <div class="optional-measures-section">
+        <button class="btn-toggle-measures" (click)="toggleMeasures()">
+          <span style="font-size: 1.2rem;">{{ showOptionalMeasures ? '➖' : '➕' }}</span>
+          <strong>Actualizar Peso y Medidas (Opcional)</strong>
+        </button>
+
+        <div class="measures-grid" *ngIf="showOptionalMeasures">
+          <div class="measure-input-box">
+            <label>Peso Nuevo (kg)</label>
+            <input type="number" [(ngModel)]="report.newWeight" class="edit-input" placeholder="kg">
+          </div>
+          <div class="measure-input-box"><label>Cintura (cm)</label><input type="number" [(ngModel)]="report.newMeasures.waistMeasure" class="edit-input" placeholder="cm"></div>
+          <div class="measure-input-box"><label>Cadera (cm)</label><input type="number" [(ngModel)]="report.newMeasures.hipMeasure" class="edit-input" placeholder="cm"></div>
+          <div class="measure-input-box"><label>Pecho (cm)</label><input type="number" [(ngModel)]="report.newMeasures.chestMeasure" class="edit-input" placeholder="cm"></div>
+        </div>
+      </div>
+
+      <div class="action-footer" style="padding-top: 30px;">
+        <button class="btn-primary" (click)="goToStep2()" style="width: 100%; max-width: 400px; padding: 20px; font-size: 1.2rem;">
+          FINALIZAR REPORTE
+        </button>
+      </div>
+    </div>
+
+
+    <div class="surface-module profile-card unified-card" *ngIf="step === 2">
+      <h2 style="text-align: center; margin-bottom: 1rem;">Configurar Próxima Semana</h2>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Tu reporte está listo. ¿Cómo quieres generar tu nuevo plan de comidas?</p>
+      
+      <div class="generation-options-grid" *ngIf="!isLoading">
+        
+        <div class="gen-card ai-card" (click)="generatePlan(true)">
+          <div class="gen-icon">✨</div>
+          <h3>Optimizar con IA</h3>
+          <p>Nuestra inteligencia artificial leerá tu reporte y ajustará tus calorías y macros estratégicamente para mejorar tu progreso y solucionar tu falta de energía o hambre.</p>
+          <button class="btn-ai">USAR IA</button>
+        </div>
+
+        <div class="gen-card manual-card" (click)="generatePlan(false)">
+          <div class="gen-icon">🔄</div>
+          <h3>Plan Automático</h3>
+          <p>Mantiene tus calorías y macros calculados por fórmula matemática estándar, ajustados únicamente a tu peso actual. Ideal si la semana pasada te fue perfecta.</p>
+          <button class="btn-secondary" style="border: 2px solid var(--text-muted); color: var(--text-dark);">MANTENER ESTÁNDAR</button>
+        </div>
+
+      </div>
+
+      <div class="loading-state" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <h3>Generando tu nueva semana...</h3>
+        <p>Si has elegido IA, el nutricionista virtual está analizando tu caso. Esto puede tardar unos segundos.</p>
+      </div>
+
+      <div class="action-footer" *ngIf="!isLoading">
+        <button class="btn-secondary" (click)="backToStep1()" style="padding: 10px 30px;">VOLVER AL REPORTE</button>
+      </div>
+    </div>
+
+    <div class="surface-module profile-card unified-card success-screen" *ngIf="step === 3">
+  <div class="success-header">
+    <div class="success-icon-container">
+      <svg viewBox="0 0 24 24" width="80" height="80" stroke="#2ecc71" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+    <h2>{{ successMessage }}</h2>
+  </div>
+  
+  <div class="ai-report-box" *ngIf="aiFeedback">
+    <div class="ai-report-header">
+      <span class="magic-sparkle">✨</span>
+      <h3>INFORME DE AJUSTES NUTRICIONALES</h3>
+    </div>
+    
+    <div class="ai-report-body">
+      <p class="ai-analysis-text">{{ aiFeedback }}</p>
+    </div>
+
+    <div class="ai-report-footer">
+      <small>Tus nuevas recetas y objetivos ya están disponibles en tu calendario semanal.</small>
+    </div>
+  </div>
+
+  <button class="btn-primary" (click)="goHome()" style="margin-top: 30px; width: 100%; max-width: 300px; padding: 18px;">
+    VER MI NUEVA SEMANA
+  </button>
+</div>
+    
+  </div>
+</div>
