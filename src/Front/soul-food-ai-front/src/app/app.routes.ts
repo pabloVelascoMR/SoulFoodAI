@@ -6,6 +6,7 @@ import { IngredientSelectionComponent } from './pages/ingredient-selection/ingre
 import { HomeComponent } from './pages/home/home.component';
 import { RecipesComponent } from './pages/recipes/recipes.component';
 import { PersonalInformationComponent } from './pages/personal-information/personal-information.component';
+import { WeekReportComponent } from './pages/week-report/week-report.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -15,4 +16,5 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'recipes', component: RecipesComponent },
   { path: 'personal-information', component: PersonalInformationComponent },
+  { path: 'week-report', component: WeekReportComponent }
 ];
