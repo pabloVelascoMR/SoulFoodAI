@@ -244,14 +244,14 @@ namespace SoulFoodAiBack.Controllers
                     w.EndDate,
                     w.IsActive,
                     RecipesEaten = w.UserFoodPlanMeals
-                        .SelectMany(d => d.FoodPlanDailyRecipes)
-                        .Select(dr => new {
-                            dr.Recipe.IdRecipe,
-                            dr.Recipe.RecipeName,
-                            MealType = dr.Recipe.Meal?.MealName,
-                            DateEaten = dr.CreationDate
-                        })
-                        .ToList()
+                        .OrderBy(d => d.IdUserFoodPlanDaily) 
+                        .SelectMany((d, index) => d.FoodPlanDailyRecipes.Select(dr => new {
+                        dr.Recipe.IdRecipe,
+                        dr.Recipe.RecipeName,
+                        MealType = dr.Recipe.Meal?.MealName,                  
+                        DateEaten = w.StartDate.AddDays(index)
+                    }))
+                    .ToList()
                 })
                 .ToList();
 
