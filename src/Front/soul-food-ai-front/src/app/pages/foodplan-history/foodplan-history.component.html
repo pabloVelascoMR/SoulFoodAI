@@ -1,0 +1,47 @@
+<div class="history-container">
+  <div class="header">
+    <h1>Historial de Planes</h1>
+    <p>Revisa las recetas que has consumido en tus planes anteriores.</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando tu historial...</p>
+  </div>
+
+  <div *ngIf="!isLoading && errorMessage" class="empty-state">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div *ngIf="!isLoading && historyPlans.length > 0" class="plans-grid">
+    <div class="plan-card" *ngFor="let plan of historyPlans">
+      
+      <div class="plan-header">
+        <div class="plan-info">
+          <h2>{{ plan.dietName }}</h2>
+          <span class="plan-dates">
+            {{ plan.startDate | date:'dd MMM yyyy' }} - {{ plan.endDate | date:'dd MMM yyyy' }}
+          </span>
+          <span class="badge" *ngIf="plan.isActive">Plan Actual</span>
+        </div>
+        <button class="btn-hide" (click)="hidePlan(plan.idUserFoodPlanWeek)" title="Ocultar del historial">
+          🗑️
+        </button>
+      </div>
+
+      <div class="recipes-list">
+        <h3>Recetas Consumidas ({{ plan.recipesEaten.length }})</h3>
+        <ul>
+          <li *ngFor="let recipe of plan.recipesEaten">
+            <div class="recipe-meta">
+              <span class="meal-type">{{ recipe.mealType }}</span>
+              <span class="recipe-date">{{ recipe.dateEaten | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <p class="recipe-name">{{ recipe.recipeName }}</p>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
