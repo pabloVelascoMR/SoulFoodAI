@@ -1,0 +1,160 @@
+.history-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header h1 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+}
+
+/* Grilla de tarjetas */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+/* Tarjeta del Plan */
+.plan-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #edf2f7;
+  transition: transform 0.2s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.plan-header {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-bottom: 1px solid #edf2f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.plan-info h2 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.25rem;
+}
+
+.plan-dates {
+  display: block;
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  background: #27ae60;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+.btn-hide {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.btn-hide:hover {
+  opacity: 1;
+}
+
+/* Lista de Recetas */
+.recipes-list {
+  padding: 1.5rem;
+}
+
+.recipes-list h3 {
+  font-size: 1rem;
+  color: #34495e;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #3498db;
+  display: inline-block;
+  padding-bottom: 0.25rem;
+}
+
+.recipes-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.recipes-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed #e2e8f0;
+}
+.recipes-list li:last-child {
+  border-bottom: none;
+}
+
+.recipe-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.meal-type {
+  color: #e67e22;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.recipe-date {
+  color: #95a5a6;
+}
+
+.recipe-name {
+  margin: 0;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.loading-state, .empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #7f8c8d;
+}
+
+.icon-empty {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
