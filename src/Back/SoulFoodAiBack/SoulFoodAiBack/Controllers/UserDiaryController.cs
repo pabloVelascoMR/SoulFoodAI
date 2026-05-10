@@ -164,6 +164,24 @@ namespace SoulFoodAiBack.Controllers
                     };
                     await _context.UserDiaries.AddAsync(diaryEntry);
                     activePlan.IsActive = false;
+
+                    List<UserFoodPlanDaily>? activeDailies = await _context.UserFoodPlansDaily
+                    .Include(d => d.FoodPlanDailyRecipes) 
+                    .Where(d => d.IdUserFoodPlanWeek == activePlan.IdUserFoodPlanWeek)
+                    .ToListAsync();
+
+                    foreach (var daily in activeDailies)
+                    {
+                        daily.IsActive = false; 
+
+                        if (daily.FoodPlanDailyRecipes != null && daily.FoodPlanDailyRecipes.Any())
+                        {
+                            foreach (var recipe in daily.FoodPlanDailyRecipes)
+                            {
+                                recipe.IsActive = false;
+                            }
+                        }
+                    }
                 }
 
                 if (dto.NewWeight.HasValue && dto.NewWeight.Value > 0) userData.Weight = dto.NewWeight.Value;
@@ -196,6 +214,7 @@ namespace SoulFoodAiBack.Controllers
                     TotalWeeklyCarbs = dailyCarbsGrams * 7,
                     TotalWeeklyFat = dailyFatGrams * 7,
                     IsActive = true,
+                    IsVisibleInHistory = true,
                     UserFoodPlanWeekIntolerances = new List<UserFoodPlanWeekIntolerance>()
                 };
 
