@@ -93,7 +93,7 @@ namespace SoulFoodAiBack.Controllers
             - Sueño (1-10): {dto.SleepQuality} (1=pésimo, 10=perfecto)
             - Adherencia: {dto.DietAdherence}/10
             - Peso actual: {weightToUse} kg
-            - Observaciones del paciente: ""{dto.Description ?? "Sin comentarios adicionales"}""
+            - Observaciones: ""{dto.Description ?? "Sin comentarios adicionales"}""
 
             INSTRUCCIONES CRÍTICAS PARA TU ANÁLISIS:
             1. Calcula las calorías y macros (en porcentajes sobre 1, ej: 0.30) para la PRÓXIMA SEMANA.
@@ -101,10 +101,11 @@ namespace SoulFoodAiBack.Controllers
             3. En tu informe, DEBES mencionar explícitamente los cambios numéricos (ej. de {oldDailyKcal} kcal a X kcal, de {oldCarbs}% CH a Y% CH).
             4. DEBES justificar el POR QUÉ de estos cambios basándote DIRECTAMENTE en sus puntuaciones y especialmente en sus Observaciones.
             5. Usa decimales con punto (ej. 0.40) para los SuggestedPercentages en el JSON.
+            6. Si el usuaro especifica exactamente en el campo observaciones las kilocaliorias o porcentajes de macros o gramos de proteinas o gramos de hidratos de carbono o gramos de grassas que quiere tener, tendra mas importancia que cualquier otro ajuste y el nuevo plan tendra las especificaciones que dicte 
 
             Devuelve ESTRICTAMENTE este JSON sin markdown:
             {{
-                ""AnalysisMessage"": ""(Ejemplo: 'Hola. He leído en tus notas que has tenido mucha ansiedad por la tarde y veo que tu energía fue baja (4/10). Para solucionarlo, he ajustado tus calorías pasando de 2000 kcal a 2150 kcal. Además, he modificado tus macros: bajamos las grasas del 30% al 25% y subimos los carbohidratos del 40% al 45% para darte ese extra de energía constante que necesitas...')"",
+                ""AnalysisMessage"": ""(Ejemplo: 'He leído en tus notas que has tenido mucha ansiedad por la tarde y veo que tu energía fue baja (4/10). Para solucionarlo, he ajustado tus calorías pasando de 2000 kcal a 2150 kcal. Además, he modificado tus macros: bajamos las grasas del 30% al 25% y subimos los carbohidratos del 40% al 45% para darte ese extra de energía constante que necesitas...')"",
                 ""SuggestedKcal"": 2150,
                 ""SuggestedProteinPercentage"": 0.30,
                 ""SuggestedCarbsPercentage"": 0.45,
