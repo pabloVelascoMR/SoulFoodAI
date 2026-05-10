@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef,NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -21,7 +21,7 @@ export class WeekReportComponent implements OnInit {
     sleepQuality: 5,
     energyLevel: 5,
     dietAdherence: 5,
-    notes: '',
+    description: '',
     newWeight: null,
     newMeasures: {
       chestMeasure: 0, waistMeasure: 0, hipMeasure: 0,
@@ -41,7 +41,8 @@ export class WeekReportComponent implements OnInit {
     private reportService: WeekReportService,
     private userService: UserService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -71,11 +72,11 @@ export class WeekReportComponent implements OnInit {
   }
 
   generatePlan(useAi: boolean): void {
-    if (this.isLoading) return; 
+    if (this.isLoading) return;
 
     this.isLoading = true;
     this.errorMessage = '';
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
 
     const cleanPayload = {
       idUser: this.report.idUser,
@@ -83,10 +84,9 @@ export class WeekReportComponent implements OnInit {
       sleepQuality: Number(this.report.sleepQuality),
       energyLevel: Number(this.report.energyLevel),
       dietAdherence: Number(this.report.dietAdherence),
-      notes: this.report.notes || "",
+      description: this.report.description || "",
       useAiAdjustment: useAi,
       newWeight: (this.showOptionalMeasures && this.report.newWeight) ? Number(this.report.newWeight) : null,
-      
       newMeasures: this.showOptionalMeasures ? {
         chestMeasure: Number(this.report.newMeasures.chestMeasure) || 0,
         waistMeasure: Number(this.report.newMeasures.waistMeasure) || 0,
@@ -98,31 +98,29 @@ export class WeekReportComponent implements OnInit {
       } : null
     };
 
-    console.log("⏳ Enviando petición al servidor...", cleanPayload);
+    console.log(" Enviando petición...", cleanPayload);
 
     this.reportService.submitReport(cleanPayload).subscribe({
       next: (res: any) => {
-        console.log("✅ ¡RESPUESTA RECIBIDA DEL BACKEND!", res);
+        console.log(" RESPUESTA OK", res);
         
-        setTimeout(() => {
+        this.ngZone.run(() => {
+          this.aiFeedback = res?.aiAnalysis || res?.AiAnalysis || res?.analysisMessage || '';
           this.isLoading = false;
-          this.step = 3;
-          this.successMessage = "¡Tu nueva semana ha sido configurada con éxito!";
+          this.step = 3; 
           
-          this.aiFeedback = res?.aiAnalysis || res?.AiAnalysis || 'Hemos analizado tus métricas y ajustado tus calorías y macros estratégicamente para resolver tus problemas de energía y saciedad. ¡Tus nuevos objetivos ya están aplicados para esta semana!';
-          
-          this.cdr.detectChanges();
-        }, 100);
+          this.cdr.markForCheck(); 
+          this.cdr.detectChanges(); 
+        });
       },
       error: (err) => {
-        console.error("❌ ERROR RECIBIDO:", err);
+        console.error(" ERROR", err);
         
-        setTimeout(() => {
+        this.ngZone.run(() => {
           this.isLoading = false;
-          const serverError = err.error?.message || err.error?.Message || "Error de conexión con el servidor.";
-          this.errorMessage = "Error: " + serverError;
+          this.errorMessage = "Hubo un error al generar el plan. Inténtalo de nuevo.";
           this.cdr.detectChanges();
-        }, 100);
+        });
       }
     });
   }
