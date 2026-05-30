@@ -66,18 +66,16 @@ export class OnboardingComponent implements OnInit {
 
   decrementAge() {
     if (this.userData.age === null) {
-      this.userData.age = 28;
-    }
-    if (this.userData.age > 1) {
+      this.userData.age = 17;
+    } else if (this.userData.age > 1) {
       this.userData.age--;
     }
   }
 
   incrementAge() {
     if (this.userData.age === null) {
-      this.userData.age = 28;
-    }
-    if (this.userData.age < 120) {
+      this.userData.age = 19;
+    } else if (this.userData.age < 120) {
       this.userData.age++;
     }
   }

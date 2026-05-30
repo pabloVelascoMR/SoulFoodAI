@@ -39,7 +39,7 @@
       <div class="form-group">
         <label class="form-label">INTRODUCE TU EDAD</label>
         <div class="number-input-wrapper">
-          <button type="button" class="btn-counter" (click)="decrementAge()" [disabled]="!userData.age || userData.age <= 1">－</button>
+          <button type="button" class="btn-counter" (click)="decrementAge()" [disabled]="userData.age !== null && userData.age <= 1">－</button>
           <input type="number" 
                  class="form-input big-input" 
                  [(ngModel)]="userData.age" 
@@ -48,7 +48,7 @@
                  required 
                  min="1" 
                  max="120" 
-                 placeholder="28">
+                 placeholder="18">
           <button type="button" class="btn-counter" (click)="incrementAge()" [disabled]="userData.age !== null && userData.age >= 120">＋</button>
         </div>
         <div class="text-error" *ngIf="ageCtrl.invalid && (ageCtrl.dirty || ageCtrl.touched)">
