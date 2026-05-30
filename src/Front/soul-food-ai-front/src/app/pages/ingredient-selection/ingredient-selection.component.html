@@ -5,10 +5,10 @@
       <h1 class="stepper-main-title">Módulo de Selección de Ingredientes</h1>
       <p class="stepper-subtitle">Selecciona todos los ingredientes necesarios</p>
     </div>
-    
+
     <div class="stepper">
-      <div 
-        *ngFor="let step of steps; let i = index" 
+      <div
+        *ngFor="let step of steps; let i = index"
         class="step-item"
         [class.active]="i === currentStepIndex"
         [class.completed]="i < currentStepIndex"
@@ -23,7 +23,7 @@
       <div class="section-left">
         <h2 class="section-title">{{ steps[currentStepIndex]?.name || 'Soul Food AI' }}</h2>
       </div>
-      
+
       <div class="section-right">
         <button class="btn-create-custom" (click)="openCustomModal()">
           + Crear
@@ -36,14 +36,14 @@
 
     <section class="ingredients-grid">
       <div *ngFor="let ingredient of currentIngredients; trackBy: trackByIngredient" class="ingredient-card">
-        
+
         <div class="card-image-wrapper">
-          <img *ngIf="!ingredient.hasImageError && getIngredientImage(ingredient)" 
-               [src]="getIngredientImage(ingredient)" 
+          <img *ngIf="!ingredient.hasImageError && getIngredientImage(ingredient)"
+               [src]="getIngredientImage(ingredient)"
                (error)="handleImageError($event, ingredient)"
-               [alt]="ingredient.name" 
+               [alt]="ingredient.name"
                class="card-image">
-          
+
           <div *ngIf="ingredient.hasImageError || !getIngredientImage(ingredient)" class="emoji-display">
             {{ ingredient.icon || '🍽️' }}
           </div>
@@ -53,9 +53,9 @@
               <button class="action-btn" (click)="toggleIngredientSelection(ingredient)">
                 {{ isIngredientSelected(ingredient) ? 'Deseleccionar' : 'Seleccionar' }}
               </button>
-              
-              <button class="action-btn-secondary" 
-                      *ngIf="canEdit(ingredient)" 
+
+              <button class="action-btn-secondary"
+                      *ngIf="canEdit(ingredient)"
                       (click)="editCustomIngredient(ingredient, $event)">
                 Editar
               </button>
@@ -68,7 +68,7 @@
             </svg>
           </div>
 
-          <div class="card-delete-x" 
+          <div class="card-delete-x"
                *ngIf="canDelete(ingredient) && !isIngredientSelected(ingredient)"
                (click)="deleteCustomIngredient(ingredient, $event)">
             <svg class="x-icon" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@
         ← Anterior
       </button>
     </div>
-    
+
     <div class="finish-wrapper">
        <span class="ingredients-counter" [class.insufficient]="!canFinish">
          {{ selectedIngredientIds.size }} / {{ requiredMinimum }} ingredientes
@@ -111,19 +111,19 @@
   <div class="modal-overlay" *ngIf="showCustomModal">
     <div class="modal-content">
       <h2 class="modal-title">{{ isEditing ? 'Editar Ingrediente' : 'Crear Ingrediente' }}</h2>
-      
+
       <div class="form-group">
         <label>Nombre del alimento:</label>
         <input type="text" class="modal-input" [(ngModel)]="newIngredient.name">
       </div>
-      
+
       <div class="form-group">
         <label>Categoría:</label>
         <select class="modal-input" [(ngModel)]="newIngredient.category">
           <option *ngFor="let step of steps" [value]="step.name">{{ step.name }}</option>
         </select>
       </div>
-      
+
       <div class="form-group">
         <label>Icono o Emoji:</label>
         <input type="text" class="modal-input" [(ngModel)]="newIngredient.icon">
@@ -160,10 +160,10 @@
   <div class="modal-overlay" *ngIf="showOFFModal">
     <div class="modal-content modal-off">
       <h2 class="modal-title">Buscar en OpenFoodFacts</h2>
-      
+
       <div class="off-search-bar">
-        <input type="text" class="modal-input" [(ngModel)]="offSearchQuery" 
-               placeholder="Ej: Leche Pascual, Cereales..." 
+        <input type="text" class="modal-input" [(ngModel)]="offSearchQuery"
+               placeholder="Ej: Leche Pascual, Cereales..."
                (keyup.enter)="searchOFF()">
         <button class="btn-save" (click)="searchOFF()" [disabled]="isSearchingOFF">
           {{ isSearchingOFF ? 'Buscando...' : 'Buscar' }}
@@ -175,18 +175,18 @@
           <div class="spinner"></div>
           <p class="loading-text-animated">Buscando en la base de datos...</p>
         </div>
-        
+
         <div class="off-list" *ngIf="!isSearchingOFF">
           <div *ngFor="let prod of offSearchResults" class="off-item">
-            <img [src]="prod.image_url || 'assets/placeholder.jpg'" class="off-img" alt="IMG">
+            <img [src]="prod.imageUrl || 'assets/placeholder.jpg'" class="off-img" alt="IMG">
             <div class="off-info">
-              <strong class="off-name">{{ prod.product_name_es || prod.product_name || 'Sin nombre' }}</strong>
-              <span class="off-brand">{{ prod.brands }}</span>
+              <strong class="off-name">{{ prod.name || 'Sin nombre' }}</strong>
+              <span class="off-brand">{{ prod.brand }}</span>
               <div class="off-macros">
-                {{ prod.nutriments?.['energy-kcal_100g'] || 0 | number:'1.0-0' }} kcal | 
-                P: {{ prod.nutriments?.proteins_100g || 0 }}g | 
-                C: {{ prod.nutriments?.carbohydrates_100g || 0 }}g | 
-                G: {{ prod.nutriments?.fat_100g || 0 }}g
+                {{ prod.kcal || 0 | number:'1.0-0' }} kcal |
+                P: {{ prod.protein || 0 }}g |
+                C: {{ prod.carbs || 0 }}g |
+                G: {{ prod.fat || 0 }}g
               </div>
             </div>
             <button class="btn-add-off" (click)="selectOFFIngredient(prod)">Añadir</button>
