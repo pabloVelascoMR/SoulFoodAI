@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FoodplanHistoryService } from '../../services/foodplan-history.service';
+import { UserService } from '../../services/user.service';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -19,7 +20,8 @@ export class FoodplanHistoryComponent implements OnInit {
   constructor(
     private historyService: FoodplanHistoryService, 
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -27,7 +29,14 @@ export class FoodplanHistoryComponent implements OnInit {
   }
 
   loadHistory() {
-    const userId = Number(localStorage.getItem('userId')) || 1; 
+    const userId = this.userService.getUserId();
+
+    if (!userId) {
+      this.isLoading = false;
+      this.errorMessage = 'No se ha detectado una sesión activa. Por favor, vuelve a iniciar sesión.';
+      this.cdr.detectChanges();
+      return;
+    }
 
     this.isLoading = true;
     this.errorMessage = '';
