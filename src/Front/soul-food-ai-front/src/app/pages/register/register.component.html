@@ -60,10 +60,30 @@
         </div>
       </div>
 
+      <div class="input-group">
+        <details class="legal-details">
+          <summary>Leer Política de Privacidad y tratamiento de datos</summary>
+          <div class="legal-text">
+            <p>De acuerdo con el Reglamento General de Protección de Datos (RGPD) de la UE (2016/679) y la Ley Orgánica 3/2018 (LOPDGDD), tratamos sus datos de salud con un nivel de seguridad excepcional:</p>
+            <ul>
+              <li><strong>Consentimiento explícito:</strong> El tratamiento es lícito bajo su autorización voluntaria e informada.</li>
+              <li><strong>Minimización:</strong> Solo almacenamos la información estrictamente necesaria para su plan nutricional.</li>
+              <li><strong>Derechos:</strong> Usted tiene derecho a la supresión total de sus datos (Derecho al olvido) en cualquier momento.</li>
+              <li><strong>Seguridad:</strong> Implementamos cifrado y hashing seguro para proteger su información frente a terceros.</li>
+            </ul>
+            <label class="checkbox-container">
+              <input type="checkbox" [(ngModel)]="termsAccepted" name="termsAccepted">
+              <span class="terms-label">He leído y acepto la Política de Privacidad y el tratamiento de datos.</span>
+            </label>
+          </div>
+        </details>
+      </div>
+
       <p *ngIf="errorMessage" style="color: #ef4444; font-size: 0.85rem; font-weight: 700; text-align: center; margin-top: 5px;">
         {{ errorMessage }}
       </p>
-      <button type="submit" class="login-btn" [disabled]="isSubmitting">
+
+      <button type="submit" class="login-btn" [disabled]="isSubmitting || !termsAccepted">
         {{ isSubmitting ? 'CREANDO CUENTA...' : 'CREAR CUENTA' }}
         <svg *ngIf="!isSubmitting" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="5" y1="12" x2="19" y2="12"></line>

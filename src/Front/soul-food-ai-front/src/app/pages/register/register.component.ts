@@ -18,19 +18,23 @@ export class RegisterComponent {
   password: string = '';
   confirmPassword: string = ''; 
   errorMessage: string = '';
-  
+  termsAccepted: boolean = false;
   isSubmitting: boolean = false; 
 
   constructor(private userService: UserService, private router: Router) {}
 
   register() {
-    // Si ya se está enviando, no hacemos nada aunque le de al botón mil veces
     if (this.isSubmitting) return; 
 
     this.errorMessage = '';
 
     if (!this.username || !this.email || !this.password || !this.confirmPassword) {
       this.errorMessage = 'Todos los campos son obligatorios.';
+      return;
+    }
+
+    if (!this.termsAccepted) {
+      this.errorMessage = 'Debes aceptar la Política de Privacidad y el tratamiento de datos.';
       return;
     }
 
