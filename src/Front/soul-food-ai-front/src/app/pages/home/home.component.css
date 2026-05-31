@@ -1,7 +1,4 @@
-
 :root {
-  --primary-color: #2ecc71;
-  --primary-hover: #27ae60;
   --secondary-color: #e74c3c;
   --tertiary-color: #3498db;
   --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1a1f3a 100%);
@@ -165,6 +162,7 @@ body {
   font-size: 0.85rem;
   letter-spacing: 1px;
 }
+
 .macro-legend {
   display: flex;
   flex-direction: column;
@@ -361,11 +359,11 @@ body {
 }
 
 .recipe-title {
-  font-size: 1rem;
-  margin: 0 0 10px 0;
+  font-size: 1.35rem;
+  margin: 0 0 1rem 0;
   line-height: 1.3;
-  color: #1a1a1a;
-  font-weight: 700;
+  color: var(--text-dark);
+  font-weight: 800;
 }
 
 .recipe-meta {
@@ -518,30 +516,6 @@ body.cdk-drop-list-dragging {
   }
 }
 
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 60vh;
-  color: var(--text-muted);
-}
-
-.loader-spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(255, 255, 255, 0.1);
-  border-top-color: var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-  box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 .no-plan-container {
   display: flex;
   justify-content: center;
@@ -650,11 +624,6 @@ body.cdk-drop-list-dragging {
   -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
   animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .sidebar {
@@ -781,14 +750,6 @@ body.cdk-drop-list-dragging {
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-.recipe-title {
-  font-size: 1.35rem;
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: var(--text-dark);
-  font-weight: 800;
-}
-
 .recipe-title-sm {
   font-size: 1.1rem;
   margin-top: 0;
@@ -803,31 +764,6 @@ body.cdk-drop-list-dragging {
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 1rem;
-}
-
-.diet-pill {
-  background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.1));
-  border: 1.5px solid var(--primary-color);
-  color: #2ecc71;
-  padding: 7px 16px;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.meal-pill {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  color: var(--text-dark);
-  padding: 7px 16px;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  backdrop-filter: blur(10px);
 }
 
 .meal-pill.desayuno {
@@ -852,19 +788,6 @@ body.cdk-drop-list-dragging {
   background: rgba(156, 39, 176, 0.25);
   border-color: rgba(156, 39, 176, 0.5);
   color: #9c27b0;
-}
-
-.meal-pill-sm {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: var(--text-dark);
-  padding: 5px 14px;
-  border-radius: 50px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  margin-bottom: 0.8rem;
-  backdrop-filter: blur(8px);
 }
 
 .kcal-tag {
@@ -902,61 +825,6 @@ body.cdk-drop-list-dragging {
   background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(46, 204, 113, 0.15));
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
-}
-
-.meal-yellow { 
-  background-color: rgba(255, 193, 7, 0.15) !important; 
-  border-color: rgba(255, 193, 7, 0.4) !important;
-  border-left: 5px solid #ffc107 !important;
-}
-
-.meal-yellow:hover { 
-  background-color: rgba(255, 193, 7, 0.25) !important;
-  border-color: rgba(255, 193, 7, 0.6) !important;
-}
-
-.meal-orange { 
-  background-color: rgba(255, 152, 0, 0.15) !important; 
-  border-color: rgba(255, 152, 0, 0.4) !important;
-  border-left: 5px solid #ff9800 !important;
-}
-
-.meal-orange:hover { 
-  background-color: rgba(255, 152, 0, 0.25) !important;
-  border-color: rgba(255, 152, 0, 0.6) !important;
-}
-
-.meal-red { 
-  background-color: rgba(244, 67, 54, 0.15) !important; 
-  border-color: rgba(244, 67, 54, 0.4) !important;
-  border-left: 5px solid #f44336 !important;
-}
-
-.meal-red:hover { 
-  background-color: rgba(244, 67, 54, 0.25) !important;
-  border-color: rgba(244, 67, 54, 0.6) !important;
-}
-
-.meal-purple { 
-  background-color: rgba(156, 39, 176, 0.15) !important; 
-  border-color: rgba(156, 39, 176, 0.4) !important;
-  border-left: 5px solid #9c27b0 !important;
-}
-
-.meal-purple:hover { 
-  background-color: rgba(156, 39, 176, 0.25) !important;
-  border-color: rgba(156, 39, 176, 0.6) !important;
-}
-
-.meal-blue { 
-  background-color: rgba(52, 152, 219, 0.15) !important; 
-  border-color: rgba(52, 152, 219, 0.4) !important;
-  border-left: 5px solid #3498db !important;
-}
-
-.meal-blue:hover { 
-  background-color: rgba(52, 152, 219, 0.25) !important;
-  border-color: rgba(52, 152, 219, 0.6) !important;
 }
 
 .daily-active-header {
@@ -1030,7 +898,7 @@ body.cdk-drop-list-dragging {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 15px; /* Esto empuja los gramos a la derecha para que nunca se peguen al texto */
+  gap: 15px;
   font-size: 1.1rem;
   color: var(--text-muted);
   font-weight: 700;
@@ -1062,19 +930,17 @@ body.cdk-drop-list-dragging {
 }
 
 .macro-bar-item:nth-child(1) .daily-progress-fill {
-   background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%) !important;
+  background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%) !important;
   box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
 }
 
 .macro-bar-item:nth-child(2) .daily-progress-fill {
-
   background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%) !important;
   box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
 }
 
 .macro-bar-item:nth-child(3) .daily-progress-fill {
-  
-   background: linear-gradient(90deg, #f1c40f 0%, #f39c12 100%) !important;
+  background: linear-gradient(90deg, #f1c40f 0%, #f39c12 100%) !important;
   box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
 }
 
@@ -1171,16 +1037,6 @@ body.cdk-drop-list-dragging {
 .mt-4 { margin-top: 1.5rem; }
 .mb-3 { margin-bottom: 1rem; }
 
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top-color: var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-}
-
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -1202,4 +1058,3 @@ body.cdk-drop-list-dragging {
 }
 
 .text-danger-macro { color: #e74c3c !important; }
-
