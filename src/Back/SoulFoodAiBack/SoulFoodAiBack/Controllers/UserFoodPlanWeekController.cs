@@ -181,39 +181,46 @@ namespace SoulFoodAiBack.Controllers
                 return NotFound("No hay plan semanal activo para este usuario.");
 
             var weekDays = await _context.UserFoodPlansDaily
-                .Include(d => d.FoodPlanDailyRecipes) 
-                    .ThenInclude(dr => dr.Recipe)         
-                        .ThenInclude(r => r.Meal)          
+                .Include(d => d.FoodPlanDailyRecipes)
+                    .ThenInclude(dr => dr.Recipe)
+                        .ThenInclude(r => r.Meal)
+                .Include(d => d.FoodPlanDailyRecipes)
+                    .ThenInclude(dr => dr.Recipe)
+                        .ThenInclude(r => r.RecipeUserIngredients)
+                            .ThenInclude(ri => ri.Ingredient)
                 .Where(d => d.IdUserFoodPlanWeek == activeWeek.IdUserFoodPlanWeek)
-                .OrderBy(d => d.CreationDate)              
+                .OrderBy(d => d.CreationDate)
                 .ToListAsync();
 
-            
             var culture = new System.Globalization.CultureInfo("es-ES");
 
-            
             var calendarDto = new WeekCalendarDto
             {
                 IdUserFoodPlanWeek = activeWeek.IdUserFoodPlanWeek,
-                MealsPerDay = activeWeek.MealsPerDay, 
-
+                MealsPerDay = activeWeek.MealsPerDay,
                 Days = weekDays.Select(day => new DayCalendarDto
                 {
                     IdUserFoodPlanDaily = day.IdUserFoodPlanDaily,
-
                     DayName = char.ToUpper(day.CreationDate.ToString("dddd", culture)[0]) +
                               day.CreationDate.ToString("dddd", culture).Substring(1),
-
                     DateNumber = day.CreationDate.ToString("dd"),
-
                     FullDate = day.CreationDate,
-
                     AssignedRecipes = day.FoodPlanDailyRecipes.Select(dr => new DailyRecipeDto
                     {
                         IdRecipe = dr.IdRecipe,
                         RecipeName = dr.Recipe.RecipeName,
                         Kcal = dr.Recipe.TotalKcal,
-                        MealType = dr.Recipe.Meal.MealName 
+                        MealType = dr.Recipe.Meal?.MealName,
+                        Protein = dr.Recipe.Protein,
+                        Carbs = dr.Recipe.Carbs,
+                        Fat = dr.Recipe.Fat,
+                        RecipeDescription = dr.Recipe.RecipeDescription,
+                        Ingredients = dr.Recipe.RecipeUserIngredients.Select(ri => new RecipeIngredientDetailDto
+                        {
+                            Name = ri.Ingredient.Name,
+                            Quantity = ri.Quantity,
+                            Unit = ri.Unit
+                        }).ToList()
                     }).ToList()
                 }).ToList()
             };
