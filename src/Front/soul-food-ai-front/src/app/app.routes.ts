@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+
+import { LandingPageComponent } from './pages/landing-page/landing-page.component'; 
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { OnboardingComponent } from './pages/onboarding/onboarding.component';
@@ -11,7 +13,9 @@ import { FoodplanHistoryComponent } from './pages/foodplan-history/foodplan-hist
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: LoginComponent },
+ 
+  { path: '', component: LandingPageComponent }, 
+  { path: 'login', component: LoginComponent },  
   { path: 'register', component: RegisterComponent },
   { path: 'onboarding', component: OnboardingComponent, canActivate: [authGuard] },
   { path: 'ingredient-selection', component: IngredientSelectionComponent, canActivate: [authGuard] },
@@ -20,5 +24,5 @@ export const routes: Routes = [
   { path: 'personal-information', component: PersonalInformationComponent, canActivate: [authGuard] },
   { path: 'week-report', component: WeekReportComponent, canActivate: [authGuard] },
   { path: 'foodplan-historial', component: FoodplanHistoryComponent, canActivate: [authGuard] },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' } 
 ];
