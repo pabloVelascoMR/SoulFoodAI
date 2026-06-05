@@ -85,14 +85,11 @@
 
       <button type="submit" class="login-btn" [disabled]="isSubmitting || !termsAccepted">
         {{ isSubmitting ? 'CREANDO CUENTA...' : 'CREAR CUENTA' }}
-        <svg *ngIf="!isSubmitting" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
+        <svg *ngIf="!isSubmitting" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
       </button>
 
       <p class="register-text">
-        ¿Ya tienes cuenta? <a routerLink="/" class="register-link">Inicia sesión</a>
+        ¿Ya tienes cuenta? <a routerLink="/login" class="register-link">Inicia sesión</a>
       </p>
     </form>
   </div>

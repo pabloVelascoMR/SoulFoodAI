@@ -20,23 +20,21 @@ import {
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
-  
   userId: number = 0; 
   hasActivePlan: boolean = false;
   loading: boolean = true;
-
   weeklyHeader: WeeklyHeaderDto | null = null;
   calendar: WeekCalendarDto | null = null;
   availableRecipes: any[] = [];
   connectedLists: string[] = ['recipe-catalog'];
   dailyHeaders: { [key: number]: DailyHeaderDto } = {};
-
   isSidebarOpen: boolean = false;
   selectedDayId: number | null = null;
   isAdjustingMacros: boolean = false;
-
   aiMessage: string = '';
   aiMessageType: 'success' | 'error' | '' = '';
+  isInfoModalOpen: boolean = false;
+  selectedRecipe: any = null;
 
   constructor(
     private homeService: HomeService,
@@ -78,25 +76,18 @@ export class HomeComponent implements OnInit {
     this.aiMessage = ''; 
     this.aiMessageType = ''; 
     this.cdr.detectChanges(); 
-    
+      
     this.homeService.adjustDayMacros(this.selectedDayId)
       .pipe(
-        timeout(60000), 
-        catchError((err) => {
-          return throwError(() => err);
-        }),
-        finalize(() => {
-          this.isAdjustingMacros = false;
-          this.cdr.detectChanges(); 
-        })
+        timeout(60000)
       )
       .subscribe({
         next: (res) => {
+          this.isAdjustingMacros = false;
           this.aiMessageType = 'success';
-          this.aiMessage = "Raciones del dia cuadradas corréctamente";
+          this.aiMessage = "Raciones del día cuadradas correctamente";
           this.loadDashboardData(); 
-          
-          this.cdr.detectChanges(); 
+          this.cdr.detectChanges();
           
           setTimeout(() => {
             this.aiMessage = '';
@@ -105,7 +96,7 @@ export class HomeComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
-          
+          this.isAdjustingMacros = false;
           this.aiMessageType = 'error';
           
           if (err.name === 'TimeoutError' || err.message?.includes('Timeout')) {
@@ -123,20 +114,19 @@ export class HomeComponent implements OnInit {
           else {
             this.aiMessage = "Error de conexión con la IA. Inténtalo de nuevo.";
           }
-
           this.cdr.detectChanges(); 
         }
       });
   }
-  
+
   getMealClass(mealName: string): string {
     if (!mealName) return '';
     const name = mealName.toLowerCase();
-    if (name.includes('desayuno')) return 'meal-yellow';
-    if (name.includes('almuerzo')) return 'meal-orange';
-    if (name.includes('comida')) return 'meal-red';
-    if (name.includes('merienda')) return 'meal-purple';
-    if (name.includes('cena')) return 'meal-blue';
+    if (name.includes('desayuno')) return 'meal-desayuno';
+    if (name.includes('almuerzo')) return 'meal-almuerzo';
+    if (name.includes('comida')) return 'meal-comida';
+    if (name.includes('merienda')) return 'meal-merienda';
+    if (name.includes('cena')) return 'meal-cena';
     return '';
   }
 
@@ -150,6 +140,17 @@ export class HomeComponent implements OnInit {
 
   closeSidebar() {
     this.isSidebarOpen = false;
+  }
+
+  openInfoModal(recipe: any) {
+    this.selectedRecipe = recipe;
+    this.isInfoModalOpen = true;
+    this.cdr.detectChanges();
+  }
+
+  closeInfoModal() {
+    this.isInfoModalOpen = false;
+    this.selectedRecipe = null;
   }
 
   loadDashboardData(): void {
@@ -232,14 +233,12 @@ export class HomeComponent implements OnInit {
         );
         
         event.container.data[event.currentIndex] = { ...event.container.data[event.currentIndex] };
-
         if (targetDayId) {
           this.saveDayConfiguration(targetDayId, event.container.data);
         }
       } 
       else if (event.container.id === 'recipe-catalog') {
-        event.previousContainer.data.splice(event.previousIndex, 1); 
-        
+        event.previousContainer.data.splice(event.previousIndex, 1);
         const oldDayId = parseInt(event.previousContainer.id.replace('day-list-', ''), 10);
         this.saveDayConfiguration(oldDayId, event.previousContainer.data); 
       } 
@@ -250,11 +249,9 @@ export class HomeComponent implements OnInit {
           event.previousIndex,
           event.currentIndex,
         );
-
         if (targetDayId) {
           this.saveDayConfiguration(targetDayId, event.container.data); 
         }
-
         const previousListId = event.previousContainer.id;
         const oldDayId = parseInt(previousListId.replace('day-list-', ''), 10);
         this.saveDayConfiguration(oldDayId, event.previousContainer.data); 
@@ -292,7 +289,7 @@ export class HomeComponent implements OnInit {
       this.loadDailyHeader(idDailyPlan);
     });
   }
-  
+
   getEmptySlots(day: any): any[] {
     if (!this.calendar || !day.assignedRecipes) return [];
     const count = this.calendar.mealsPerDay - day.assignedRecipes.length;
@@ -300,8 +297,7 @@ export class HomeComponent implements OnInit {
   }
 
   crearNuevoPlan() {
-    this.loading = true; 
-    
+    this.loading = true;
     this.homeService.createWeeklyPlan(this.userId).subscribe({
       next: () => {
         this.loadDashboardData();
@@ -310,7 +306,6 @@ export class HomeComponent implements OnInit {
         console.error(err);
         this.loading = false;
         this.cdr.detectChanges();
-
         if (err.status === 404 || err.status === 400 || err.status === 500) {
            this.router.navigate(['/onboarding']); 
         } else {

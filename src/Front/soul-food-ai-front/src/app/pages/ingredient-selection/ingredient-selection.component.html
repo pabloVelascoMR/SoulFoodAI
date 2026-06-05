@@ -21,14 +21,31 @@
   <main class="content">
     <div class="section-header">
       <div class="section-left">
+        <button class="btn-nav" [style.visibility]="currentStepIndex === 0 ? 'hidden' : 'visible'" (click)="previousStep()">
+          ← Anterior
+        </button>
+
         <h2 class="section-title">{{ steps[currentStepIndex]?.name || 'Soul Food AI' }}</h2>
+
+        <button class="btn-nav" [style.visibility]="currentStepIndex === steps.length - 1 ? 'hidden' : 'visible'" (click)="nextStep()">
+          Siguiente →
+        </button>
       </div>
 
       <div class="section-right">
+        <div class="finish-wrapper">
+           <span class="ingredients-counter" [class.insufficient]="!canFinish">
+             {{ selectedIngredientIds.size }} / {{ requiredMinimum }}
+           </span>
+           <button class="btn-primary" [disabled]="!canFinish" (click)="finalizar()" style="width: auto; padding: 0 20px;">
+             Finalizar
+           </button>
+        </div>
+
         <button class="btn-create-custom" (click)="openCustomModal()">
           + Crear
         </button>
-        <button class="btn-search-off" (click)="openOFFModal()">
+        <button class="btn-auto btn-ai " (click)="openOFFModal()">
           🔍 Buscar
         </button>
       </div>
@@ -47,110 +64,84 @@
           <div *ngIf="ingredient.hasImageError || !getIngredientImage(ingredient)" class="emoji-display">
             {{ ingredient.icon || '🍽️' }}
           </div>
-
-          <div class="card-action-overlay">
-            <div class="overlay-buttons">
-              <button class="action-btn" (click)="toggleIngredientSelection(ingredient)">
-                {{ isIngredientSelected(ingredient) ? 'Deseleccionar' : 'Seleccionar' }}
-              </button>
-
-              <button class="action-btn-secondary"
-                      *ngIf="canEdit(ingredient)"
-                      (click)="editCustomIngredient(ingredient, $event)">
-                Editar
-              </button>
-            </div>
-          </div>
-
-          <div class="card-selected-tick" *ngIf="isIngredientSelected(ingredient)">
-            <svg class="tick-icon" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
-            </svg>
-          </div>
-
-          <div class="card-delete-x"
-               *ngIf="canDelete(ingredient) && !isIngredientSelected(ingredient)"
-               (click)="deleteCustomIngredient(ingredient, $event)">
-            <svg class="x-icon" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-            </svg>
-          </div>
         </div>
 
         <div class="card-name">
           <span class="card-category">{{ ingredient.category }}</span>
           <span class="card-ingredient-name">{{ ingredient.name }}</span>
         </div>
+
+        <div class="card-action-overlay">
+          <div class="overlay-buttons">
+            <button class="action-btn" (click)="toggleIngredientSelection(ingredient)">
+              {{ isIngredientSelected(ingredient) ? 'Deseleccionar' : 'Seleccionar' }}
+            </button>
+
+            <button class="action-btn-secondary"
+                    *ngIf="canEdit(ingredient)"
+                    (click)="editCustomIngredient(ingredient, $event)">
+              Editar
+            </button>
+          </div>
+        </div>
+
+        <div class="card-selected-tick" *ngIf="isIngredientSelected(ingredient)">
+          <svg class="tick-icon" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+          </svg>
+        </div>
+
+        <div class="card-delete-x"
+          *ngIf="canDelete(ingredient) && !isIngredientSelected(ingredient)"
+          (click)="deleteCustomIngredient(ingredient, $event)">🗑️
+        </div>
       </div>
     </section>
   </main>
-
-  <footer class="final-actions">
-    <div class="footer-left">
-      <button class="btn-nav" [style.visibility]="currentStepIndex === 0 ? 'hidden' : 'visible'" (click)="previousStep()">
-        ← Anterior
-      </button>
-    </div>
-
-    <div class="finish-wrapper">
-       <span class="ingredients-counter" [class.insufficient]="!canFinish">
-         {{ selectedIngredientIds.size }} / {{ requiredMinimum }} ingredientes
-       </span>
-       <button class="btn-primary" [disabled]="!canFinish" (click)="finalizar()">
-         Finalizar
-       </button>
-    </div>
-
-    <div class="footer-right">
-      <button class="btn-nav" [style.visibility]="currentStepIndex === steps.length - 1 ? 'hidden' : 'visible'" (click)="nextStep()">
-        Siguiente →
-      </button>
-    </div>
-  </footer>
 
   <div class="modal-overlay" *ngIf="showCustomModal">
     <div class="modal-content">
       <h2 class="modal-title">{{ isEditing ? 'Editar Ingrediente' : 'Crear Ingrediente' }}</h2>
 
-      <div class="form-group">
-        <label>Nombre del alimento:</label>
-        <input type="text" class="modal-input" [(ngModel)]="newIngredient.name">
+      <div class="input-group">
+        <div class="label-row"><label>Nombre del alimento:</label></div>
+        <input type="text" class="form-input" [(ngModel)]="newIngredient.name">
       </div>
 
-      <div class="form-group">
-        <label>Categoría:</label>
-        <select class="modal-input" [(ngModel)]="newIngredient.category">
+      <div class="input-group">
+        <div class="label-row"><label>Categoría:</label></div>
+        <select class="form-input" [(ngModel)]="newIngredient.category">
           <option *ngFor="let step of steps" [value]="step.name">{{ step.name }}</option>
         </select>
       </div>
 
-      <div class="form-group">
-        <label>Icono o Emoji:</label>
-        <input type="text" class="modal-input" [(ngModel)]="newIngredient.icon">
+      <div class="input-group">
+        <div class="label-row"><label>Icono o Emoji:</label></div>
+        <input type="text" class="form-input" [(ngModel)]="newIngredient.icon">
       </div>
 
       <div class="macros-grid">
-        <div class="form-group">
-          <label>Kcal:</label>
-          <input type="number" class="modal-input" [(ngModel)]="newIngredient.kcal">
+        <div class="input-group">
+          <div class="label-row"><label>Kcal:</label></div>
+          <input type="number" class="form-input" [(ngModel)]="newIngredient.kcal">
         </div>
-        <div class="form-group">
-          <label>Proteína (g):</label>
-          <input type="number" class="modal-input" [(ngModel)]="newIngredient.protein">
+        <div class="input-group">
+          <div class="label-row"><label>Proteína (g):</label></div>
+          <input type="number" class="form-input" [(ngModel)]="newIngredient.protein">
         </div>
-        <div class="form-group">
-          <label>Carbos (g):</label>
-          <input type="number" class="modal-input" [(ngModel)]="newIngredient.carbs">
+        <div class="input-group">
+          <div class="label-row"><label>Carbos (g):</label></div>
+          <input type="number" class="form-input" [(ngModel)]="newIngredient.carbs">
         </div>
-        <div class="form-group">
-          <label>Grasas (g):</label>
-          <input type="number" class="modal-input" [(ngModel)]="newIngredient.fat">
+        <div class="input-group">
+          <div class="label-row"><label>Grasas (g):</label></div>
+          <input type="number" class="form-input" [(ngModel)]="newIngredient.fat">
         </div>
       </div>
 
       <div class="modal-actions">
-        <button class="btn-cancel" (click)="closeCustomModal()">Cancelar</button>
-        <button class="btn-save" (click)="saveCustomIngredient()">
+        <button class="btn-secondary" style="width: auto;" (click)="closeCustomModal()">Cancelar</button>
+        <button class="btn-primary" style="width: auto; padding: 0 24px;" (click)="saveCustomIngredient()">
           {{ isEditing ? 'Actualizar' : 'Guardar' }}
         </button>
       </div>
@@ -162,10 +153,10 @@
       <h2 class="modal-title">Buscar en OpenFoodFacts</h2>
 
       <div class="off-search-bar">
-        <input type="text" class="modal-input" [(ngModel)]="offSearchQuery"
+        <input type="text" class="form-input" [(ngModel)]="offSearchQuery"
                placeholder="Ej: Leche Pascual, Cereales..."
                (keyup.enter)="searchOFF()">
-        <button class="btn-save" (click)="searchOFF()" [disabled]="isSearchingOFF">
+        <button class="btn-primary" style="width: auto; padding: 0 24px;" (click)="searchOFF()" [disabled]="isSearchingOFF">
           {{ isSearchingOFF ? 'Buscando...' : 'Buscar' }}
         </button>
       </div>
@@ -198,7 +189,7 @@
       </div>
 
       <div class="modal-actions">
-        <button class="btn-cancel" (click)="closeOFFModal()">Cerrar</button>
+        <button class="btn-secondary" style="width: auto;" (click)="closeOFFModal()">Cerrar</button>
       </div>
     </div>
   </div>

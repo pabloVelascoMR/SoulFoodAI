@@ -13,13 +13,12 @@
     <h3>Menú SoulFood</h3>
     <button class="close-btn" (click)="closeSidebar()">✕</button>
   </div>
-  
   <nav class="sidebar-nav">
     <a routerLink="/personal-information" class="nav-item" (click)="closeSidebar()">
       <span class="nav-icon">👤</span> Mi Perfil
     </a>
     <a routerLink="/ingredient-selection" class="nav-item" (click)="closeSidebar()">
-      <span class="nav-icon">🥦</span> Mis Ingredientes
+      <span class="nav-icon">🥩</span> Mis Ingredientes
     </a>
     <a routerLink="/recipes" class="nav-item" (click)="closeSidebar()">
       <span class="nav-icon">🍳</span> Mis Recetas
@@ -27,7 +26,6 @@
     <a routerLink="/week-report" class="nav-item" (click)="closeSidebar()">
       <span class="nav-icon">📊</span> Reporte Semanal
     </a>
-
     <a routerLink="/foodplan-historial" class="nav-item" (click)="closeSidebar()">
       <span class="nav-icon">📅</span> Historiales
     </a>
@@ -35,7 +33,7 @@
 </aside>
 
 <div class="dashboard-container page-layout">
-
+  
   <div *ngIf="loading" class="loading-state">
     <div class="loader-spinner"></div>
     <h2>Cargando tu información...</h2>
@@ -46,23 +44,21 @@
     <header class="surface-module header-module" *ngIf="weeklyHeader && !selectedDayId">
       <div class="header-info">
         <p class="greeting-subtitle">¡Bienvenido a tu plan!</p>
-        <h1 class="page-title" style="text-align: left; margin-bottom: 5px;">{{ weeklyHeader.dietName }}</h1>
+        <h1 class="page-title page-title--left">{{ weeklyHeader.dietName }}</h1>
         <p class="target-kcal-badge">🔥 {{ weeklyHeader.totalWeeklyKcal }} Kcal Semanales</p>
       </div>
-
       <div class="header-macros">
         <div class="macro-chart-container">
-          <div class="macro-wheel"
-               [style.background]="'conic-gradient(' +
-                  '#e74c3c 0% ' + weeklyHeader.targetProteinPercent + '%,' +
-                  '#f39c12 ' + weeklyHeader.targetProteinPercent + '% ' + (weeklyHeader.targetProteinPercent + weeklyHeader.targetCarbsPercent) + '%,' +
+          <div class="macro-wheel" 
+               [style.background]="'conic-gradient(' + 
+                  '#e74c3c 0% ' + weeklyHeader.targetProteinPercent + '%,' + 
+                  '#f39c12 ' + weeklyHeader.targetProteinPercent + '% ' + (weeklyHeader.targetProteinPercent + weeklyHeader.targetCarbsPercent) + '%,' + 
                   '#3498db ' + (weeklyHeader.targetProteinPercent + weeklyHeader.targetCarbsPercent) + '% 100%)'">
             <div class="macro-wheel-inner">
               <span>Macros</span>
             </div>
           </div>
         </div>
-
         <div class="macro-legend">
           <div class="legend-item"><span class="dot primary"></span> Proteína <strong>{{weeklyHeader.targetProteinPercent}}%</strong></div>
           <div class="legend-item"><span class="dot secondary"></span> Carbos <strong>{{weeklyHeader.targetCarbsPercent}}%</strong></div>
@@ -74,31 +70,34 @@
     <header class="surface-module header-module daily-active-header" *ngIf="selectedDayId && dailyHeaders[selectedDayId]">
       
       <div class="header-info">
-        <button class="btn-text-link mb-3" (click)="clearSelectedDay()" style="font-size: 1rem; display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 1.2rem;">⬅</span> Volver a Vista Semanal
+        <button class="btn-text-link mb-3 back-btn-wrapper" (click)="clearSelectedDay()">
+          <span class="back-icon-lg">⬅</span> Volver a Vista Semanal
         </button>
         
-        <h1 class="page-title" style="text-align: left; margin-bottom: 5px;">Día: {{ getDayName(selectedDayId) }}</h1>
+        <h1 class="page-title page-title--left">Día: {{ getDayName(selectedDayId) }}</h1>
         <p class="target-kcal-badge">🎯 Objetivo del día: {{ dailyHeaders[selectedDayId].targetKcal }} Kcal</p>
         
-        <button class="btn-primary mt-4 ai-magic-btn" (click)="adjustMacrosForSelectedDay()" [disabled]="isAdjustingMacros">
-          <span *ngIf="!isAdjustingMacros"> Cuadra tus recetas con automáticamente</span>
+        <button class="btn-ai btn-auto" (click)="adjustMacrosForSelectedDay()" [disabled]="isAdjustingMacros">
+          <span *ngIf="!isAdjustingMacros">Cuadra tus recetas automáticamente</span>
           <div *ngIf="isAdjustingMacros" class="loading-content">
             <span class="spinner"></span> Ajustando raciones puede tardar un rato...
           </div>
         </button>
 
         <div *ngIf="aiMessage" 
-             class="ai-status-message mt-3" 
+             class="ai-status-message" 
              [ngClass]="{'msg-success': aiMessageType === 'success', 'msg-error': aiMessageType === 'error'}">
+             <span *ngIf="aiMessageType === 'error'">⚠️</span>
           {{ aiMessage }}
         </div>
-      </div> <div class="header-macros daily-macros-container">
+      </div>
+      
+      <div class="header-macros daily-macros-container">
         <h3 class="daily-macros-title">Progreso de Macros</h3>
         
         <div class="daily-macros-grid">
           
-          <div class="macro-bar-item">
+          <div class="macro-bar-item kcal-bar">
             <div class="macro-bar-header">
               <span>🔥 Calorías</span>
               <strong>
@@ -108,7 +107,7 @@
               </strong>
             </div>
             <div class="daily-progress-bg">
-              <div class="daily-progress-fill" 
+              <div class="daily-progress-fill fill-kcal" 
                    [style.width.%]="(dailyHeaders[selectedDayId].realKcal / dailyHeaders[selectedDayId].targetKcal) * 100">
               </div>
             </div>
@@ -116,7 +115,7 @@
 
           <div class="macro-bar-item">
             <div class="macro-bar-header">
-              <span>🥩 Proteína</span>
+              <span>🥩 Prote</span>
               <strong>
                 <span [ngClass]="{'text-danger-macro': dailyHeaders[selectedDayId].realProtein > dailyHeaders[selectedDayId].targetProtein}">
                   {{ dailyHeaders[selectedDayId].realProtein }}
@@ -124,7 +123,7 @@
               </strong>
             </div>
             <div class="daily-progress-bg">
-              <div class="daily-progress-fill" 
+              <div class="daily-progress-fill fill-protein" 
                    [style.width.%]="(dailyHeaders[selectedDayId].realProtein / dailyHeaders[selectedDayId].targetProtein) * 100">
               </div>
             </div>
@@ -132,7 +131,7 @@
 
           <div class="macro-bar-item">
             <div class="macro-bar-header">
-              <span>🍞 Carbos</span>
+              <span>🍞 Carbs</span>
               <strong>
                 <span [ngClass]="{'text-danger-macro': dailyHeaders[selectedDayId].realCarbs > dailyHeaders[selectedDayId].targetCarbs}">
                   {{ dailyHeaders[selectedDayId].realCarbs }}
@@ -140,7 +139,7 @@
               </strong>
             </div>
             <div class="daily-progress-bg">
-              <div class="daily-progress-fill" 
+              <div class="daily-progress-fill fill-carbs" 
                    [style.width.%]="(dailyHeaders[selectedDayId].realCarbs / dailyHeaders[selectedDayId].targetCarbs) * 100">
               </div>
             </div>
@@ -156,7 +155,7 @@
               </strong>
             </div>
             <div class="daily-progress-bg">
-              <div class="daily-progress-fill" 
+              <div class="daily-progress-fill fill-fat" 
                    [style.width.%]="(dailyHeaders[selectedDayId].realFat / dailyHeaders[selectedDayId].targetFat) * 100">
               </div>
             </div>
@@ -164,17 +163,17 @@
           
         </div>
       </div>
-    </header> 
+    </header>
 
     <div class="calendar-wrapper" *ngIf="calendar">
-      <div class="calendar-grid">
+      <div class="home-calendar-grid">
         
-        <div class="day-column surface-module" *ngFor="let day of calendar.days">
+        <div class="home-day-column surface-module" *ngFor="let day of calendar.days">
           
-          <div class="day-header clickable-header" 
+          <div class="home-day-header clickable-header" 
                [class.selected-day-header]="selectedDayId === day.idUserFoodPlanDaily"
                (click)="selectDay(day.idUserFoodPlanDaily)">
-            <span class="day-name">{{ day.dayName }}</span>
+            <span class="home-day-name">{{ day.dayName }}</span>
             <div class="day-date-bubble">{{ day.dateNumber }}</div>
             
             <div class="day-progress" *ngIf="dailyHeaders[day.idUserFoodPlanDaily]">
@@ -184,7 +183,7 @@
                 </span> / {{ dailyHeaders[day.idUserFoodPlanDaily].targetKcal }} kcal
               </div>
               <div class="progress-bar-bg">
-                <div class="progress-bar-fill" 
+                <div class="progress-bar-fill fill-kcal" 
                      [style.width.%]="(dailyHeaders[day.idUserFoodPlanDaily].realKcal / dailyHeaders[day.idUserFoodPlanDaily].targetKcal) * 100">
                 </div>
               </div>
@@ -203,20 +202,20 @@
                  cdkDrag
                  [ngClass]="getMealClass(recipe.mealType || recipe.mealName)">
               
-              <h3 class="recipe-title-sm">{{ recipe.recipeName }}</h3>
-              
-              <div class="meal-pill-sm">
-                <span>{{ recipe.mealType || recipe.mealName }}</span>
+              <h3 class="recipe-title">{{ recipe.recipeName }}</h3>
+              <div class="recipe-tags-row">
               </div>
+              <div class="kcal-tag kcal-tag--compact">🔥 {{ recipe.kcal }} Kcal</div>
 
-              <div class="kcal-tag-sm">🔥 {{ recipe.kcal }} Kcal</div>
+              <button class="btn-secondary mt-auto" (click)="openInfoModal(recipe)">
+                ➕ Más Info
+              </button>
             </div>
 
             <div class="empty-slot" *ngFor="let empty of getEmptySlots(day)">
               <span class="plus-icon">+</span> Añadir receta
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -239,16 +238,19 @@
           
           <h3 class="recipe-title">{{ recipe.recipeName }}</h3>
           
-          <div class="pill-group">
-            <div class="diet-pill" *ngIf="recipe.dietName || weeklyHeader?.dietName">
+          <div class="recipe-tags-row">
+            <div class="diet-pill diet-pill--mb0" *ngIf="recipe.dietName || weeklyHeader?.dietName">
               <span>{{ recipe.dietName || weeklyHeader?.dietName }}</span>
             </div>
-            <div class="meal-pill">
+            <div class="diet-pill diet-pill--mb0">
               <span>{{ recipe.mealName || recipe.mealType }}</span>
             </div>
           </div>
+          <div class="kcal-tag kcal-tag--compact">🔥 {{ recipe.kcal }} Kcal</div>
 
-          <div class="kcal-tag">🔥 {{ recipe.kcal }} Kcal</div>
+          <button class="btn-secondary mt-auto" (click)="openInfoModal(recipe)">
+            ➕ Más Info
+          </button>
         </div>
         
       </div>
@@ -258,13 +260,52 @@
 
   <div *ngIf="!loading && !hasActivePlan" class="no-plan-container">
     <div class="no-plan-card">
-      <div class="no-plan-icon">🍽️</div>
+      <div class="no-plan-icon">📅</div>
       <h2>¡Vaya! Parece que aún no tienes un plan activo</h2>
       <p>Para empezar a organizar tus comidas y ver tus macros, necesitamos generar tu primera semana.</p>
       
       <button class="btn-create-plan-giant" (click)="crearNuevoPlan()">
         CREA TU PLAN
       </button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isInfoModalOpen && selectedRecipe">
+    <div class="modal-content">
+
+      <h2 class="modal-title">{{ selectedRecipe.recipeName }}</h2>
+      
+      <div class="diet-pill diet-pill--inline" [ngClass]="getMealClass(selectedRecipe.mealType)">
+        {{ selectedRecipe.mealType }}
+      </div>
+
+      <div class="info-section">
+        <h4 class="section-heading">Ingredientes</h4>
+        <ul class="clean-ingredients-list">
+          <li *ngFor="let ing of selectedRecipe.ingredients">
+            <span class="ing-qty-highlight">{{ ing.quantity }}{{ ing.unit }}</span> de {{ ing.name }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h4 class="section-heading">Preparación</h4>
+        <p class="recipe-desc-text">{{ selectedRecipe.recipeDescription || 'Sin descripción.' }}</p>
+      </div>
+
+      <div class="info-section">
+        <h4 class="section-heading">Valores Nutricionales por 100g</h4>
+        <div class="macro-grid">
+          <div class="macro-item"><strong>Calorías</strong><br><span class="macro-val">🔥 {{ selectedRecipe.kcal }}</span></div>
+          <div class="macro-item"><strong>Proteína</strong><br><span class="macro-val">🥩 {{ selectedRecipe.protein }}g</span></div>
+          <div class="macro-item"><strong>Carbos</strong><br><span class="macro-val">🍞 {{ selectedRecipe.carbs }}g</span></div>
+          <div class="macro-item"><strong>Grasas</strong><br><span class="macro-val">🥑 {{ selectedRecipe.fat }}g</span></div>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-primary" (click)="closeInfoModal()">CERRAR</button>
+      </div>
     </div>
   </div>
 

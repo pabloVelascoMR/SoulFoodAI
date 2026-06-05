@@ -12,13 +12,8 @@
 <div class="page-layout" *ngIf="userData">
   <div class="page-header">
     <h1 class="app-header-title">TU PERFIL NUTRICIONAL</h1>
-    <button class="btn-logout" (click)="logout()" title="Cerrar sesión">
-      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-        <polyline points="16 17 21 12 16 7"></polyline>
-        <line x1="21" y1="12" x2="9" y2="12"></line>
-      </svg>
-      SALIR
+    <button class="btn-secondary" style="width: auto; padding: 0 24px;" (click)="goHome()">
+      VOLVER AL INICIO
     </button>
   </div>
   
@@ -212,27 +207,27 @@
     
     <div class="action-footer">
       <div *ngIf="!isEditing" style="display: flex; gap: 20px; width: 100%; max-width: 500px;">
-        <button class="btn-secondary" (click)="goHome()" style="flex: 1; padding: 15px; font-size: 1.1rem; border-radius: 30px;">
-          VOLVER AL INICIO
+        <button class="btn-danger" style="flex: 1;" (click)="logout()">
+          LOGOUT
         </button>
-        <button class="btn-primary" (click)="startEditing()" style="flex: 1; padding: 15px; font-size: 1.1rem; border-radius: 30px;">
+
+        <button class="btn-primary" style="flex: 1;" (click)="startEditing()">
           EDITAR MIS DATOS
         </button>
       </div>
 
       <div *ngIf="isEditing" style="display: flex; gap: 20px; width: 100%; max-width: 500px;">
-        <button class="btn-secondary" (click)="cancelEditing()" style="flex: 1; padding: 15px; font-size: 1.1rem; border-radius: 30px;">
+        <button class="btn-secondary" style="flex: 1;" (click)="cancelEditing()">
           CANCELAR
         </button>
-        <button class="btn-primary" 
+        
+        <button class="btn-primary" style="flex: 1;"
                 (click)="saveData()" 
-                [disabled]="!editedData || editedData.age < 1 || editedData.age > 120 || editedData.height < 0.5 || editedData.height > 3.0 || editedData.weight < 20 || editedData.weight > 300 || editedData.mealsPerDay < 1 || editedData.mealsPerDay > 5"
-                style="flex: 1; padding: 15px; font-size: 1.1rem; background: #e74c3c; border-color: #e74c3c; box-shadow: 0 5px 15px rgba(231,76,60,0.3);">
+                [disabled]="!editedData || editedData.age < 1 || editedData.age > 120 || editedData.height < 0.5 || editedData.height > 3.0 || editedData.weight < 20 || editedData.weight > 300 || editedData.mealsPerDay < 1 || editedData.mealsPerDay > 5">
           GUARDAR CAMBIOS
         </button>
       </div>
     </div>
-
   </div>
 </div>
 
