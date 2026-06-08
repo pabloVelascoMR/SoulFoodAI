@@ -21,7 +21,7 @@ export interface AddRecipeDto {
 })
 export class RecipesService {
 
-  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/Ingredient'; 
+  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api'; 
 
   constructor(private http: HttpClient) { }
 
