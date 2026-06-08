@@ -27,7 +27,7 @@ namespace SoulFoodAiBack.Models
         [Required]
         public required string PasswordHash { get; set; }
 
-        
+
         public UserData? UserData { get; set; }
 
         public List<UserIngredient> UserIngredients { get; set; }

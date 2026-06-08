@@ -416,8 +416,14 @@ namespace SoulFoodAiBack.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUserDiary"));
 
+                    b.Property<string>("AiReportResponse")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DietAdherence")
                         .HasColumnType("int");
@@ -430,9 +436,6 @@ namespace SoulFoodAiBack.Migrations
 
                     b.Property<int>("IdUserFoodPlan")
                         .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SleepQuality")
                         .HasColumnType("int");
@@ -526,6 +529,9 @@ namespace SoulFoodAiBack.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisibleInHistory")
                         .HasColumnType("bit");
 
                     b.Property<int>("MealsPerDay")

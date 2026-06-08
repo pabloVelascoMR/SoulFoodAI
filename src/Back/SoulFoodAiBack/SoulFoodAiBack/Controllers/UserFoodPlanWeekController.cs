@@ -97,6 +97,7 @@ namespace SoulFoodAiBack.Controllers
                 TotalWeeklyCarbs = dailyCarbsGrams * 7,
                 TotalWeeklyFat = dailyFatGrams * 7,
                 IsActive = true,
+                IsVisibleInHistory = true,
                 UserFoodPlanWeekIntolerances = new List<UserFoodPlanWeekIntolerance>()
             };
 
@@ -180,44 +181,107 @@ namespace SoulFoodAiBack.Controllers
                 return NotFound("No hay plan semanal activo para este usuario.");
 
             var weekDays = await _context.UserFoodPlansDaily
-                .Include(d => d.FoodPlanDailyRecipes) 
-                    .ThenInclude(dr => dr.Recipe)         
-                        .ThenInclude(r => r.Meal)          
+                .Include(d => d.FoodPlanDailyRecipes)
+                    .ThenInclude(dr => dr.Recipe)
+                        .ThenInclude(r => r.Meal)
+                .Include(d => d.FoodPlanDailyRecipes)
+                    .ThenInclude(dr => dr.Recipe)
+                        .ThenInclude(r => r.RecipeUserIngredients)
+                            .ThenInclude(ri => ri.Ingredient)
                 .Where(d => d.IdUserFoodPlanWeek == activeWeek.IdUserFoodPlanWeek)
-                .OrderBy(d => d.CreationDate)              
+                .OrderBy(d => d.CreationDate)
                 .ToListAsync();
 
-            
             var culture = new System.Globalization.CultureInfo("es-ES");
 
-            
             var calendarDto = new WeekCalendarDto
             {
                 IdUserFoodPlanWeek = activeWeek.IdUserFoodPlanWeek,
-                MealsPerDay = activeWeek.MealsPerDay, 
-
+                MealsPerDay = activeWeek.MealsPerDay,
                 Days = weekDays.Select(day => new DayCalendarDto
                 {
                     IdUserFoodPlanDaily = day.IdUserFoodPlanDaily,
-
                     DayName = char.ToUpper(day.CreationDate.ToString("dddd", culture)[0]) +
                               day.CreationDate.ToString("dddd", culture).Substring(1),
-
                     DateNumber = day.CreationDate.ToString("dd"),
-
                     FullDate = day.CreationDate,
-
                     AssignedRecipes = day.FoodPlanDailyRecipes.Select(dr => new DailyRecipeDto
                     {
                         IdRecipe = dr.IdRecipe,
                         RecipeName = dr.Recipe.RecipeName,
                         Kcal = dr.Recipe.TotalKcal,
-                        MealType = dr.Recipe.Meal.MealName 
+                        MealType = dr.Recipe.Meal?.MealName,
+                        Protein = dr.Recipe.Protein,
+                        Carbs = dr.Recipe.Carbs,
+                        Fat = dr.Recipe.Fat,
+                        RecipeDescription = dr.Recipe.RecipeDescription,
+                        Ingredients = dr.Recipe.RecipeUserIngredients.Select(ri => new RecipeIngredientDetailDto
+                        {
+                            Name = ri.Ingredient.Name,
+                            Quantity = ri.Quantity,
+                            Unit = ri.Unit
+                        }).ToList()
                     }).ToList()
                 }).ToList()
             };
 
             return Ok(calendarDto);
+        }
+
+        [HttpGet]
+        [Route("GetPlanHistory/{idUser}")]
+        public async Task<IActionResult> GetPlanHistory(int idUser)
+        {
+            List<UserFoodPlanWeek>? history = await _context.UserFoodPlansWeek
+                .Where(w => w.IdUser == idUser && w.IsVisibleInHistory) 
+                .Include(w => w.FoodPlan)
+                .Include(w => w.UserFoodPlanMeals) 
+                    .ThenInclude(d => d.FoodPlanDailyRecipes) 
+                        .ThenInclude(dr => dr.Recipe)
+                            .ThenInclude(r => r.Meal)
+                .OrderByDescending(w => w.StartDate)
+                .ToListAsync();
+
+            var filteredHistory = history
+                .Where(w => w.UserFoodPlanMeals.Any(d => d.FoodPlanDailyRecipes.Any())) 
+                .Select(w => new {
+                    w.IdUserFoodPlanWeek,
+                    DietName = w.FoodPlan?.FoodPlanName ?? "Plan Personalizado",
+                    w.StartDate,
+                    w.EndDate,
+                    w.IsActive,
+                    RecipesEaten = w.UserFoodPlanMeals
+                        .OrderBy(d => d.IdUserFoodPlanDaily) 
+                        .SelectMany((d, index) => d.FoodPlanDailyRecipes.Select(dr => new {
+                        dr.Recipe.IdRecipe,
+                        dr.Recipe.RecipeName,
+                        MealType = dr.Recipe.Meal?.MealName,                  
+                        DateEaten = w.StartDate.AddDays(index)
+                    }))
+                    .ToList()
+                })
+                .ToList();
+
+            if (!filteredHistory.Any())
+                return NotFound("No se encontraron planes con recetas en tu historial.");
+
+            return Ok(filteredHistory);
+        }
+
+        [HttpPut]
+        [Route("HidePlanFromHistory/{idUserFoodPlanWeek}")]
+        public async Task<IActionResult> HidePlanFromHistory(int idUserFoodPlanWeek)
+        {
+            UserFoodPlanWeek? plan = await _context.UserFoodPlansWeek.FindAsync(idUserFoodPlanWeek);
+
+            if (plan == null)
+                return NotFound("El plan especificado no existe.");
+
+            plan.IsVisibleInHistory = false;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Plan ocultado del historial correctamente." });
         }
     }
 }

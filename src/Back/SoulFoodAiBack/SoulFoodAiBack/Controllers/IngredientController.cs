@@ -49,8 +49,8 @@ namespace SoulFoodAiBack.Controllers
         }
 
         [HttpGet]
-        [Route("SearchOFFIngredients/{searchText}")]
-        public async Task<ActionResult<List<Ingredient>>> SearchOFFIngredients(string searchText)
+        [Route("SearchOFFIngredients")]
+        public async Task<ActionResult<List<Ingredient>>> SearchOFFIngredients([FromQuery] string searchText)
         {
             List<Ingredient> OFFResults = new List<Ingredient>();
 

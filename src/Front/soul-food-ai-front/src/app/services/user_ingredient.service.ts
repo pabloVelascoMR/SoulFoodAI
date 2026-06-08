@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UserIngredientService {
-  private apiUrl = 'https://localhost:7007/api/UserIngredient';
+  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/Ingredient';
 
   constructor(private http: HttpClient) {}
   getSelectedIngredients(userId: number): Observable<any[]> {

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class OnboardingService {
  
-  private apiUrl = 'https://localhost:7007/api';
+  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/Ingredient';
 
   constructor(private http: HttpClient) { }
 

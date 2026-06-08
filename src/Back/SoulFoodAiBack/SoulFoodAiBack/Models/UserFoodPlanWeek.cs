@@ -30,6 +30,8 @@ namespace SoulFoodAiBack.Models
 
         public bool IsActive { get; set; }
 
+        public bool IsVisibleInHistory { get; set; }
+
         public List<UserFoodPlanDaily> UserFoodPlanMeals { get; set; }
 
         public int IdUser { get; set; }

@@ -1,16 +1,18 @@
 <div class="page-layout">
-  <h1 class="app-header-title">SOUL FOOD AI</h1>
+  <h1 class="login-main-title">SOUL FOOD AI</h1>
   <div class="progress-container">
     <div class="progress-bar" [style.width.%]="progressPercentage"></div>
   </div>
   <div class="step-content">
     
-    <div class="surface-module" *ngIf="currentStep === 1">
+    <div class="surface-module small-module" *ngIf="currentStep === 1">
       <h2 class="page-title">Empecemos por lo básico</h2>
       <p class="page-subtitle">Cuéntanos un poco sobre ti para personalizar tu plan nutricional.</p>
       
-      <div class="form-group">
-        <label class="form-label">GÉNERO</label>
+      <div class="input-group">
+        <div class="label-row" style="justify-content: center;">
+          <label>GÉNERO</label>
+        </div>
         <div class="grid-2-cols">
           <div class="selection-card" [class.selected]="userData.gender === 'Hombre'" (click)="selectGender('Hombre')">
             <div class="gender-icon-container">
@@ -36,10 +38,12 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">INTRODUCE TU EDAD</label>
+      <div class="input-group" style="margin-top: 32px;">
+        <div class="label-row" style="justify-content: center;">
+          <label>INTRODUCE TU EDAD</label>
+        </div>
         <div class="number-input-wrapper">
-          <button type="button" class="btn-counter" (click)="decrementAge()" [disabled]="!userData.age || userData.age <= 1">－</button>
+          <button type="button" class="btn-counter" (click)="decrementAge()" [disabled]="userData.age !== null && userData.age <= 1">-</button>
           <input type="number" 
                  class="form-input big-input" 
                  [(ngModel)]="userData.age" 
@@ -48,50 +52,65 @@
                  required 
                  min="1" 
                  max="120" 
-                 placeholder="28">
-          <button type="button" class="btn-counter" (click)="incrementAge()" [disabled]="userData.age !== null && userData.age >= 120">＋</button>
+                 placeholder="18">
+          <button type="button" class="btn-counter" (click)="incrementAge()" [disabled]="userData.age !== null && userData.age >= 120">+</button>
         </div>
         <div class="text-error" *ngIf="ageCtrl.invalid && (ageCtrl.dirty || ageCtrl.touched)">
           Por favor, introduce una edad real y mayor que 16.
         </div>
       </div>
-      <button class="btn-primary" [disabled]="!userData.gender || ageCtrl.invalid" (click)="nextStep()">CONTINUAR</button>
+      
+      <div class="btn-group">
+        <button class="btn-primary" [disabled]="!userData.gender || ageCtrl.invalid" (click)="nextStep()">CONTINUAR</button>
+      </div>
     </div>
 
-    <div class="surface-module" *ngIf="currentStep === 2">
-      <h2 class="page-title">Tus medidas y hábitos</h2>
-      <div class="form-group">
-        <label class="form-label">Altura (en metros)</label>
+    <div class="surface-module small-module" *ngIf="currentStep === 2">
+      <h2 class="page-title title-spaced">Tus medidas y hábitos</h2>
+      
+      <div class="input-group">
+        <div class="label-row">
+          <label>Altura (en metros)</label>
+        </div>
         <input type="number" step="0.01" class="form-input" [(ngModel)]="userData.height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0" placeholder="Ej. 1.75">
         <div class="text-error" *ngIf="heightCtrl.invalid && (heightCtrl.dirty || heightCtrl.touched)">
           La altura debe ser en metros (ej: 1.75).
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Peso (en kg)</label>
+      
+      <div class="input-group">
+        <div class="label-row">
+          <label>Peso (en kg)</label>
+        </div>
         <input type="number" class="form-input" [(ngModel)]="userData.weight" name="weight" #weightCtrl="ngModel" required min="20" max="300" placeholder="Ej. 70.5">
         <div class="text-error" *ngIf="weightCtrl.invalid && (weightCtrl.dirty || weightCtrl.touched)">
           Por favor, introduce un peso válido (entre 20kg y 300kg).
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">¿Cuántas comidas harás al día?</label>
+      
+      <div class="input-group">
+        <div class="label-row">
+          <label>¿Cuántas comidas harás al día?</label>
+        </div>
         <input type="number" class="form-input" [(ngModel)]="userData.mealsPerDay" name="meals" #mealsCtrl="ngModel" required min="1" max="5" placeholder="Ej. 3">
         <div class="text-error" *ngIf="mealsCtrl.invalid && (mealsCtrl.dirty || mealsCtrl.touched)">
           Te recomendamos entre 1 y 5 comidas al día.
         </div>
       </div>
+      
       <div class="btn-group">
         <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
         <button class="btn-primary" [disabled]="heightCtrl.invalid || weightCtrl.invalid || mealsCtrl.invalid" (click)="nextStep()">CONTINUAR</button>
       </div>
     </div>
 
-    <div class="surface-module" *ngIf="currentStep === 3">
-      <h2 class="page-title">Un poco más sobre ti</h2>
+    <div class="surface-module large-module" *ngIf="currentStep === 3">
+      <h2 class="page-title title-spaced">Un poco más sobre ti</h2>
       
-      <div class="form-group" style="margin-top: 2rem;">
-        <label class="form-label" style="font-size: 1.1rem;">NIVEL DE ACTIVIDAD FÍSICA</label>
+      <div class="input-group" style="margin-top: 16px;">
+        <div class="label-row" style="justify-content: center; margin-bottom: 24px;">
+          <label style="font-size: 1rem;">NIVEL DE ACTIVIDAD FÍSICA</label>
+        </div>
         <div class="activity-slider-container">
           <div class="slider-emojis">
             <span title="Sedentario">😴</span>
@@ -101,99 +120,99 @@
             <div class="triangle-track"></div>
             <input type="range" class="activity-slider" min="1" max="5" step="1" [(ngModel)]="userData.levelOfActivity">
           </div>
-          <div class="activity-result card">
+          <div class="activity-result">
             <h3>{{ currentActivity.title }}</h3>
             <p>{{ currentActivity.desc }}</p>
           </div>
         </div>
       </div>
 
-      <hr style="border: 0; border-top: 1px dashed rgba(0,0,0,0.1); margin: 3.5rem 0;">
+      <hr style="border: 0; border-top: 2px dashed var(--border-color); margin: 3.5rem 0;">
 
-      <div class="form-group measures-section">
+      <div class="input-group measures-section">
         
         <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 2.5rem;">
-          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px;">
-            <label class="form-label" style="margin:0; font-size: 1.1rem;">MEDIDAS CORPORALES (En cm)</label>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px;">
+            <div class="label-row" style="margin: 0;">
+              <label style="font-size: 1rem; margin: 0;">MEDIDAS CORPORALES (En cm)</label>
+            </div>
             <div class="info-tooltip" title="Usa una cinta métrica flexible. Mide el pecho en la parte más ancha, la cintura a la altura del ombligo y la cadera en la parte más ancha de los glúteos. El brazo y la pierna deben medirse en estado de relajación.">?</div>
           </div>
-          <p class="page-subtitle" style="margin: 0; color: var(--primary-color);">Estos datos nos ayudan a precisar más, pero son <strong>opcionales</strong>.</p>
+          <p class="page-subtitle" style="margin: 0; color: var(--primary);">Estos datos nos ayudan a precisar más, pero son <strong>opcionales</strong>.</p>
         </div>
 
-       
         <div class="body-map-container">
-          
           <div class="body-silhouette">
-            <img [src]="userData.gender === 'Mujer' ? 'assets/ingredientes_imagenes/bodyF.jpg' : 'assets/ingredientes_imagenes/bodyM.jpg'" 
-                 alt="Silueta corporal">
+            <img [src]="userData.gender === 'Mujer' ? 'assets/ingredientes_imagenes/bodyF.jpg' : 'assets/ingredientes_imagenes/bodyM.jpg'" alt="Silueta corporal">
           </div>
 
           <div class="measure-row" style="top: 29%;">
             <div class="cross-line center-line" style="width: 220px;"></div>
             <div class="track-line track-left-far"></div>
-            <div class="measure-input-box box-left-far">
+            <div class="measure-display-box box-left-far is-editing-box">
               <label>Pecho</label>
-              <input type="number" [(ngModel)]="userData.chestMeasure" placeholder="cm">
+              <input type="number" class="measure-input-edit" [(ngModel)]="userData.chestMeasure" placeholder="cm">
             </div>
           </div>
 
           <div class="measure-row" style="top: 35%;">
             <div class="cross-line center-line" style="width: 480px;"></div>
             <div class="track-line track-left-near"></div>
-            <div class="measure-input-box box-left-near">
+            <div class="measure-display-box box-left-near is-editing-box">
               <label>Bíceps Izq.</label>
-              <input type="number" [(ngModel)]="userData.leftBicepMeasure" placeholder="cm">
+              <input type="number" class="measure-input-edit" [(ngModel)]="userData.leftBicepMeasure" placeholder="cm">
             </div>
             <div class="track-line track-right-near"></div>
-            <div class="measure-input-box box-right-near">
+            <div class="measure-display-box box-right-near is-editing-box">
               <label>Bíceps Der.</label>
-              <input type="number" [(ngModel)]="userData.rightBicepMeasure" placeholder="cm">
+              <input type="number" class="measure-input-edit" [(ngModel)]="userData.rightBicepMeasure" placeholder="cm">
             </div>
           </div>
 
-          <div class="measure-row" style="top: 45%;">
+          <div class="measure-row" style="top: 47.5%;">
             <div class="cross-line center-line" style="width: 180px;"></div>
             <div class="track-line track-right-far"></div>
-            <div class="measure-input-box box-right-far">
+            <div class="measure-display-box box-right-far is-editing-box">
               <label>Cintura</label>
-              <input type="number" [(ngModel)]="userData.waistMeasure" placeholder="cm">
+              <input type="number" class="measure-input-edit" [(ngModel)]="userData.waistMeasure" placeholder="cm">
             </div>
           </div>
 
           <div class="measure-row" style="top: 52%;">
             <div class="cross-line center-line" style="width: 260px;"></div>
             <div class="track-line track-left-far"></div>
-            <div class="measure-input-box box-left-far">
+            <div class="measure-display-box box-left-far is-editing-box">
               <label>Cadera</label>
-              <input type="number" [(ngModel)]="userData.hipMeasure" placeholder="cm">
+              <input type="number" class="measure-input-edit" [(ngModel)]="userData.hipMeasure" placeholder="cm">
             </div>
           </div>
 
           <div class="measure-row" style="top: 61%;">
             <div class="cross-line center-line" style="width: 350px;"></div>
             <div class="track-line track-left-near"></div>
-            <div class="measure-input-box box-left-near">
+            <div class="measure-display-box box-left-near is-editing-box">
               <label>Cuád. Izq.</label>
-              <input type="number" [(ngModel)]="userData.leftCuadricepsMeasure" placeholder="cm">
+              <input type="number" class="measure-input-edit" [(ngModel)]="userData.leftCuadricepsMeasure" placeholder="cm">
             </div>
             <div class="track-line track-right-near"></div>
-            <div class="measure-input-box box-right-near">
+            <div class="measure-display-box box-right-near is-editing-box">
               <label>Cuád. Der.</label>
-              <input type="number" [(ngModel)]="userData.rightCuadricepsMeasure" placeholder="cm">
+              <input type="number" class="measure-input-edit" [(ngModel)]="userData.rightCuadricepsMeasure" placeholder="cm">
             </div>
           </div>
 
         </div>
       </div>
+      
       <div class="btn-group" style="margin-top: 3.5rem;">
         <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
         <button class="btn-primary" (click)="nextStep()">CONTINUAR</button>
       </div>
     </div>
 
-    <div class="surface-module" *ngIf="currentStep === 4">
-      <h2 class="page-title">¿Cuál es tu objetivo principal?</h2>
-      <div class="grid-auto-fit">
+    <div class="surface-module large-module" *ngIf="currentStep === 4">
+      <h2 class="page-title title-spaced">¿Cuál es tu objetivo principal?</h2>
+      <div class="grid-3-cols">
         <div class="selection-card" *ngFor="let goal of goals" 
           [class.selected]="userData.idGoal === goal.idGoal" 
           (click)="selectGoal(goal.idGoal)">
@@ -209,9 +228,9 @@
       </div>
     </div>
 
-    <div class="surface-module" *ngIf="currentStep === 5">
-      <h2 class="page-title">¿Tienes alguna intolerancia?</h2>
-      <div class="grid-auto-fit">
+    <div class="surface-module large-module" *ngIf="currentStep === 5">
+      <h2 class="page-title title-spaced">¿Tienes alguna intolerancia?</h2>
+      <div class="grid-3-cols">
         <div class="selection-card" *ngFor="let int of intolerances" 
              [class.selected]="userData.idIntolerances.includes(int.idIntolerance)"
              (click)="selectIntolerance(int.idIntolerance)">
@@ -229,9 +248,9 @@
       </div>
     </div>
 
-    <div class="surface-module" *ngIf="currentStep === 6">
-      <h2 class="page-title">¿Qué tipo de dieta prefieres?</h2>
-      <div class="grid-auto-fit">
+    <div class="surface-module large-module" *ngIf="currentStep === 6">
+      <h2 class="page-title title-spaced">¿Qué tipo de dieta prefieres?</h2>
+      <div class="grid-3-cols">
         <div class="selection-card" *ngFor="let plan of foodPlans" 
              [class.selected]="userData.idFoodPlan === plan.idFoodPlan" 
              (click)="selectFoodPlan(plan.idFoodPlan)">

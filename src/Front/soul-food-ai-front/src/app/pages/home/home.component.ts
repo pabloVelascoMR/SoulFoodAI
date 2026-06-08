@@ -12,7 +12,6 @@ import {
   DailyHeaderDto,
 } from '../../services/home.service';
 
-
 @Component({
   selector: 'app-home',
   standalone: true, 
@@ -21,24 +20,21 @@ import {
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
-  
   userId: number = 0; 
   hasActivePlan: boolean = false;
   loading: boolean = true;
-
   weeklyHeader: WeeklyHeaderDto | null = null;
   calendar: WeekCalendarDto | null = null;
   availableRecipes: any[] = [];
   connectedLists: string[] = ['recipe-catalog'];
   dailyHeaders: { [key: number]: DailyHeaderDto } = {};
-
-  
   isSidebarOpen: boolean = false;
   selectedDayId: number | null = null;
   isAdjustingMacros: boolean = false;
-
   aiMessage: string = '';
   aiMessageType: 'success' | 'error' | '' = '';
+  isInfoModalOpen: boolean = false;
+  selectedRecipe: any = null;
 
   constructor(
     private homeService: HomeService,
@@ -60,7 +56,6 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  // --- FUNCIONES DE SELECCIÓN DE DÍA  IA ---
   selectDay(idDaily: number) {
     this.selectedDayId = idDaily;
   }
@@ -81,25 +76,18 @@ export class HomeComponent implements OnInit {
     this.aiMessage = ''; 
     this.aiMessageType = ''; 
     this.cdr.detectChanges(); 
-    
+      
     this.homeService.adjustDayMacros(this.selectedDayId)
       .pipe(
-        timeout(20000), 
-        catchError((err) => {
-          return throwError(() => err);
-        }),
-        finalize(() => {
-          this.isAdjustingMacros = false;
-          this.cdr.detectChanges(); 
-        })
+        timeout(60000)
       )
       .subscribe({
         next: (res) => {
+          this.isAdjustingMacros = false;
           this.aiMessageType = 'success';
-          this.aiMessage = "✨ ¡Magia! Raciones cuadradas perfectamente.";
+          this.aiMessage = "Raciones del día cuadradas correctamente";
           this.loadDashboardData(); 
-          
-          this.cdr.detectChanges(); 
+          this.cdr.detectChanges();
           
           setTimeout(() => {
             this.aiMessage = '';
@@ -107,11 +95,11 @@ export class HomeComponent implements OnInit {
           }, 4000);
         },
         error: (err) => {
-          console.error("Error capturado de la IA:", err);
-          
+          console.error(err);
+          this.isAdjustingMacros = false;
           this.aiMessageType = 'error';
           
-          if (err.name === 'TimeoutError') {
+          if (err.name === 'TimeoutError' || err.message?.includes('Timeout')) {
              this.aiMessage = "La IA está tardando demasiado en responder. Los servidores deben estar muy saturados. Por favor, inténtalo más tarde.";
           }
           else if (err.status === 503 || (typeof err.error === 'string' && err.error.includes("high demand"))) {
@@ -126,21 +114,19 @@ export class HomeComponent implements OnInit {
           else {
             this.aiMessage = "Error de conexión con la IA. Inténtalo de nuevo.";
           }
-
           this.cdr.detectChanges(); 
         }
       });
   }
-  
-  // --- FUNCIONES DE ESTÉTICA Y NAVEGACIÓN ---
+
   getMealClass(mealName: string): string {
     if (!mealName) return '';
     const name = mealName.toLowerCase();
-    if (name.includes('desayuno')) return 'meal-yellow';
-    if (name.includes('almuerzo')) return 'meal-orange';
-    if (name.includes('comida')) return 'meal-red';
-    if (name.includes('merienda')) return 'meal-purple';
-    if (name.includes('cena')) return 'meal-blue';
+    if (name.includes('desayuno')) return 'meal-desayuno';
+    if (name.includes('almuerzo')) return 'meal-almuerzo';
+    if (name.includes('comida')) return 'meal-comida';
+    if (name.includes('merienda')) return 'meal-merienda';
+    if (name.includes('cena')) return 'meal-cena';
     return '';
   }
 
@@ -148,7 +134,6 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/recipes']);
   }
 
-  // --- FUNCIONES DEL MENÚ LATERAL ---
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
@@ -157,7 +142,17 @@ export class HomeComponent implements OnInit {
     this.isSidebarOpen = false;
   }
 
-  // --- CARGA DE DATOS ---
+  openInfoModal(recipe: any) {
+    this.selectedRecipe = recipe;
+    this.isInfoModalOpen = true;
+    this.cdr.detectChanges();
+  }
+
+  closeInfoModal() {
+    this.isInfoModalOpen = false;
+    this.selectedRecipe = null;
+  }
+
   loadDashboardData(): void {
     this.loading = true;
     
@@ -183,7 +178,7 @@ export class HomeComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error("Error cargando calendario (posiblemente no hay plan):", err);
+        console.error(err);
         this.hasActivePlan = false;
         this.loading = false;
         this.cdr.detectChanges();
@@ -197,18 +192,17 @@ export class HomeComponent implements OnInit {
         this.weeklyHeader = header;
         this.cdr.detectChanges();
       },
-      error: (err) => console.error("Error cargando cabecera:", err)
+      error: (err) => console.error(err)
     });
 
     this.homeService.getRecipesForUser(this.userId).subscribe({
       next: (recipes) => {
-        // Filtramos para que no salgan las recetas clonadas de ajuste en el catálogo
         this.availableRecipes = recipes.filter(r => !r.recipeName.startsWith('[AJUSTADO]'));
         this.loading = false; 
         this.cdr.detectChanges(); 
       },
       error: (err) => {
-        console.error("Error cargando recetas:", err);
+        console.error(err);
         this.loading = false;
         this.cdr.detectChanges();
       }
@@ -222,10 +216,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  // --- DRAG AND DROP ---
   drop(event: CdkDragDrop<any[]>, targetDayId?: number) {
-    
-    
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       if (targetDayId) {
@@ -242,19 +233,15 @@ export class HomeComponent implements OnInit {
         );
         
         event.container.data[event.currentIndex] = { ...event.container.data[event.currentIndex] };
-
         if (targetDayId) {
           this.saveDayConfiguration(targetDayId, event.container.data);
         }
       } 
-     
       else if (event.container.id === 'recipe-catalog') {
-        event.previousContainer.data.splice(event.previousIndex, 1); 
-        
+        event.previousContainer.data.splice(event.previousIndex, 1);
         const oldDayId = parseInt(event.previousContainer.id.replace('day-list-', ''), 10);
         this.saveDayConfiguration(oldDayId, event.previousContainer.data); 
       } 
-
       else {
         transferArrayItem(
           event.previousContainer.data,
@@ -262,14 +249,12 @@ export class HomeComponent implements OnInit {
           event.previousIndex,
           event.currentIndex,
         );
-
         if (targetDayId) {
-          this.saveDayConfiguration(targetDayId, event.container.data); // Guarda el día destino
+          this.saveDayConfiguration(targetDayId, event.container.data); 
         }
-
         const previousListId = event.previousContainer.id;
         const oldDayId = parseInt(previousListId.replace('day-list-', ''), 10);
-        this.saveDayConfiguration(oldDayId, event.previousContainer.data); // Guarda el día origen
+        this.saveDayConfiguration(oldDayId, event.previousContainer.data); 
       }
     }
   }
@@ -296,7 +281,6 @@ export class HomeComponent implements OnInit {
       this.cdr.detectChanges(); 
     }
 
-    
     const recipeIds = recipes.map(r => r.idRecipe);
     this.homeService.updateDailyRecipes({
       idUserFoodPlanDaily: idDailyPlan,
@@ -305,7 +289,7 @@ export class HomeComponent implements OnInit {
       this.loadDailyHeader(idDailyPlan);
     });
   }
-  
+
   getEmptySlots(day: any): any[] {
     if (!this.calendar || !day.assignedRecipes) return [];
     const count = this.calendar.mealsPerDay - day.assignedRecipes.length;
@@ -313,19 +297,16 @@ export class HomeComponent implements OnInit {
   }
 
   crearNuevoPlan() {
-    this.loading = true; 
-    
+    this.loading = true;
     this.homeService.createWeeklyPlan(this.userId).subscribe({
       next: () => {
         this.loadDashboardData();
       },
       error: (err) => {
-        console.error("Error al crear plan:", err);
+        console.error(err);
         this.loading = false;
         this.cdr.detectChanges();
-
         if (err.status === 404 || err.status === 400 || err.status === 500) {
-           console.warn("Redirigiendo al Onboarding...");
            this.router.navigate(['/onboarding']); 
         } else {
            alert("Ha ocurrido un error inesperado al intentar crear tu plan.");

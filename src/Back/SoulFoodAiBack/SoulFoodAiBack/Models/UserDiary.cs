@@ -22,7 +22,9 @@ namespace SoulFoodAiBack.Models
 
         public int DietAdherence { get; set; }
 
-        public string? Notes { get; set; }
+        public string? Description { get; set; }
+
+        public string? AiReportResponse { get; set; }
 
         public int IdUserFoodPlan { get; set; }
 

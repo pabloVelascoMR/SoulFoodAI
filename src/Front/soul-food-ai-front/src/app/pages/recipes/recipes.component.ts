@@ -81,15 +81,15 @@ export class RecipesComponent implements OnInit {
   }
 
   getMealClass(mealName: string): string {
-    if (!mealName) return '';
-    const name = mealName.toLowerCase();
-    if (name.includes('desayuno')) return 'meal-yellow';
-    if (name.includes('almuerzo')) return 'meal-orange';
-    if (name.includes('comida')) return 'meal-red';
-    if (name.includes('merienda')) return 'meal-purple';
-    if (name.includes('cena')) return 'meal-blue';
-    return '';
-  }
+  if (!mealName) return '';
+  const name = mealName.toLowerCase();
+  if (name.includes('desayuno')) return 'meal-desayuno';
+  if (name.includes('almuerzo')) return 'meal-almuerzo';
+  if (name.includes('comida')) return 'meal-comida';
+  if (name.includes('merienda')) return 'meal-merienda';
+  if (name.includes('cena')) return 'meal-cena';
+  return '';
+}
 
   openAiModal() { this.isAiModalOpen = true; }
   closeAiModal() { 

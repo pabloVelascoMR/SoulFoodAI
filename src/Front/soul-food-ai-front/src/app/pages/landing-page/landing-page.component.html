@@ -1,0 +1,446 @@
+<nav class="nav">
+  <div class="nav__logo">Soul Food<span> AI</span></div>
+  <ul class="nav__links">
+    <li><a href="#como-funciona" (click)="scrollToSection('como-funciona', $event)">Cómo funciona</a></li>
+    <li><a href="#funciones" (click)="scrollToSection('funciones', $event)">Funciones</a></li>
+    <li><a href="#reportes" (click)="scrollToSection('ia', $event)">Reportes Semanales</a></li>
+    <li><a href="#supermercado" (click)="scrollToSection('supermercado', $event)">Ingredientes</a></li>
+  </ul>
+  <button class="nav__cta" (click)="goToLogin()">Iniciar sesión</button>
+</nav>
+
+<section class="quote-section">
+  <div class="quote-container reveal">
+    <h2 class="quote-text">"Alimentar el cuerpo con cuidado es también una manera de alimentar el <span class="text-primary">ALMA</span>"</h2>
+    <p class="quote-author">— Epicuro</p>
+  </div>
+</section>
+
+<div class="hero-banner reveal">
+  <h1 class="hero-banner__title">
+  <span class="text-primary">SOUL</span> FOOD AI
+  </h1>
+</div>
+
+<section class="hero">
+  <div>
+    <div class="hero__eyebrow reveal">Nutrición personalizada con ALMA</div>
+    <h1 class="hero__title reveal revea-d1">Tu dieta.<br><em>Perfecta.</em><br>Cada semana.</h1>
+    <p class="hero__sub reveal revea-d2">Crea planes de comidas a medida con nuestra inteligencia artificial SOUL. Tus ingredientes, tus objetivos, tus gustos. Hecha a tu medida.</p>
+    <div class="hero__actions reveal revea-d3">
+      <button class="btn--primary" (click)="goToRegister()">Empezar gratis</button>
+      <button class="btn--ghost" (click)="scrollToSection('como-funciona', $event)">Ver cómo funciona</button>
+    </div>
+  </div>
+
+  <div class="hero__visual reveal revea-d2">
+    <div class="hero-app-mockup">
+      <div class="mockup-inner">
+        <header class="surface-module mockup-header">
+          <div class="mockup-header__left">
+            <h1 class="page-title mockup-title">Día: Lunes</h1>
+            <p class="mockup-goal">🎯 Objetivo del día: 2050 Kcal</p>
+            <button class="mockup-btn">
+              Cuadra tus recetas automáticamente
+            </button>
+          </div>
+          
+          <div class="mockup-macros">
+            <h3 class="mockup-macros__title">Progreso de Macros</h3>
+            <div class="mockup-macros__grid">
+              <div class="mockup-macro-card mockup-macro-card--full">
+                <div class="mockup-macro-header mockup-macro-header--lg">
+                  <span>🔥 Calorías</span><strong>1980 / 2050</strong>
+                </div>
+                <div class="mockup-progress mockup-progress--lg">
+                  <div class="mockup-progress__fill mockup-progress__fil-cals"></div>
+                </div>
+              </div>
+              <div class="mockup-macro-card">
+                <div class="mockup-macro-header">
+                  <span>🥩 Prote</span><strong>158g</strong>
+                </div>
+                <div class="mockup-progress">
+                  <div class="mockup-progress__fill mockup-progress__fil-prote"></div>
+                </div>
+              </div>
+              <div class="mockup-macro-card">
+                <div class="mockup-macro-header">
+                  <span>🍞 Carbs</span><strong>210g</strong>
+                </div>
+                <div class="mockup-progress">
+                  <div class="mockup-progress__fill mockup-progress__fil-carbs"></div>
+                </div>
+              </div>
+              <div class="mockup-macro-card">
+                <div class="mockup-macro-header">
+                  <span>🥑 Grasas</span><strong>58g</strong>
+                </div>
+                <div class="mockup-progress">
+                  <div class="mockup-progress__fill mockup-progress__fil-fats"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="mockup-days">
+          <div class="surface-module mockup-day">
+            <div class="mockup-day__header">
+              <span class="mockup-day__name">LUNES</span>
+              <div class="mockup-day__number">12</div>
+              <div class="mockup-day__stats">
+                <div class="mockup-day__stats-text">1980 / 2050 kcal</div>
+                <div class="mockup-day__progress">
+                  <div class="mockup-day__fill"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mockup-day__meals">
+              <div class="mockup-meal mockup-mea-desayuno">
+                <h3 class="mockup-meal__title">Huevos revueltos con espinacas</h3>
+                <div class="mockup-meal__tag">Desayuno</div>
+                <div class="mockup-meal__cals">🔥 380 Kcal</div>
+                <button class="mockup-meal__btn">➕ Más Info</button>
+              </div>
+
+              <div class="mockup-meal mockup-mea-comida">
+                <h3 class="mockup-meal__title">Ensalada mediterránea y atún</h3>
+                <div class="mockup-meal__tag">Comida</div>
+                <div class="mockup-meal__cals">🔥 520 Kcal</div>
+                <button class="mockup-meal__btn">➕ Más Info</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="surface-module mockup-day mockup-day--dimmed">
+            <div class="mockup-day__header mockup-day__header--dimmed">
+              <span class="mockup-day__name">MARTES</span>
+              <div class="mockup-day__number mockup-day__number--dimmed">13</div>
+              <div class="mockup-day__stats">
+                <div class="mockup-day__stats-text">600 / 2050 kcal</div>
+                <div class="mockup-day__progress">
+                  <div class="mockup-day__fill mockup-day__fil-dimmed"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mockup-day__meals">
+              <div class="mockup-meal mockup-mea-cena">
+                <h3 class="mockup-meal__title">Pollo asado al limón</h3>
+                <div class="mockup-meal__tag">Cena</div>
+                <div class="mockup-meal__cals">🔥 600 Kcal</div>
+                <button class="mockup-meal__btn">➕ Más Info</button>
+              </div>
+              <div class="mockup-mea-add">+ Añadir receta</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker__inner">
+    <span class="ticker__item"><span class="ticker__sep">—</span> Recetas generadas con alma</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Ajuste semanal de macros</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Registro de Intolerancias y alergias</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Open Food Facts integrado</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Calendario semanal </span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Reporte semanal con alma</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Todo a tu medida</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Recetas generadas con alma</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Ajuste semanal de macros</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Registro de Intolerancias y alergias</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Open Food Facts integrado</span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Calendario semanal </span>
+    <span class="ticker__item"><span class="ticker__sep">—</span> Reporte semanal con alma</span>
+  </div>
+</div>
+
+<section class="section section--pt40" id="como-funciona">
+  <div class="how__header reveal">
+    <span class="eyebrow">El proceso</span>
+    <h2 class="title">De cero a tu dieta ideal<br>en <em>minutos</em></h2>
+    <p>Sin tecnicismos. Respondes unas preguntas, eliges tus ingredientes y Soul Food AI construye tu plan de comidas completo.</p>
+  </div>
+  <div class="steps">
+    <div class="step reveal revea-d1">
+      <div class="step__num">01</div>
+      <div class="step__label">Perfil</div>
+      <h3>Cuéntanos sobre ti</h3>
+      <p>Edad, peso, medidas, nivel de actividad, intolerancias o alergias, objetivo, y el tipo de dieta que quieres seguir, Vegana, Keto, mediterránea....</p>
+    </div>
+    <div class="step reveal revea-d2">
+      <div class="step__num">02</div>
+      <div class="step__label">Catálogo</div>
+      <h3>Elige tus ingredientes</h3>
+      <p>Selecciona del catálogo o busca productos de tu marca favorita. Tus recetas solo usarán los ingredientes excatos que consumes habitualmente.</p>
+    </div>
+    <div class="step step--highlight reveal revea-d3">
+      <div class="step__num">03</div>
+      <div class="step__label">Generación</div>
+      <h3>Soul construye tu plan</h3>
+      <p>Soul Calcula tus calorías y macros diarios para crear tu plan de comidas. Despues puedes generar con Soul recetas variadas adaptadas al 100% a tu perfil y objetivos.</p>
+    </div>
+    <div class="step reveal revea-d4">
+      <div class="step__num">04</div>
+      <div class="step__label">Mejora continua</div>
+      <h3>Ajuste semanal inteligente</h3>
+      <p>Cuéntale a Soul cómo te fue: energía, sueño, hambre. Adaptará tu dieta para la semana siguiente.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--bg" id="funciones">
+  <div class="features__grid">
+    <div class="features__intro">
+      <span class="eyebrow reveal">Funcionalidades</span>
+      <h2 class="title reveal">Una app completa,<br><em>para facilitarte comer sin preocupaciones</em></h2>
+      <p class="reveal">Cada función está pensada para que comer bien no sea un trabajo. Desde el catálogo de ingredientes hasta el historial de semanas.</p>
+      <ul class="feature-list">
+        <li class="reveal revea-d1">
+          <div class="feature__marker"></div>
+          <div>
+            <div class="feature__title">Menú semanal </div>
+            <div class="feature__desc">Arrastra recetas entre los días de la semana. Los macros y calorías se recalculan al instante en el cabezal diario.</div>
+          </div>
+        </li>
+        <li class="reveal revea-d2">
+          <div class="feature__marker"></div>
+          <div>
+            <div class="feature__title">Cuadrar macros con un clic</div>
+            <div class="feature__desc">Ajusta automáticamente las cantidades de las recetas de un día para alcanzar exactamente tus objetivos diarios.</div>
+          </div>
+        </li>
+        <li class="reveal revea-d3">
+          <div class="feature__marker"></div>
+          <div>
+            <div class="feature__title">Recetas generadas o manuales</div>
+            <div class="feature__desc">Pide a Soul una receta con texto libre o créala tú seleccionando ingredientes y cantidades.</div>
+          </div>
+        </li>
+        <li class="reveal revea-d3">
+          <div class="feature__marker"></div>
+          <div>
+            <div class="feature__title">Reporte Semanal</div>
+            <div class="feature__desc">Al finalizar cada semana, cuéntale a Soul cómo te ha ido con la dieta. Analizará tu progreso y la ajustará para ayudarte a mejorar la semana siguiente</div>
+          </div>
+        </li>
+        <li class="reveal revea-d4">
+          <div class="feature__marker"></div>
+          <div>
+            <div class="feature__title">Historial de planes</div>
+            <div class="feature__desc">Consulta qué comiste cualquier semana anterior. Oculta semanas que no quieras ver sin perder los datos.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="ai-panel reveal">
+      <div class="ai-panel__title">Receta generada por Soul</div>
+      <div class="chat">
+        <div class="bubble bubble--user">Quiero una cena de cocina italiana, que sea ligera</div>
+        <div class="bubble bubble--ai">
+          He diseñado la receta perfecta para ti.
+          
+          <div class="unified-card ai-recipe-card">
+            <h3 class="ai-recipe-title">Pasta al pesto de calabacín con pollo</h3>
+            <div class="diet-pill ai-recipe-pill">CENA</div>
+            <div class="kcatag ai-recipe-kcal">🔥 420 Kcal</div>
+            <button class="btn-secondary ai-recipe-btn">➕ Más Info</button>
+          </div>
+        </div>
+      </div>
+      <div class="panedivider"></div>
+      <div class="panelabel">Ajuste de macros</div>
+      <div class="panel-grid">
+        <div class="panel-stat">
+          <div class="panel-stat-header">
+            <span>🔥 Calorías</span><strong>1025 / 2050</strong>
+          </div>
+          <div class="bar"><div class="bar__fill bar__fill--cal"></div></div>
+        </div>
+        <div class="panel-stat">
+          <div class="panel-stat-header">
+            <span>🥩 Prote</span><strong>80 / 165g</strong>
+          </div>
+          <div class="bar"><div class="bar__fill bar__fill--prot"></div></div>
+        </div>
+        <div class="panel-stat">
+          <div class="panel-stat-header">
+            <span>🍞 Carbs</span><strong>110 / 225g</strong>
+          </div>
+          <div class="bar"><div class="bar__fill bar__fill--carb"></div></div>
+        </div>
+        <div class="panel-stat">
+          <div class="panel-stat-header">
+            <span>🥑 Grasas</span><strong>31 / 62g</strong>
+          </div>
+          <div class="bar"><div class="bar__fill bar__fill--fat"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--dark" id="ia">
+  <div class="ai-inner">
+    <div class="ai-text">
+      <span class="eyebrow reveal">Soul te entiende</span>
+      <h2 class="title reveal">La dieta se adapta<br>a <em>cómo te sientes</em></h2>
+      <p class="ai-text__sub reveal">No todas las semanas son iguales. Si has dormido mal, tienes más hambre o te has sentido sin energía, Soul ajusta tu plan para la semana siguiente.</p>
+      <div class="ai-cards">
+        <div class="ai-card reveal revea-d1">
+          <div class="ai-card__title">Análisis de bienestar</div>
+          <div class="ai-card__desc">Puntúa tu saciedad, energía, calidad de sueño y adherencia a la dieta. Soul lee cada señal y actúa en consecuencia.</div>
+        </div>
+        <div class="ai-card reveal revea-d2">
+          <div class="ai-card__title">Notas libres</div>
+          <div class="ai-card__desc">Escríbele directamente: "Me cuesta llegar a las proteínas" o "quiero exactamente 2.100 kcal esta semana". Soul lo tendra en cuenta.</div>
+        </div>
+        <div class="ai-card reveal revea-d3">
+          <div class="ai-card__title">Actualización de medidas</div>
+          <div class="ai-card__desc">Registra tu peso y medidas corporales semanalmente. Soul recalcula tus necesidades con los datos reales actualizados.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-stack reveal">
+      <div class="report-card">
+        <div class="report-card__title">Tu reporte de la semana</div>
+        <div class="slider">
+          <span class="slider__label">Saciedad</span>
+          <div class="slider__track"><div class="slider__fill slider__fill--saciedad"></div></div>
+          <span class="slider__num">4</span>
+        </div>
+        <div class="slider">
+          <span class="slider__label">Energía</span>
+          <div class="slider__track"><div class="slider__fill slider__fill--energia"></div></div>
+          <span class="slider__num">3</span>
+        </div>
+        <div class="slider">
+          <span class="slider__label">Sueño</span>
+          <div class="slider__track"><div class="slider__fill slider__fill--sueno"></div></div>
+          <span class="slider__num">5</span>
+        </div>
+        <div class="slider">
+          <span class="slider__label">Adherencia</span>
+          <div class="slider__track"><div class="slider__fill slider__fill--adherencia"></div></div>
+          <span class="slider__num">8</span>
+        </div>
+        <div class="report-note">
+          <strong>Nota:</strong> "Me cuesta llegar a las proteínas, tengo ansiedad por dulce por las tardes."
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-tag">Ajuste de Soul para la próxima semana</div>
+        <p class="report-body">
+          He notado que tienes poca energía y hambre nocturna. He subido tus proteínas a <strong>175g</strong>, añadido un snack vespertino de 200 kcal y aumentado los hidratos complejos en la cena para mejorar la calidad del sueño.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="supermercado">
+  <div class="off-header reveal">
+    <span class="eyebrow">Tus productos reales</span>
+    <h2 class="title">Conectado a <em>Open Food Facts</em></h2>
+    <p class="off-header__sub">Busca exactamente lo que compras en tu supermercado. Soul Food AI obtiene los datos nutricionales reales del producto y los usa en tus recetas y macros diarios con precisión.</p>
+  </div>
+
+  <div class="off-grid off-container">
+    
+    <div class="off-search reveal reveal--d1 off-search--constrained">
+      <div class="off-search__bar">
+        <span class="off-search__icon">↗</span>
+        Yogur griego Mercadona 0% M.G.
+        <span class="off-search__cursor"></span>
+      </div>
+      <div class="off-results">
+        <div class="off-result off-result--active">
+          <div class="off-result__left">
+            <div class="off-result__dot"></div>
+            <div>
+              <div class="off-result__name">Yogur Griego Natural 0% — Hacendado</div>
+              <div class="off-result__brand">Mercadona · 125g</div>
+            </div>
+          </div>
+          <div class="off-result__macros">
+            <span class="off-pill off-pill--kcal">72 kcal</span>
+            <span class="off-pill off-pill--prot">10g prot</span>
+          </div>
+        </div>
+        <div class="off-result">
+          <div class="off-result__left">
+            <div class="off-result__dot"></div>
+            <div>
+              <div class="off-result__name">Yogur Griego Cremoso — Danone</div>
+              <div class="off-result__brand">Varios supermercados · 125g</div>
+            </div>
+          </div>
+          <div class="off-result__macros">
+            <span class="off-pill off-pill--kcal">115 kcal</span>
+            <span class="off-pill off-pill--prot">5g prot</span>
+          </div>
+        </div>
+        <div class="off-result">
+          <div class="off-result__left">
+            <div class="off-result__dot"></div>
+            <div>
+              <div class="off-result__name">Yogur Griego Con Miel — Chobani</div>
+              <div class="off-result__brand">El Corte Inglés · 150g</div>
+            </div>
+          </div>
+          <div class="off-result__macros">
+            <span class="off-pill off-pill--kcal">140 kcal</span>
+            <span class="off-pill off-pill--prot">8g prot</span>
+          </div>
+        </div>
+      </div>
+      <div class="off-added">
+        <div class="off-added__main">Añadido a tu catálogo</div>
+        <div class="off-added__sub">Disponible en tus recetas y menú semanal</div>
+      </div>
+    </div>
+
+    <div class="off-pills reveal reveal--d3 off-pills--margin">
+      <div class="off-pill-card">
+        <div class="off-pill-card__title">Cualquier supermercado</div>
+        <div class="off-pill-card__desc">Mercadona, Lidl, Día, Carrefour, Aldi y +3 millones de productos alimenticios indexados en Open Food Facts.</div>
+      </div>
+      <div class="off-pill-card off-pill-card--dark">
+        <div class="off-pill-card__title">Macros reales, no estimados</div>
+        <div class="off-pill-card__desc">Calorías, proteínas, hidratos y grasas extraídos directamente de la etiqueta nutricional del producto. No vas a tener datos genéricos</div>
+      </div>
+      <div class="off-pill-card">
+        <div class="off-pill-card__title">Tu catálogo personal</div>
+        <div class="off-pill-card__desc">Añade, activa, desactiva o elimina productos. El historial de recetas antiguas se mantiene intacto.</div>
+      </div>
+      <div class="off-pill-card">
+        <div class="off-pill-card__title">Conteo automático</div>
+        <div class="off-pill-card__desc">Si la una receta usa 150,50g de yogur, suma exactamente la cantidad real a tu total del día. Sin redondeos.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="cta">
+  <span class="eyebrow reveal">Empieza hoy</span>
+  <h2 class="title cta__title reveal">La dieta que <em>funciona</em><br>para ti existe.</h2>
+  <p class="cta__sub reveal">Regístrate gratis, completa tu perfil y en menos de 5 minutos tendrás tu primer plan de comidas personalizado.</p>
+  <div class="cta__actions reveal">
+    <button class="btn--primary" (click)="goToRegister()">Crear mi cuenta gratis</button>
+    <button class="btn--secondary" (click)="goToLogin()">Ya tengo cuenta</button>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer__logo">Soul Food<span> AI</span></div>
+  <p class="footer__copy">© 2026 Soul Food AI · Todos los derechos reservados. · Privacidad garantizada</p> 
+</footer>
