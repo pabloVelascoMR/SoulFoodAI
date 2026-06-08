@@ -22,7 +22,7 @@ export interface PlanHistory {
   providedIn: 'root'
 })
 export class FoodplanHistoryService {
-  private apiUrl = 'https://localhost:7007/api';
+  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api';
 
   constructor(private http: HttpClient) { }
 

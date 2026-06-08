@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class WeekReportService {
   
-  private apiUrl = 'https://localhost:7007/api'; 
+  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api';
 
   constructor(private http: HttpClient) {}
 

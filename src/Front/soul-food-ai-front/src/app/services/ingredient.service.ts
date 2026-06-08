@@ -20,7 +20,7 @@ export interface Ingredient {
   providedIn: 'root'
 })
 export class IngredientService {
-  private apiUrl = 'https://localhost:7007/api/Ingredient';
+  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/Ingredient';
 
   constructor(private http: HttpClient) {}
   

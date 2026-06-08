@@ -36,7 +36,7 @@ export interface DailyHeaderDto {
   providedIn: 'root'
 })
 export class HomeService {
-  private baseUrl = 'https://localhost:7007/api';
+  private baseUrl = 'https://api-soulfoodai.azurewebsites.net/api';
 
   constructor(private http: HttpClient) { }
 

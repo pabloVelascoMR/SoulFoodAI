@@ -7,8 +7,8 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://localhost:7007/api/User'; 
-  private authUrl = 'https://localhost:7007/api/Auth'; 
+  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/User';
+  private authUrl = 'https://api-soulfoodai.azurewebsites.net/api/Auth';
 
   constructor(
     private http: HttpClient,
