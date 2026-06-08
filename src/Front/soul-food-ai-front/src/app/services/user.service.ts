@@ -9,6 +9,7 @@ import { isPlatformBrowser } from '@angular/common';
 export class UserService {
   private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/User';
   private authUrl = 'https://api-soulfoodai.azurewebsites.net/api/Auth';
+  private userId: number | null = null;
 
   constructor(
     private http: HttpClient,
@@ -21,6 +22,7 @@ export class UserService {
         if (isPlatformBrowser(this.platformId)) {
           const id = res.idUser || res.IdUser; 
           if (id) {
+            this.userId = parseInt(id, 10);
             localStorage.setItem('soulfood_userId', id.toString());
           }
 
@@ -39,6 +41,7 @@ export class UserService {
         if (isPlatformBrowser(this.platformId)) {
           const id = res.idUser || res.IdUser; 
           if (id) {
+            this.userId = parseInt(id, 10);
             localStorage.setItem('soulfood_userId', id.toString());
           }
 
@@ -52,14 +55,23 @@ export class UserService {
   }
 
   getUserId(): number | null {
+    if (this.userId) {
+      return this.userId;
+    }
+
     if (isPlatformBrowser(this.platformId)) {
       const id = localStorage.getItem('soulfood_userId');
-      return id ? parseInt(id, 10) : null;
+      if (id) {
+        this.userId = parseInt(id, 10);
+        return this.userId;
+      }
     }
+    
     return null;
   }
 
   logout(): void {
+    this.userId = null;
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('soulfood_userId');
       localStorage.removeItem('soulfood_token');
