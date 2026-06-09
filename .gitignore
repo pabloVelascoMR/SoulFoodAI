@@ -22,3 +22,8 @@ Thumbs.db
 # Sonar
 .sonarqube/
 .scannerwork/
+
+# Coverage reports
+src/Back/SoulFoodAiBack/SoulFoodAiBack/Tests/coveragereport/
+src/Back/SoulFoodAiBack/SoulFoodAiBack/Tests/coveragereport_controllers/
+src/Front/soul-food-ai-front/coverage/
