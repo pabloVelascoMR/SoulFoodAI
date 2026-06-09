@@ -3,8 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
 import { Router, RouterModule } from '@angular/router'; 
 import { UserService } from '../../services/user.service';
-import { finalize, timeout, catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 import { 
   HomeService, 
   WeekCalendarDto, 
@@ -37,11 +36,11 @@ export class HomeComponent implements OnInit {
   selectedRecipe: any = null;
 
   constructor(
-    private homeService: HomeService,
-    private userService: UserService,
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef 
+    private readonly homeService: HomeService,
+    private readonly userService: UserService,
+    private readonly router: Router,
+    @Inject(PLATFORM_ID) private readonly platformId: Object,
+    private readonly cdr: ChangeDetectorRef 
   ) {}
 
   ngOnInit(): void {
@@ -102,7 +101,7 @@ export class HomeComponent implements OnInit {
           if (err.name === 'TimeoutError' || err.message?.includes('Timeout')) {
              this.aiMessage = "La IA está tardando demasiado en responder. Los servidores deben estar muy saturados. Por favor, inténtalo más tarde.";
           }
-          else if (err.status === 503 || (typeof err.error === 'string' && err.error.includes("high demand"))) {
+          else if (err.status === 503 || (typeof err.error === 'string' && err.error?.includes("high demand"))) {
             this.aiMessage = "Servidores de IA saturados por alta demanda. Por favor, espera unos segundos y vuelve a intentarlo.";
           } 
           else if (err.error && typeof err.error === 'string') {
@@ -158,7 +157,7 @@ export class HomeComponent implements OnInit {
     
     this.homeService.getActiveWeekCalendar(this.userId).subscribe({
       next: (cal) => {
-        if (!cal || !cal.days || cal.days.length === 0) {
+        if (!cal?.days || cal.days.length === 0) {
           this.hasActivePlan = false;
           this.loading = false;
           this.cdr.detectChanges();
@@ -223,39 +222,37 @@ export class HomeComponent implements OnInit {
         this.saveDayConfiguration(targetDayId, event.container.data);
       }
     } 
-    else {
-      if (event.previousContainer.id === 'recipe-catalog') {
-        copyArrayItem(
-          event.previousContainer.data,
-          event.container.data,
-          event.previousIndex,
-          event.currentIndex
-        );
-        
-        event.container.data[event.currentIndex] = { ...event.container.data[event.currentIndex] };
-        if (targetDayId) {
-          this.saveDayConfiguration(targetDayId, event.container.data);
-        }
-      } 
-      else if (event.container.id === 'recipe-catalog') {
-        event.previousContainer.data.splice(event.previousIndex, 1);
-        const oldDayId = parseInt(event.previousContainer.id.replace('day-list-', ''), 10);
-        this.saveDayConfiguration(oldDayId, event.previousContainer.data); 
-      } 
-      else {
-        transferArrayItem(
-          event.previousContainer.data,
-          event.container.data,
-          event.previousIndex,
-          event.currentIndex,
-        );
-        if (targetDayId) {
-          this.saveDayConfiguration(targetDayId, event.container.data); 
-        }
-        const previousListId = event.previousContainer.id;
-        const oldDayId = parseInt(previousListId.replace('day-list-', ''), 10);
-        this.saveDayConfiguration(oldDayId, event.previousContainer.data); 
+    else if (event.previousContainer.id === 'recipe-catalog') {
+      copyArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+      
+      event.container.data[event.currentIndex] = { ...event.container.data[event.currentIndex] };
+      if (targetDayId) {
+        this.saveDayConfiguration(targetDayId, event.container.data);
       }
+    } 
+    else if (event.container.id === 'recipe-catalog') {
+      event.previousContainer.data.splice(event.previousIndex, 1);
+      const oldDayId = Number.parseInt(event.previousContainer.id.replace('day-list-', ''), 10);
+      this.saveDayConfiguration(oldDayId, event.previousContainer.data); 
+    } 
+    else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex,
+      );
+      if (targetDayId) {
+        this.saveDayConfiguration(targetDayId, event.container.data); 
+      }
+      const previousListId = event.previousContainer.id;
+      const oldDayId = Number.parseInt(previousListId.replace('day-list-', ''), 10);
+      this.saveDayConfiguration(oldDayId, event.previousContainer.data); 
     }
   }
 

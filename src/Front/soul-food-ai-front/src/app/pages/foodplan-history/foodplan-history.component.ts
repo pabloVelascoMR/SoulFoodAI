@@ -18,14 +18,22 @@ export class FoodplanHistoryComponent implements OnInit {
   planToHide: number | null = null; 
 
   constructor(
-    private historyService: FoodplanHistoryService, 
-    private cdr: ChangeDetectorRef,
-    private ngZone: NgZone,
-    private userService: UserService
+    private readonly historyService: FoodplanHistoryService, 
+    private readonly cdr: ChangeDetectorRef,
+    private readonly ngZone: NgZone,
+    private readonly userService: UserService
   ) {}
 
   ngOnInit(): void {
     this.loadHistory();
+  }
+
+  private isSameDate(r: any, currentDate: Date): boolean {
+    if (!r?.dateEaten) return false;
+    const rDate = new Date(r.dateEaten);
+    return rDate.getDate() === currentDate.getDate() && 
+           rDate.getMonth() === currentDate.getMonth() &&
+           rDate.getFullYear() === currentDate.getFullYear();
   }
 
   loadHistory() {
@@ -58,13 +66,7 @@ export class FoodplanHistoryComponent implements OnInit {
                   const currentDate = new Date(startDate);
                   currentDate.setDate(startDate.getDate() + i); 
                   
-                  const dayRecipes = rawRecipes.filter((r: any) => {
-                    if (!r || !r.dateEaten) return false;
-                    const rDate = new Date(r.dateEaten);
-                    return rDate.getDate() === currentDate.getDate() && 
-                           rDate.getMonth() === currentDate.getMonth() &&
-                           rDate.getFullYear() === currentDate.getFullYear();
-                  });
+                  const dayRecipes = rawRecipes.filter((r: any) => this.isSameDate(r, currentDate));
 
                   calendarDays.push({
                     date: currentDate,

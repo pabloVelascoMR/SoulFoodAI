@@ -93,7 +93,9 @@
 
         <div class="card-delete-x"
           *ngIf="canDelete(ingredient) && !isIngredientSelected(ingredient)"
-          (click)="deleteCustomIngredient(ingredient, $event)">🗑️
+          (click)="deleteCustomIngredient(ingredient, $event)"
+          tabindex="0"
+          (keydown.enter)="deleteCustomIngredient(ingredient, $event)">🗑️
         </div>
       </div>
     </section>
@@ -104,38 +106,38 @@
       <h2 class="modal-title">{{ isEditing ? 'Editar Ingrediente' : 'Crear Ingrediente' }}</h2>
 
       <div class="input-group">
-        <div class="label-row"><label>Nombre del alimento:</label></div>
-        <input type="text" class="form-input" [(ngModel)]="newIngredient.name">
+        <div class="label-row"><label for="ing_name">Nombre del alimento:</label></div>
+        <input id="ing_name" type="text" class="form-input" [(ngModel)]="newIngredient.name">
       </div>
 
       <div class="input-group">
-        <div class="label-row"><label>Categoría:</label></div>
-        <select class="form-input" [(ngModel)]="newIngredient.category">
+        <div class="label-row"><label for="ing_category">Categoría:</label></div>
+        <select id="ing_category" class="form-input" [(ngModel)]="newIngredient.category">
           <option *ngFor="let step of steps" [value]="step.name">{{ step.name }}</option>
         </select>
       </div>
 
       <div class="input-group">
-        <div class="label-row"><label>Icono o Emoji:</label></div>
-        <input type="text" class="form-input" [(ngModel)]="newIngredient.icon">
+        <div class="label-row"><label for="ing_icon">Icono o Emoji:</label></div>
+        <input id="ing_icon" type="text" class="form-input" [(ngModel)]="newIngredient.icon">
       </div>
 
       <div class="macros-grid">
         <div class="input-group">
-          <div class="label-row"><label>Kcal:</label></div>
-          <input type="number" class="form-input" [(ngModel)]="newIngredient.kcal">
+          <div class="label-row"><label for="ing_kcal">Kcal:</label></div>
+          <input id="ing_kcal" type="number" class="form-input" [(ngModel)]="newIngredient.kcal">
         </div>
         <div class="input-group">
-          <div class="label-row"><label>Proteína (g):</label></div>
-          <input type="number" class="form-input" [(ngModel)]="newIngredient.protein">
+          <div class="label-row"><label for="ing_protein">Proteína (g):</label></div>
+          <input id="ing_protein" type="number" class="form-input" [(ngModel)]="newIngredient.protein">
         </div>
         <div class="input-group">
-          <div class="label-row"><label>Carbos (g):</label></div>
-          <input type="number" class="form-input" [(ngModel)]="newIngredient.carbs">
+          <div class="label-row"><label for="ing_carbs">Carbos (g):</label></div>
+          <input id="ing_carbs" type="number" class="form-input" [(ngModel)]="newIngredient.carbs">
         </div>
         <div class="input-group">
-          <div class="label-row"><label>Grasas (g):</label></div>
-          <input type="number" class="form-input" [(ngModel)]="newIngredient.fat">
+          <div class="label-row"><label for="ing_fat">Grasas (g):</label></div>
+          <input id="ing_fat" type="number" class="form-input" [(ngModel)]="newIngredient.fat">
         </div>
       </div>
 

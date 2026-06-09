@@ -6,7 +6,7 @@
   </svg>
 </button>
 
-<div class="sidebar-overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
+<div class="sidebar-overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()" tabindex="0" (keydown.enter)="closeSidebar()"></div>
 
 <aside class="sidebar" [class.open]="isSidebarOpen">
   <div class="sidebar-header">
@@ -172,7 +172,9 @@
           
           <div class="home-day-header clickable-header" 
                [class.selected-day-header]="selectedDayId === day.idUserFoodPlanDaily"
-               (click)="selectDay(day.idUserFoodPlanDaily)">
+               (click)="selectDay(day.idUserFoodPlanDaily)"
+               tabindex="0"
+               (keydown.enter)="selectDay(day.idUserFoodPlanDaily)">
             <span class="home-day-name">{{ day.dayName }}</span>
             <div class="day-date-bubble">{{ day.dateNumber }}</div>
             
