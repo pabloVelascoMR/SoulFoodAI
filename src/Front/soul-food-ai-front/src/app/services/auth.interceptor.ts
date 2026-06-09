@@ -9,7 +9,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const token = localStorage.getItem('soulfood_token');
 
     if (token) {
-      const clonedRequestá= req.clone({
+      const clonedRequest = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
         }
