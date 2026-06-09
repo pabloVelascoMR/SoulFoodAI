@@ -14,7 +14,7 @@
           <span style="font-weight: bold;">GÉNERO</span>
         </div>
         <div class="grid-2-cols">
-          <div class="selection-card" [class.selected]="userData.gender === 'Hombre'" (click)="selectGender('Hombre')" tabindex="0" role="button" (keydown.enter)="selectGender('Hombre')">
+          <button type="button" class="selection-card" [class.selected]="userData.gender === 'Hombre'" (click)="selectGender('Hombre')" style="border:none; text-align:inherit; font:inherit; background:var(--bg-card);">
             <div class="gender-icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="10" cy="14" r="5"></circle>
@@ -24,8 +24,8 @@
               </svg>
             </div>
             <h3>Hombre</h3>
-          </div>
-          <div class="selection-card" [class.selected]="userData.gender === 'Mujer'" (click)="selectGender('Mujer')" tabindex="0" role="button" (keydown.enter)="selectGender('Mujer')">
+          </button>
+          <button type="button" class="selection-card" [class.selected]="userData.gender === 'Mujer'" (click)="selectGender('Mujer')" style="border:none; text-align:inherit; font:inherit; background:var(--bg-card);">
             <div class="gender-icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="10" r="5"></circle>
@@ -34,7 +34,7 @@
               </svg>
             </div>
             <h3>Mujer</h3>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -213,15 +213,15 @@
     <div class="surface-module large-module" *ngIf="currentStep === 4">
       <h2 class="page-title title-spaced">¿Cuál es tu objetivo principal?</h2>
       <div class="grid-3-cols">
-        <div class="selection-card" *ngFor="let goal of goals" 
+        <button type="button" class="selection-card" *ngFor="let goal of goals" 
           [class.selected]="userData.idGoal === goal.idGoal" 
-          (click)="selectGoal(goal.idGoal)" tabindex="0" role="button" (keydown.enter)="selectGoal(goal.idGoal)">
+          (click)="selectGoal(goal.idGoal)" style="border:none; text-align:inherit; font:inherit; background:var(--bg-card);">
           <div class="goal-emoji">
             {{ getGoalEmoji(goal.idGoal) }}
           </div>
           <h3>{{ goal.goalName }}</h3>
           <p *ngIf="goal.description">{{ goal.description }}</p>
-        </div>
+        </button>
       </div>
       <div class="btn-group">
         <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
@@ -231,14 +231,14 @@
     <div class="surface-module large-module" *ngIf="currentStep === 5">
       <h2 class="page-title title-spaced">¿Tienes alguna intolerancia?</h2>
       <div class="grid-3-cols">
-        <div class="selection-card" *ngFor="let int of intolerances" 
+        <button type="button" class="selection-card" *ngFor="let int of intolerances" 
              [class.selected]="userData.idIntolerances.includes(int.idIntolerance)"
-             (click)="selectIntolerance(int.idIntolerance)" tabindex="0" role="button" (keydown.enter)="selectIntolerance(int.idIntolerance)">
+             (click)="selectIntolerance(int.idIntolerance)" style="border:none; text-align:inherit; font:inherit; background:var(--bg-card);">
           <div class="intolerance-emoji">
             {{ getIntoleranceEmoji(int.idIntolerance) }}
           </div>
           <h3>{{ int.intoleranceName }}</h3>
-        </div>
+        </button>
       </div>
       <div class="btn-group">
         <button class="btn-secondary" (click)="prevStep()">VOLVER</button>
@@ -251,15 +251,15 @@
     <div class="surface-module large-module" *ngIf="currentStep === 6">
       <h2 class="page-title title-spaced">¿Qué tipo de dieta prefieres?</h2>
       <div class="grid-3-cols">
-        <div class="selection-card" *ngFor="let plan of foodPlans" 
+        <button type="button" class="selection-card" *ngFor="let plan of foodPlans" 
              [class.selected]="userData.idFoodPlan === plan.idFoodPlan" 
-             (click)="selectFoodPlan(plan.idFoodPlan)" tabindex="0" role="button" (keydown.enter)="selectFoodPlan(plan.idFoodPlan)">
+             (click)="selectFoodPlan(plan.idFoodPlan)" style="border:none; text-align:inherit; font:inherit; background:var(--bg-card);">
           <div class="diet-emoji">
             {{ getDietEmoji(plan.idFoodPlan) }}
           </div>
           <h3>{{  plan.foodPlanName }}</h3>
           <p *ngIf="plan.description">{{ plan.description }}</p>
-        </div>
+        </button>
       </div>
       <div class="btn-group">
         <button class="btn-secondary" (click)="prevStep()">VOLVER</button>

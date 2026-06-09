@@ -107,7 +107,7 @@ export class HomeComponent implements OnInit {
           else if (err.error && typeof err.error === 'string') {
             this.aiMessage = err.error; 
           } 
-          else if (err.error && err.error.message) {
+          else if (err.error?.message) {
             this.aiMessage = err.error.message;
           }
           else {

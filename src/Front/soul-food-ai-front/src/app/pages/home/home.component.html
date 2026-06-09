@@ -6,7 +6,7 @@
   </svg>
 </button>
 
-<div class="sidebar-overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()" tabindex="0" role="button" (keydown.enter)="closeSidebar()"></div>
+<button class="sidebar-overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()" aria-label="Cerrar sidebar" style="border:none; cursor:pointer;"></button>
 
 <aside class="sidebar" [class.open]="isSidebarOpen">
   <div class="sidebar-header">
@@ -170,11 +170,10 @@
         
         <div class="home-day-column surface-module" *ngFor="let day of calendar.days">
           
-          <div class="home-day-header clickable-header" 
+          <button type="button" class="home-day-header clickable-header" 
                [class.selected-day-header]="selectedDayId === day.idUserFoodPlanDaily"
                (click)="selectDay(day.idUserFoodPlanDaily)"
-               tabindex="0" role="button"
-               (keydown.enter)="selectDay(day.idUserFoodPlanDaily)">
+               style="border:none; background:transparent; font:inherit; width:100%; text-align:inherit; color:inherit;">
             <span class="home-day-name">{{ day.dayName }}</span>
             <div class="day-date-bubble">{{ day.dateNumber }}</div>
             
@@ -190,7 +189,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </button>
 
           <div class="meals-dropzone" 
                [id]="'day-list-' + day.idUserFoodPlanDaily"

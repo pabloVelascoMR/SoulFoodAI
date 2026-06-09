@@ -91,12 +91,11 @@
           </svg>
         </div>
 
-        <div class="card-delete-x"
+        <button type="button" class="card-delete-x"
           *ngIf="canDelete(ingredient) && !isIngredientSelected(ingredient)"
           (click)="deleteCustomIngredient(ingredient, $event)"
-          tabindex="0" role="button"
-          (keydown.enter)="deleteCustomIngredient(ingredient, $event)">🗑️
-        </div>
+          style="border:none; background:transparent; font:inherit; padding:0;">🗑️
+        </button>
       </div>
     </section>
   </main>
