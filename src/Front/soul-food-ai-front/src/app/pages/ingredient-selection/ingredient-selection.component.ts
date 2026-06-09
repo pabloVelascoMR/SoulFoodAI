@@ -51,12 +51,12 @@ export class IngredientSelectionComponent implements OnInit {
   isSearchingOFF: boolean = false;
 
   constructor(
-    private ingredientService: IngredientService,
-    private userIngredientService: UserIngredientService,
-    private router: Router,
-    private userService: UserService,
-    private cdr: ChangeDetectorRef,
-    private http: HttpClient
+    private readonly ingredientService: IngredientService,
+    private readonly userIngredientService: UserIngredientService,
+    private readonly router: Router,
+    private readonly userService: UserService,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -128,7 +128,7 @@ export class IngredientSelectionComponent implements OnInit {
   loadSelectedIngredients(): void {
     this.userIngredientService.getSelectedIngredients(this.userId).subscribe({
       next: (favorites) => {
-        const validIds = favorites.map((f: any) => Number(f.idIngredient || f.IdIngredient || f.id || f.Id)).filter((id: number) => !isNaN(id) && id > 0);
+        const validIds = favorites.map((f: any) => Number(f.idIngredient || f.IdIngredient || f.id || f.Id)).filter((id: number) => !Number.isNaN(id) && id > 0);
         this.selectedIngredientIds = new Set(validIds);
         this.cdr.markForCheck();
       }
@@ -193,7 +193,7 @@ export class IngredientSelectionComponent implements OnInit {
   getIngredientImage(ingredient: any): string | null {
     const numericId = Number(ingredient.idIngredient || ingredient.id);
     if (numericId > 0 && numericId <= 191) return `/assets/ingredientes_imagenes/${numericId}.jpg`;
-    if (ingredient.imageUrl && ingredient.imageUrl.startsWith('http')) return ingredient.imageUrl;
+    if (ingredient.imageUrl?.startsWith('http')) return ingredient.imageUrl;
     return null;
   }
 

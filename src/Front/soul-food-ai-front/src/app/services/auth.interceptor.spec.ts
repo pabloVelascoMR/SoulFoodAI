@@ -36,7 +36,7 @@ describe('authInterceptor', () => {
     req.flush({});
   });
 
-  it('NO debería añadir el header si no hay token', () => {
+  it('NO debería añadir el header sióno hay token', () => {
     localStorage.removeItem('soulfood_token'); 
     
     httpClient.get('/api/test').subscribe();

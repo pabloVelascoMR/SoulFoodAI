@@ -19,9 +19,9 @@ export class LoginComponent {
   isSubmitting = false;
 
   constructor(
-    private userService: UserService, 
-    private router: Router,
-    private cdr: ChangeDetectorRef // 2. NUEVO: Inyectarlo en el constructor
+    private readonly userService: UserService, 
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef // 2. NUEVO: Inyectarlo en el constructor
   ) {}
 
   login() {

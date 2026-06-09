@@ -1,60 +1,81 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoulFoodAiBack.Data;
 using SoulFoodAiBack.Dtos;
 using SoulFoodAiBack.Models;
-using System.Reflection;
-using System.Security.Claims;
 
 namespace SoulFoodAiBack.Controllers
 {
+    /// <summary>
+    /// Controlador responsable de gestionar los perfiles biométricos y la configuración nutricional de los usuarios, 
+    /// incluyendo su antropometría, metas y restricciones dietéticas.
+    /// </summary>
+    /// <remarks>
+    /// @author Pablo_Velasco_Martin
+    /// @see SoulFoodAiBack.Controllers
+    /// @see SoulFoodAiBack.Models
+    /// @see SoulFoodAiBack.Dtos
+    /// @see SoulFoodAiBack.Data
+    /// </remarks>
     [ApiController]
     [Route("api/[controller]")]
     public class UserDataController : ControllerBase
     {
+        /// <summary>
+        /// Contexto de acceso a datos para interactuar de forma transaccional con la base de datos.
+        /// </summary>
         private readonly DataContext _context;
 
+        /// <summary>
+        /// Constructor de la clase que inyecta la dependencia del contexto de Entity Framework.
+        /// </summary>
+        /// <param name="dataContext">Instancia inyectada del contexto de datos.</param>
         public UserDataController(DataContext dataContext)
         {
             _context = dataContext;
         }
 
+        /// <summary>
+        /// Consulta y devuelve la totalidad de los perfiles biométricos almacenados en el sistema.
+        /// </summary>
+        /// <returns>Devuelve un código 200 (OK) con la colección completa de perfiles.</returns>
         [HttpGet]
         [Route("GetAllUserDatas")]
-
         public async Task<IActionResult> GetAllUserDatas()
         {
-        
             List<UserData> userDatas = await _context.UserDatas
                 .Include(ud => ud.UserIntolerances)
                 .ToListAsync();
 
             List<UserDataDto> allUserDatas = userDatas.
-
                 Select(ud => new UserDataDto
                 {
-                    IdUserData= ud.IdUserData,
+                    IdUserData = ud.IdUserData,
                     Gender = ud.Gender,
-                    Age =ud.Age,
-                    Height =ud.Height,
-                    Weight =ud.Weight,
-                    MealsPerDay =ud.MealsPerDay,
-                    IdUser =ud.IdUser,
-                    IdFoodPlan =ud.IdFoodPlan,
-                    IdGoal =ud.IdGoal,
+                    Age = ud.Age,
+                    Height = ud.Height,
+                    Weight = ud.Weight,
+                    MealsPerDay = ud.MealsPerDay,
+                    IdUser = ud.IdUser,
+                    IdFoodPlan = ud.IdFoodPlan,
+                    IdGoal = ud.IdGoal,
                     IdIntolerances = ud.UserIntolerances.Select(ui => ui.IdIntolerance).ToList()
                 }).ToList();
 
             return Ok(allUserDatas);
         }
 
+        /// <summary>
+        /// Inicializa el perfil biométrico de un usuario de nueva creación, asignando valores por defecto 
+        /// a las métricas que no hayan sido proporcionadas explícitamente en la solicitud inicial.
+        /// </summary>
+        /// <param name="dto">Objeto de transferencia con los datos biométricos fundamentales aportados.</param>
+        /// <returns>Devuelve un código 200 (OK) tras confirmar la inicialización del perfil.</returns>
         [HttpPost]
         [Route("AddUserData")]
         public async Task<IActionResult> AddUserData(CreateUserDataDto dto)
         {
-            
-
-            UserData userDataAdd = new UserData 
+            UserData userDataAdd = new UserData
             {
                 Gender = dto.Gender,
                 Age = dto.Age,
@@ -76,14 +97,14 @@ namespace SoulFoodAiBack.Controllers
                 UserIntolerances = new List<UserIntolerance>()
             };
 
-            if (dto.IdIntolerances != null && dto.IdIntolerances.Any())
+            if (dto.IdIntolerances != null && dto.IdIntolerances.Count > 0)
             {
                 foreach (var idIntolerance in dto.IdIntolerances)
                 {
                     userDataAdd.UserIntolerances.Add(new UserIntolerance
                     {
                         IdIntolerance = idIntolerance,
-                        IdUser = dto.IdUser 
+                        IdUser = dto.IdUser
                     });
                 }
             }
@@ -92,23 +113,32 @@ namespace SoulFoodAiBack.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Elimina físicamente el perfil de datos biométricos asociado a un usuario específico.
+        /// </summary>
+        /// <param name="idUser">Identificador principal del usuario propietario del perfil.</param>
+        /// <returns>La colección actualizada de perfiles tras confirmar la operación.</returns>
         [HttpDelete]
         [Route("DeleteUserData")]
         public async Task<IActionResult> DeleteUserData(int idUser)
         {
-
             UserData? userData = await _context.UserDatas.FirstOrDefaultAsync(u => u.IdUser == idUser);
 
             if (userData is null) { return NotFound("Ese usaurio no existe."); }
 
             _context.UserDatas.Remove(userData);
             await _context.SaveChangesAsync();
-            return await GetAllUserDatas(); ;
+            return await GetAllUserDatas();
         }
 
+        /// <summary>
+        /// Actualiza integralmente el perfil biométrico del usuario, gestionando de forma sincronizada 
+        /// el reemplazo total de sus relaciones con intolerancias dietéticas.
+        /// </summary>
+        /// <param name="dto">Objeto de transferencia con el nuevo estado del perfil.</param>
+        /// <returns>Devuelve un código 200 (OK) si la actualización transaccional se completa con éxito.</returns>
         [HttpPut]
         [Route("EditUserData")]
-
         public async Task<IActionResult> EditUserData(UserDataDto dto)
         {
             UserData? userDataEdit = await _context.UserDatas
@@ -132,11 +162,12 @@ namespace SoulFoodAiBack.Controllers
             userDataEdit.LeftCuadricepsMeasure = dto.LeftCuadricepsMeasure ?? 0;
             userDataEdit.RightCuadricepsMeasure = dto.RightCuadricepsMeasure ?? 0;
             userDataEdit.IdUser = dto.IdUser;
-            userDataEdit.IdFoodPlan = dto.IdFoodPlan ;
-            userDataEdit.IdGoal = dto.IdGoal ;
+            userDataEdit.IdFoodPlan = dto.IdFoodPlan;
+            userDataEdit.IdGoal = dto.IdGoal;
+
             _context.UserIntolerances.RemoveRange(userDataEdit.UserIntolerances);
 
-            if(dto.IdIntolerances != null && dto.IdIntolerances.Any())
+            if (dto.IdIntolerances != null && dto.IdIntolerances.Count > 0)
             {
                 userDataEdit.UserIntolerances = dto.IdIntolerances.Select(id => new UserIntolerance
                 {
@@ -149,6 +180,12 @@ namespace SoulFoodAiBack.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Recupera de forma individual el perfil biométrico de un usuario basándose en su identificador, 
+        /// proveyendo una estructura predeterminada (vacía) en caso de que aún no exista un registro real.
+        /// </summary>
+        /// <param name="id">Identificador unívoco del usuario.</param>
+        /// <returns>Objeto de transferencia de datos con la configuración del perfil.</returns>
         [HttpGet]
         [Route("GetUserDataById/{id}")]
         public async Task<IActionResult> GetUserDataById(int id)
@@ -158,7 +195,7 @@ namespace SoulFoodAiBack.Controllers
                  .AsNoTracking()
                  .FirstOrDefaultAsync(ud => ud.IdUser == id);
 
-            if (userData is null) {return Ok(new { IdFoodPlan = 1 });}
+            if (userData is null) { return Ok(new { IdFoodPlan = 1 }); }
 
             UserDataDto userDataDto = new UserDataDto
             {
@@ -185,6 +222,11 @@ namespace SoulFoodAiBack.Controllers
             return Ok(userDataDto);
         }
 
+        /// <summary>
+        /// Aplica una actualización parcial sobre el perfil del usuario, modificando exclusivamente sus medidas corporales (antropometría) sin alterar sus métricas base.
+        /// </summary>
+        /// <param name="dto">Objeto de transferencia que contiene únicamente las medidas corporales a actualizar.</param>
+        /// <returns>Devuelve un código 200 (OK) tras actualizar el registro.</returns>
         [HttpPut]
         [Route("UpdateBodyMeasures")]
         public async Task<IActionResult> UpdateBodyMeasures([FromBody] UpdateBodyMeasuresDto dto)

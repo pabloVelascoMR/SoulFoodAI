@@ -11,10 +11,10 @@
       
       <div class="input-group">
         <div class="label-row" style="justify-content: center;">
-          <label>GÉNERO</label>
+          <span style="font-weight: bold;">GÉNERO</span>
         </div>
         <div class="grid-2-cols">
-          <div class="selection-card" [class.selected]="userData.gender === 'Hombre'" (click)="selectGender('Hombre')">
+          <div class="selection-card" [class.selected]="userData.gender === 'Hombre'" (click)="selectGender('Hombre')" tabindex="0" (keydown.enter)="selectGender('Hombre')">
             <div class="gender-icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="10" cy="14" r="5"></circle>
@@ -25,7 +25,7 @@
             </div>
             <h3>Hombre</h3>
           </div>
-          <div class="selection-card" [class.selected]="userData.gender === 'Mujer'" (click)="selectGender('Mujer')">
+          <div class="selection-card" [class.selected]="userData.gender === 'Mujer'" (click)="selectGender('Mujer')" tabindex="0" (keydown.enter)="selectGender('Mujer')">
             <div class="gender-icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="10" r="5"></circle>
@@ -40,14 +40,14 @@
 
       <div class="input-group" style="margin-top: 32px;">
         <div class="label-row" style="justify-content: center;">
-          <label>INTRODUCE TU EDAD</label>
+          <label for="age">INTRODUCE TU EDAD</label>
         </div>
         <div class="number-input-wrapper">
           <button type="button" class="btn-counter" (click)="decrementAge()" [disabled]="userData.age !== null && userData.age <= 1">-</button>
           <input type="number" 
                  class="form-input big-input" 
                  [(ngModel)]="userData.age" 
-                 name="age" 
+                 id="age" name="age" 
                  #ageCtrl="ngModel" 
                  required 
                  min="1" 
@@ -70,9 +70,9 @@
       
       <div class="input-group">
         <div class="label-row">
-          <label>Altura (en metros)</label>
+          <label for="height">Altura (en metros)</label>
         </div>
-        <input type="number" step="0.01" class="form-input" [(ngModel)]="userData.height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0" placeholder="Ej. 1.75">
+        <input type="number" step="0.01" class="form-input" [(ngModel)]="userData.height" id="height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0" placeholder="Ej. 1.75">
         <div class="text-error" *ngIf="heightCtrl.invalid && (heightCtrl.dirty || heightCtrl.touched)">
           La altura debe ser en metros (ej: 1.75).
         </div>
@@ -80,9 +80,9 @@
       
       <div class="input-group">
         <div class="label-row">
-          <label>Peso (en kg)</label>
+          <label for="weight">Peso (en kg)</label>
         </div>
-        <input type="number" class="form-input" [(ngModel)]="userData.weight" name="weight" #weightCtrl="ngModel" required min="20" max="300" placeholder="Ej. 70.5">
+        <input type="number" class="form-input" [(ngModel)]="userData.weight" id="weight" name="weight" #weightCtrl="ngModel" required min="20" max="300" placeholder="Ej. 70.5">
         <div class="text-error" *ngIf="weightCtrl.invalid && (weightCtrl.dirty || weightCtrl.touched)">
           Por favor, introduce un peso válido (entre 20kg y 300kg).
         </div>
@@ -90,9 +90,9 @@
       
       <div class="input-group">
         <div class="label-row">
-          <label>¿Cuántas comidas harás al día?</label>
+          <label for="meals">¿Cuántas comidas harás al día?</label>
         </div>
-        <input type="number" class="form-input" [(ngModel)]="userData.mealsPerDay" name="meals" #mealsCtrl="ngModel" required min="1" max="5" placeholder="Ej. 3">
+        <input type="number" class="form-input" [(ngModel)]="userData.mealsPerDay" id="meals" name="meals" #mealsCtrl="ngModel" required min="1" max="5" placeholder="Ej. 3">
         <div class="text-error" *ngIf="mealsCtrl.invalid && (mealsCtrl.dirty || mealsCtrl.touched)">
           Te recomendamos entre 1 y 5 comidas al día.
         </div>
@@ -109,7 +109,7 @@
       
       <div class="input-group" style="margin-top: 16px;">
         <div class="label-row" style="justify-content: center; margin-bottom: 24px;">
-          <label style="font-size: 1rem;">NIVEL DE ACTIVIDAD FÍSICA</label>
+          <label for="activity" style="font-size: 1rem;">NIVEL DE ACTIVIDAD FÍSICA</label>
         </div>
         <div class="activity-slider-container">
           <div class="slider-emojis">
@@ -118,7 +118,7 @@
           </div>
           <div class="slider-wrapper">
             <div class="triangle-track"></div>
-            <input type="range" class="activity-slider" min="1" max="5" step="1" [(ngModel)]="userData.levelOfActivity">
+            <input type="range" id="activity" class="activity-slider" min="1" max="5" step="1" [(ngModel)]="userData.levelOfActivity">
           </div>
           <div class="activity-result">
             <h3>{{ currentActivity.title }}</h3>
@@ -134,7 +134,7 @@
         <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 2.5rem;">
           <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px;">
             <div class="label-row" style="margin: 0;">
-              <label style="font-size: 1rem; margin: 0;">MEDIDAS CORPORALES (En cm)</label>
+              <span style="font-size: 1rem; margin: 0; font-weight: bold;">MEDIDAS CORPORALES (En cm)</span>
             </div>
             <div class="info-tooltip" title="Usa una cinta métrica flexible. Mide el pecho en la parte más ancha, la cintura a la altura del ombligo y la cadera en la parte más ancha de los glúteos. El brazo y la pierna deben medirse en estado de relajación.">?</div>
           </div>
@@ -150,8 +150,8 @@
             <div class="cross-line center-line" style="width: 220px;"></div>
             <div class="track-line track-left-far"></div>
             <div class="measure-display-box box-left-far is-editing-box">
-              <label>Pecho</label>
-              <input type="number" class="measure-input-edit" [(ngModel)]="userData.chestMeasure" placeholder="cm">
+              <label for="chest">Pecho</label>
+              <input type="number" class="measure-input-edit" id="chest" [(ngModel)]="userData.chestMeasure" placeholder="cm">
             </div>
           </div>
 
@@ -159,13 +159,13 @@
             <div class="cross-line center-line" style="width: 480px;"></div>
             <div class="track-line track-left-near"></div>
             <div class="measure-display-box box-left-near is-editing-box">
-              <label>Bíceps Izq.</label>
-              <input type="number" class="measure-input-edit" [(ngModel)]="userData.leftBicepMeasure" placeholder="cm">
+              <label for="lbicep">Bíceps Izq.</label>
+              <input type="number" class="measure-input-edit" id="lbicep" [(ngModel)]="userData.leftBicepMeasure" placeholder="cm">
             </div>
             <div class="track-line track-right-near"></div>
             <div class="measure-display-box box-right-near is-editing-box">
-              <label>Bíceps Der.</label>
-              <input type="number" class="measure-input-edit" [(ngModel)]="userData.rightBicepMeasure" placeholder="cm">
+              <label for="rbicep">Bíceps Der.</label>
+              <input type="number" class="measure-input-edit" id="rbicep" [(ngModel)]="userData.rightBicepMeasure" placeholder="cm">
             </div>
           </div>
 
@@ -173,8 +173,8 @@
             <div class="cross-line center-line" style="width: 180px;"></div>
             <div class="track-line track-right-far"></div>
             <div class="measure-display-box box-right-far is-editing-box">
-              <label>Cintura</label>
-              <input type="number" class="measure-input-edit" [(ngModel)]="userData.waistMeasure" placeholder="cm">
+              <label for="waist">Cintura</label>
+              <input type="number" class="measure-input-edit" id="waist" [(ngModel)]="userData.waistMeasure" placeholder="cm">
             </div>
           </div>
 
@@ -182,8 +182,8 @@
             <div class="cross-line center-line" style="width: 260px;"></div>
             <div class="track-line track-left-far"></div>
             <div class="measure-display-box box-left-far is-editing-box">
-              <label>Cadera</label>
-              <input type="number" class="measure-input-edit" [(ngModel)]="userData.hipMeasure" placeholder="cm">
+              <label for="hip">Cadera</label>
+              <input type="number" class="measure-input-edit" id="hip" [(ngModel)]="userData.hipMeasure" placeholder="cm">
             </div>
           </div>
 
@@ -191,13 +191,13 @@
             <div class="cross-line center-line" style="width: 350px;"></div>
             <div class="track-line track-left-near"></div>
             <div class="measure-display-box box-left-near is-editing-box">
-              <label>Cuád. Izq.</label>
-              <input type="number" class="measure-input-edit" [(ngModel)]="userData.leftCuadricepsMeasure" placeholder="cm">
+              <label for="lquad">Cuád. Izq.</label>
+              <input type="number" class="measure-input-edit" id="lquad" [(ngModel)]="userData.leftCuadricepsMeasure" placeholder="cm">
             </div>
             <div class="track-line track-right-near"></div>
             <div class="measure-display-box box-right-near is-editing-box">
-              <label>Cuád. Der.</label>
-              <input type="number" class="measure-input-edit" [(ngModel)]="userData.rightCuadricepsMeasure" placeholder="cm">
+              <label for="rquad">Cuád. Der.</label>
+              <input type="number" class="measure-input-edit" id="rquad" [(ngModel)]="userData.rightCuadricepsMeasure" placeholder="cm">
             </div>
           </div>
 

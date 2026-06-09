@@ -12,8 +12,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 export class LandingPageComponent implements AfterViewInit {
 
   constructor(
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    private readonly router: Router,
+    @Inject(PLATFORM_ID) private readonly platformId: Object
   ) {}
 
   ngAfterViewInit() {
