@@ -27,37 +27,37 @@
       
       <div class="report-sliders-grid">
         <div class="slider-box">
-          <label>Nivel de Saciedad / Hambre</label>
+          <label for="rep-hunger">Nivel de Saciedad / Hambre</label>
           <div class="slider-labels"><small>Mucha hambre</small><small>Muy saciado</small></div>
-          <input type="range" min="0" max="10" [(ngModel)]="report.hungerLevel" class="modern-slider">
+          <input id="rep-hunger" type="range" min="0" max="10" [(ngModel)]="report.hungerLevel" class="modern-slider">
           <span class="slider-value">{{ report.hungerLevel }} / 10</span>
         </div>
 
         <div class="slider-box">
-          <label>Nivel de Energía</label>
+          <label for="rep-energy">Nivel de Energía</label>
           <div class="slider-labels"><small>Agotado</small><small>A tope</small></div>
-          <input type="range" min="0" max="10" [(ngModel)]="report.energyLevel" class="modern-slider">
+          <input id="rep-energy" type="range" min="0" max="10" [(ngModel)]="report.energyLevel" class="modern-slider">
           <span class="slider-value">{{ report.energyLevel }} / 10</span>
         </div>
 
         <div class="slider-box">
-          <label>Calidad del Sueño</label>
+          <label for="rep-sleep">Calidad del Sueño</label>
           <div class="slider-labels"><small>Pésimo</small><small>Perfecto</small></div>
-          <input type="range" min="0" max="10" [(ngModel)]="report.sleepQuality" class="modern-slider">
+          <input id="rep-sleep" type="range" min="0" max="10" [(ngModel)]="report.sleepQuality" class="modern-slider">
           <span class="slider-value">{{ report.sleepQuality }} / 10</span>
         </div>
 
         <div class="slider-box">
-          <label>Adherencia a la Dieta</label>
+          <label for="rep-diet">Adherencia a la Dieta</label>
           <div class="slider-labels"><small>Me lo salté todo</small><small>100% Estricto</small></div>
-          <input type="range" min="0" max="10" [(ngModel)]="report.dietAdherence" class="modern-slider">
+          <input id="rep-diet" type="range" min="0" max="10" [(ngModel)]="report.dietAdherence" class="modern-slider">
           <span class="slider-value">{{ report.dietAdherence }} / 10</span>
         </div>
       </div>
 
       <div class="description-section">
-        <label>Observaciones o Notas Adicionales</label>
-        <textarea [(ngModel)]="report.description" class="description-input" placeholder="Ej: Me costó comer tanta proteína, Quiero que mi plan tenga exactamente 2008 kcal diarias..."></textarea>
+        <label for="rep-notes">Observaciones o Notas Adicionales</label>
+        <textarea id="rep-notes" [(ngModel)]="report.description" class="description-input" placeholder="Ej: Me costó comer tanta proteína, Quiero que mi plan tenga exactamente 2008 kcal diarias..."></textarea>
       </div>
 
       <hr class="section-divider">
@@ -72,8 +72,8 @@
           
           <div class="weight-top-container">
             <div class="measure-display-box static-measure-box is-editing-box">
-              <label>Peso Nuevo (kg)</label>
-              <input type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newWeight" placeholder="kg">
+              <label for="rep-weight">Peso Nuevo (kg)</label>
+              <input id="rep-weight" type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newWeight" placeholder="kg">
             </div>
           </div>
 
@@ -86,8 +86,8 @@
               <div class="cross-line center-line" style="width: 220px;"></div>
               <div class="track-line track-left-far"></div>
               <div class="measure-display-box box-left-far is-editing-box">
-                <label>Pecho</label>
-                <input type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.chestMeasure" placeholder="cm">
+                <label for="rep-chest">Pecho</label>
+                <input id="rep-chest" type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.chestMeasure" placeholder="cm">
               </div>
             </div>
 
@@ -95,13 +95,13 @@
               <div class="cross-line center-line" style="width: 480px;"></div>
               <div class="track-line track-left-near"></div>
               <div class="measure-display-box box-left-near is-editing-box">
-                <label>Bíceps Izq.</label>
-                <input type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.leftBicepMeasure" placeholder="cm">
+                <label for="rep-lbicep">Bíceps Izq.</label>
+                <input id="rep-lbicep" type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.leftBicepMeasure" placeholder="cm">
               </div>
               <div class="track-line track-right-near"></div>
               <div class="measure-display-box box-right-near is-editing-box">
-                <label>Bíceps Der.</label>
-                <input type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.rightBicepMeasure" placeholder="cm">
+                <label for="rep-rbicep">Bíceps Der.</label>
+                <input id="rep-rbicep" type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.rightBicepMeasure" placeholder="cm">
               </div>
             </div>
 
@@ -109,8 +109,8 @@
               <div class="cross-line center-line" style="width: 180px;"></div>
               <div class="track-line track-right-far"></div>
               <div class="measure-display-box box-right-far is-editing-box">
-                <label>Cintura</label>
-                <input type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.waistMeasure" placeholder="cm">
+                <label for="rep-waist">Cintura</label>
+                <input id="rep-waist" type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.waistMeasure" placeholder="cm">
               </div>
             </div>
 
@@ -118,8 +118,8 @@
               <div class="cross-line center-line" style="width: 260px;"></div>
               <div class="track-line track-left-far"></div>
               <div class="measure-display-box box-left-far is-editing-box">
-                <label>Cadera</label>
-                <input type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.hipMeasure" placeholder="cm">
+                <label for="rep-hip">Cadera</label>
+                <input id="rep-hip" type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.hipMeasure" placeholder="cm">
               </div>
             </div>
 
@@ -127,13 +127,13 @@
               <div class="cross-line center-line" style="width: 350px;"></div>
               <div class="track-line track-left-near"></div>
               <div class="measure-display-box box-left-near is-editing-box">
-                <label>Cuád. Izq.</label>
-                <input type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.leftCuadricepsMeasure" placeholder="cm">
+                <label for="rep-lquad">Cuád. Izq.</label>
+                <input id="rep-lquad" type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.leftCuadricepsMeasure" placeholder="cm">
               </div>
               <div class="track-line track-right-near"></div>
               <div class="measure-display-box box-right-near is-editing-box">
-                <label>Cuád. Der.</label>
-                <input type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.rightCuadricepsMeasure" placeholder="cm">
+                <label for="rep-rquad">Cuád. Der.</label>
+                <input id="rep-rquad" type="number" class="edit-input measure-input-edit" [(ngModel)]="report.newMeasures.rightCuadricepsMeasure" placeholder="cm">
               </div>
             </div>
           </div>
@@ -152,19 +152,19 @@
       <span class="step-subtitle">Tu reporte está listo. ¿Cómo quieres generar tu nuevo plan de comidas?</span>
       
       <div class="generation-options-grid" *ngIf="!isLoading">
-        <div class="gen-card ai-card" (click)="generatePlan(true)">
+        <button type="button" class="gen-card ai-card" (click)="generatePlan(true)" style="border:none; font:inherit; text-align:inherit; background:var(--bg-card);">
           <div class="gen-icon">📊</div>
           <h3>Optimizar con Soul</h3>
           <p>Nuestra inteligencia artificial, Soul, leerá tu reporte y ajustará tus calorías y macros estratégicamente para mejorar tu progreso y solucionar las carencias del plan actual</p>
-          <button class="btn-ai">USAR SOUL</button>
-        </div>
+          <div class="btn-ai">USAR SOUL</div>
+        </button>
 
-        <div class="gen-card manual-card" (click)="generatePlan(false)">
+        <button type="button" class="gen-card manual-card" (click)="generatePlan(false)" style="border:none; font:inherit; text-align:inherit; background:var(--bg-card);">
           <div class="gen-icon">🔄</div>
           <h3>Plan Automático</h3>
           <p>Mantiene el mismo plan que tienes actualmente, ajustado únicamente a tu peso actual si introduciste ese dato en el reporte. Ideal si la semana pasada te fue perfecta.</p>
-          <button class="btn-secondary">MANTENER ESTÁNDAR</button>
-        </div>
+          <div class="btn-secondary">MANTENER ESTÁNDAR</div>
+        </button>
       </div>
 
       <div class="loading-state" *ngIf="isLoading">

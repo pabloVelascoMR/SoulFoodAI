@@ -192,14 +192,15 @@
         </div>
 
         <div class="tags-container edit-tags-container" *ngIf="isEditing">
-          <span class="intolerance-tag editable-tag" 
+          <button type="button" class="intolerance-tag editable-tag" 
                 *ngFor="let int of intolerances" 
                 [ngClass]="hasIntolerance(int.idIntolerance) ? 'selected-green' : 'unselected-red'"
-                (click)="toggleIntolerance(int.idIntolerance)" tabindex="0" role="button" (keydown.enter)="toggleIntolerance(int.idIntolerance)">
+                (click)="toggleIntolerance(int.idIntolerance)"
+                style="border:none; font:inherit; cursor:pointer;">
             <span *ngIf="hasIntolerance(int.idIntolerance)">✓</span>
             <span *ngIf="!hasIntolerance(int.idIntolerance)">✗</span>
             {{ int.intoleranceName }}
-          </span>
+          </button>
         </div>
       </div>
 
