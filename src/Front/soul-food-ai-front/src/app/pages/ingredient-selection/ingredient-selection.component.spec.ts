@@ -6,7 +6,7 @@ import { UserIngredientService } from '../../services/user_ingredient.service';
 import { UserService } from '../../services/user.service';
 import { provideRouter, Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 
 describe('IngredientSelectionComponent', () => {
@@ -109,10 +109,10 @@ describe('IngredientSelectionComponent', () => {
     component.finalizar();
     expect(router.navigate).toHaveBeenCalledWith(['/home']);
 
-    vi.spyOn(window, 'alert');
+    vi.spyOn(globalThis, 'alert');
     vi.spyOn(component, 'canFinish', 'get').mockReturnValue(false); // Override previous spy
     component.finalizar();
-    expect(window.alert).toHaveBeenCalled();
+    expect(globalThis.alert).toHaveBeenCalled();
   });
 
   it('debería cambiar de paso', () => {
@@ -149,7 +149,7 @@ describe('IngredientSelectionComponent', () => {
   });
 
   it('debería borrar ingrediente custom', () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
     const mockEvent = new Event('click');
     component.deleteCustomIngredient({ id: 200, name: 'Test' }, mockEvent);
     expect(ingredientMock.deleteCustomIngredient).toBeTruthy();

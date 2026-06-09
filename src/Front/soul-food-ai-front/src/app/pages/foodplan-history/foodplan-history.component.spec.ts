@@ -83,12 +83,12 @@ describe('FoodplanHistoryComponent', () => {
   });
 
   it('debería manejar error al ejecutar ocultar plan', () => {
-    vi.spyOn(window, 'alert');
+    vi.spyOn(globalThis, 'alert');
     component.planToHide = 1;
-    vi.spyOn(historyMock, 'hidePlanFromHistory').mockReturnValue(throwError(() => new Error()));
+    vi.spyOn(historyMock, 'hidePlanFromHistory').mockReturnValue(throwError(() => new Error('Simulated error')));
     
     component.executeHide();
-    expect(window.alert).toHaveBeenCalledWith('No se pudo ocultar el plan. Inténtalo de nuevo.');
+    expect(globalThis.alert).toHaveBeenCalledWith('No se pudo ocultar el plan. Inténtalo de nuevo.');
     expect(component.planToHide).toBeNull();
   });
 

@@ -5,7 +5,7 @@ import { HomeService } from '../../services/home.service';
 import { UserService } from '../../services/user.service';
 import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, PLATFORM_ID } from '@angular/core';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -51,7 +51,7 @@ describe('HomeComponent', () => {
   });
 
   it('debería manejar error al obtener calendario', () => {
-    vi.spyOn(homeServiceMock, 'getActiveWeekCalendar').mockReturnValue(throwError(() => new Error()));
+    vi.spyOn(homeServiceMock, 'getActiveWeekCalendar').mockReturnValue(throwError(() => new Error('Simulated error')));
     component.loadDashboardData();
     expect(component.hasActivePlan).toBe(false);
     expect(component.loading).toBe(false);
@@ -88,7 +88,7 @@ describe('HomeComponent', () => {
   });
 
   it('debería manejar error al cargar recetas', () => {
-    vi.spyOn(homeServiceMock, 'getRecipesForUser').mockReturnValue(throwError(() => new Error()));
+    vi.spyOn(homeServiceMock, 'getRecipesForUser').mockReturnValue(throwError(() => new Error('Simulated error')));
     component.loadRemainingData();
     expect(component.loading).toBe(false);
   });
@@ -147,10 +147,10 @@ describe('HomeComponent', () => {
   });
 
   it('debería manejar error general al crear nuevo plan', () => {
-    vi.spyOn(window, 'alert');
+    vi.spyOn(globalThis, 'alert');
     vi.spyOn(homeServiceMock, 'createWeeklyPlan').mockReturnValue(throwError(() => ({ status: 501 })));
     component.crearNuevoPlan();
-    expect(window.alert).toHaveBeenCalled();
+    expect(globalThis.alert).toHaveBeenCalled();
   });
 
   it('debería redirigir a ver receta', () => {
@@ -161,13 +161,23 @@ describe('HomeComponent', () => {
 
   it('debería guardar configuracion de dia', () => {
     vi.spyOn(homeServiceMock, 'updateDailyRecipes').mockReturnValue(of({}));
-    vi.spyOn(component, 'loadDailyHeader').mockImplementation(() => {}); // Prevent overwrite
-    component.dailyHeaders[1] = { idUserFoodPlanDaily: 1, dietName: '', dayName: '', targetKcal: 0, realKcal: 0, targetProtein: 0, realProtein: 0, targetCarbs: 0, realCarbs: 0, targetFat: 0, realFat: 0, mealsPerDay: 5 };
+    vi.spyOn(component, 'loadDailyHeader').mockImplementation(() => {}); 
+    component.dailyHeaders[1] = { 
+      idUserFoodPlanDaily: 1, 
+      dietName: '', 
+      dayName: '', 
+      targetKcal: 0, 
+      realKcal: 0, 
+      targetProtein: 0, 
+      realProtein: 0, 
+      targetCarbs: 0, 
+      realCarbs: 0, 
+      targetFat: 0, 
+      realFat: 0, 
+      mealsPerDay: 5 
+    };
     component.saveDayConfiguration(1, [{ idRecipe: 1, kcal: 100, protein: 10, carbs: 10, fat: 10 }]);
     expect(component.dailyHeaders[1].realKcal).toBe(100);
     expect(component.dailyHeaders[1].realProtein).toBe(10);
   });
 });
-import { PLATFORM_ID } from '@angular/core';
-
-
