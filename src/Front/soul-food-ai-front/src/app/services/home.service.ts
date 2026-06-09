@@ -36,9 +36,9 @@ export interface DailyHeaderDto {
   providedIn: 'root'
 })
 export class HomeService {
-  private baseUrl = 'https://api-soulfoodai.azurewebsites.net/api';
+  private readonly baseUrl = 'https://api-soulfoodai.azurewebsites.net/api';
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   getWeeklyHeader(userId: number): Observable<WeeklyHeaderDto> {
     return this.http.get<WeeklyHeaderDto>(`${this.baseUrl}/UserFoodPlanWeek/GetWeeklyHeader/${userId}`);

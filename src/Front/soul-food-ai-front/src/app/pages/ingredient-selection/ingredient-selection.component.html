@@ -94,7 +94,7 @@
         <div class="card-delete-x"
           *ngIf="canDelete(ingredient) && !isIngredientSelected(ingredient)"
           (click)="deleteCustomIngredient(ingredient, $event)"
-          tabindex="0"
+          tabindex="0" role="button"
           (keydown.enter)="deleteCustomIngredient(ingredient, $event)">🗑️
         </div>
       </div>

@@ -45,7 +45,7 @@
           <span class="stat-label">ALTURA (m)</span>
           <span class="stat-value" *ngIf="!isEditing">{{ userData.height }}</span>
           <input type="number" step="0.01" class="edit-input" *ngIf="isEditing" 
-                 [(ngModel)]="editedData.height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0"
+                 [(ngModel)]="editedData.height" id="height" name="height" #heightCtrl="ngModel" required min="0.5" max="3.0"
                  [class.is-modified]="editedData.height !== userData.height">
           <div *ngIf="isEditing && (editedData.height < 0.5 || editedData.height > 3.0 || !editedData.height)" style="color: #e74c3c; font-size: 0.7rem; font-weight: bold; margin-top: 5px;">Límite: 0.5m - 3.0m</div>
         </div>
@@ -54,7 +54,7 @@
           <span class="stat-label">PESO (kg)</span>
           <span class="stat-value" *ngIf="!isEditing">{{ userData.weight }}</span>
           <input type="number" class="edit-input" *ngIf="isEditing" 
-                 [(ngModel)]="editedData.weight" name="weight" #weightCtrl="ngModel" required min="20" max="300"
+                 [(ngModel)]="editedData.weight" id="weight" name="weight" #weightCtrl="ngModel" required min="20" max="300"
                  [class.is-modified]="editedData.weight !== userData.weight">
           <div *ngIf="isEditing && (editedData.weight < 20 || editedData.weight > 300 || !editedData.weight)" style="color: #e74c3c; font-size: 0.7rem; font-weight: bold; margin-top: 5px;">Límite: 20kg - 300kg</div>
         </div>

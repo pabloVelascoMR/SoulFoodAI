@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RegisterComponent } from './register.component';
 import { UserService } from '../../services/user.service';
-import { provideRouter, Router } from '@angular/router';
+import {  Router } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('RegisterComponent', () => {

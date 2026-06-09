@@ -31,10 +31,10 @@ export class PersonalInformationComponent implements OnInit {
   ];
 
   constructor(
-    private personalInfoService: PersonalInformationService,
-    private userService: UserService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
+    private readonly personalInfoService: PersonalInformationService,
+    private readonly userService: UserService,
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +55,7 @@ export class PersonalInformationComponent implements OnInit {
     this.personalInfoService.getUserDataById(userId).subscribe({
       next: (res: any) => {
        
-        if (!res || !res.age) {
+        if (!res?.age) {
           this.router.navigate(['/onboarding']);
           return;
         }
@@ -70,7 +70,7 @@ export class PersonalInformationComponent implements OnInit {
   }
 
   startEditing(): void {
-    this.editedData = JSON.parse(JSON.stringify(this.userData)); 
+    this.editedData = structuredClone(this.userData); 
     if (!this.editedData.idIntolerances) {
       this.editedData.idIntolerances = [];
     }
@@ -139,7 +139,7 @@ export class PersonalInformationComponent implements OnInit {
   }
 
   getIntolerancesNames(): string[] {
-    if (!this.userData || !this.userData.idIntolerances) return ['Ninguna'];
+    if (!this.userData?.idIntolerances) return ['Ninguna'];
     return this.userData.idIntolerances.map((id: number) => {
       const int = this.intolerances.find(i => i.idIntolerance == id);
       return int ? int.intoleranceName : '';

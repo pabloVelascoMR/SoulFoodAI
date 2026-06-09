@@ -7,9 +7,9 @@ import { Observable } from 'rxjs';
 })
 export class WeekReportService {
   
-  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api';
+  private readonly apiUrl = 'https://api-soulfoodai.azurewebsites.net/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   submitReport(reportData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/UserDiary/SubmitReportAndCreatePlan`, reportData);

@@ -20,9 +20,9 @@ export interface Ingredient {
   providedIn: 'root'
 })
 export class IngredientService {
-  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/Ingredient';
+  private readonly apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/Ingredient';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
   
   getIngredients(category: string, userId: number): Observable<any[]> {
     const params = new HttpParams()

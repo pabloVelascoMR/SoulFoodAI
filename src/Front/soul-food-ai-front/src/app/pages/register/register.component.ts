@@ -21,7 +21,7 @@ export class RegisterComponent {
   termsAccepted: boolean = false;
   isSubmitting: boolean = false; 
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private readonly userService: UserService, private readonly router: Router) {}
 
   register() {
     if (this.isSubmitting) return; 
@@ -49,7 +49,7 @@ export class RegisterComponent {
     }
 
     const pass = this.password;
-    if (pass.length < 8 || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass)) {
+    if (pass.length < 8 || !/[A-Z]/.test(pass) || !/\\d/.test(pass)) {
       this.errorMessage = 'Contraseña: mín. 8 caracteres, una mayúscula y un número.';
       return;
     }

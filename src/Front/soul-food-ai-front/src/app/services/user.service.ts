@@ -7,13 +7,12 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/User';
-  private authUrl = 'https://api-soulfoodai.azurewebsites.net/api/Auth';
+  private readonly apiUrl = 'https://api-soulfoodai.azurewebsites.net/api/User';
+  private readonly authUrl = 'https://api-soulfoodai.azurewebsites.net/api/Auth';
   private userId: number | null = null;
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+  constructor(private readonly http: HttpClient,
+    @Inject(PLATFORM_ID) private readonly platformId: Object
   ) {}
 
   register(user: any): Observable<any> {
@@ -22,7 +21,7 @@ export class UserService {
         if (isPlatformBrowser(this.platformId)) {
           const id = res.idUser || res.IdUser; 
           if (id) {
-            this.userId = parseInt(id, 10);
+            this.userId = Number.parseInt(id, 10);
             localStorage.setItem('soulfood_userId', id.toString());
           }
 
@@ -41,7 +40,7 @@ export class UserService {
         if (isPlatformBrowser(this.platformId)) {
           const id = res.idUser || res.IdUser; 
           if (id) {
-            this.userId = parseInt(id, 10);
+            this.userId = Number.parseInt(id, 10);
             localStorage.setItem('soulfood_userId', id.toString());
           }
 
@@ -62,7 +61,7 @@ export class UserService {
     if (isPlatformBrowser(this.platformId)) {
       const id = localStorage.getItem('soulfood_userId');
       if (id) {
-        this.userId = parseInt(id, 10);
+        this.userId = Number.parseInt(id, 10);
         return this.userId;
       }
     }

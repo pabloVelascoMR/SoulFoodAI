@@ -38,11 +38,11 @@ export class WeekReportComponent implements OnInit {
   aiFeedback: string = '';
 
   constructor(
-    private reportService: WeekReportService,
-    private userService: UserService,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
+    private readonly reportService: WeekReportService,
+    private readonly userService: UserService,
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly ngZone: NgZone
   ) {}
 
   ngOnInit(): void {
