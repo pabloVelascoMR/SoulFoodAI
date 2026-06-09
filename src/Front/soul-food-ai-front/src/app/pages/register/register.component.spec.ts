@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RegisterComponent } from './register.component';
 import { UserService } from '../../services/user.service';
-import {  Router } from '@angular/router';
+import {  Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('RegisterComponent', () => {
@@ -19,6 +19,7 @@ describe('RegisterComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RegisterComponent],
       providers: [
+        { provide: ActivatedRoute, useValue: {} },
         { provide: UserService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock }
       ]
@@ -68,3 +69,4 @@ describe('RegisterComponent', () => {
     expect(navigatedTo).toBe('/onboarding');
   });
 });
+

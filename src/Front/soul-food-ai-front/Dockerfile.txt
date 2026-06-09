@@ -1,11 +1,14 @@
-
 FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+# Security: Switch to a non-root user before running build
+USER node
 RUN npm run build --configuration=production
 
 FROM nginx:alpine AS runtime
 COPY --from=build /app/dist/soul-food-ai-front/browser /usr/share/nginx/html
+# Security: Switch to a non-root user (nginx image includes the 'nginx' user)
+USER nginx
 EXPOSE 80

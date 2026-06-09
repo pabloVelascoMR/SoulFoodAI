@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { UserService } from '../../services/user.service';
-import {  Router } from '@angular/router';
+import {  Router, ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 describe('LoginComponent', () => {
@@ -19,6 +19,7 @@ describe('LoginComponent', () => {
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
       providers: [
+        { provide: ActivatedRoute, useValue: {} },
         { provide: UserService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock }
       ]
@@ -69,3 +70,4 @@ describe('LoginComponent', () => {
     expect(component.isSubmitting).toBe(false);
   });
 });
+

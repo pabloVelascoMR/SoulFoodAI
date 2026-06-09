@@ -43,4 +43,32 @@ describe('HomeService', () => {
     expect(req.request.method).toBe('POST');
     req.flush({});
   });
+
+  it('debería obtener el calendario activo', () => {
+    service.getActiveWeekCalendar(1).subscribe();
+    const req = httpMock.expectOne(req => req.url.includes('/GetActiveWeekCalendar/1'));
+    expect(req.request.method).toBe('GET');
+    req.flush({});
+  });
+
+  it('debería obtener el daily header', () => {
+    service.getDailyHeader(1).subscribe();
+    const req = httpMock.expectOne(req => req.url.includes('/GetDailyHeader/1'));
+    expect(req.request.method).toBe('GET');
+    req.flush({});
+  });
+
+  it('debería obtener recetas para usuario', () => {
+    service.getRecipesForUser(1).subscribe();
+    const req = httpMock.expectOne(req => req.url.includes('/GetRecipesForUser/1'));
+    expect(req.request.method).toBe('GET');
+    req.flush([]);
+  });
+
+  it('debería crear un plan semanal', () => {
+    service.createWeeklyPlan(1).subscribe();
+    const req = httpMock.expectOne(req => req.url.includes('/GenerateWeekPlan/1'));
+    expect(req.request.method).toBe('POST');
+    req.flush({});
+  });
 });

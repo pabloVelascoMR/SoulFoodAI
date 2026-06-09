@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoulFoodAiBack.Controllers;
 using SoulFoodAiBack.Data;
@@ -70,6 +70,18 @@ namespace Tests
         }
 
         [Fact]
+        public async Task GetWeeklyHeader_DeberiaDevolverOk_SiHayPlan()
+        {
+            var db = await GetDatabaseContext();
+            db.FoodPlans.Add(new FoodPlan { IdFoodPlan = 1, FoodPlanName = "Test" });
+            db.UserFoodPlansWeek.Add(new UserFoodPlanWeek { IdUserFoodPlanWeek = 1, IdUser = 1, IdFoodPlan = 1, IsActive = true, TotalWeeklyKcal = 2000, TotalWeeklyProtein = 100, TotalWeeklyCarbs = 200, TotalWeeklyFat = 50 });
+            await db.SaveChangesAsync();
+            var controller = new UserFoodPlanWeekController(db);
+            var result = await controller.GetWeeklyHeader(1);
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
         public async Task GetActiveWeekCalendar_DeberiaDevolverOk()
         {
             var db = await GetDatabaseContext();
@@ -86,6 +98,17 @@ namespace Tests
         public async Task GetPlanHistory_DeberiaDevolverNotFound_SiVacio()
         {
             var db = await GetDatabaseContext();
+            var controller = new UserFoodPlanWeekController(db);
+            var result = await controller.GetPlanHistory(1);
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task GetPlanHistory_RecibeNotFound_CubreCodigo()
+        {
+            var db = await GetDatabaseContext();
+            db.UserFoodPlansWeek.Add(new UserFoodPlanWeek { IdUserFoodPlanWeek = 1, IdUser = 1, IsVisibleInHistory = true, StartDate = DateTime.Now });
+            await db.SaveChangesAsync();
             var controller = new UserFoodPlanWeekController(db);
             var result = await controller.GetPlanHistory(1);
             Assert.IsType<NotFoundObjectResult>(result);
