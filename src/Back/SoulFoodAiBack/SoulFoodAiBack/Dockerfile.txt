@@ -1,13 +1,22 @@
-
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 COPY ["SoulFoodAiBack.csproj", "./"]
 RUN dotnet restore "./SoulFoodAiBack.csproj"
-COPY . .
+# Fix SonarQube S4736: Avoid COPY . .
+COPY Controllers/ ./Controllers/
+COPY Data/ ./Data/
+COPY Dtos/ ./Dtos/
+COPY Migrations/ ./Migrations/
+COPY Models/ ./Models/
+COPY Properties/ ./Properties/
+COPY Services/ ./Services/
+COPY Program.cs appsettings*.json ./
 RUN dotnet publish "SoulFoodAiBack.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
+# Fix SonarQube root user warning
+USER app
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "SoulFoodAiBack.dll"]

@@ -2,7 +2,10 @@ FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
-COPY . .
+# Fix SonarQube S4736: Avoid COPY . .
+COPY src/ ./src/
+COPY public/ ./public/
+COPY angular.json tsconfig*.json ./
 # Security: Switch to a non-root user before running build
 USER node
 RUN npm run build --configuration=production
