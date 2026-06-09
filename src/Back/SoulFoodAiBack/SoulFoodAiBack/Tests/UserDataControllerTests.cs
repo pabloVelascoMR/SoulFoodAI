@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoulFoodAiBack.Controllers;
 using SoulFoodAiBack.Data;
@@ -75,6 +75,34 @@ namespace Tests
             var dto = new UpdateBodyMeasuresDto { IdUser = 1, ChestMeasure = 100f };
             var result = await controller.UpdateBodyMeasures(dto);
             Assert.IsType<OkResult>(result);
+        }
+
+        [Fact]
+        public async Task GetUserDataById_DeberiaDevolverOk_SiExiste()
+        {
+            var db = await GetDatabaseContext();
+            db.UserDatas.Add(new UserData { IdUser = 999, Gender = "H", Age = 30, Height = 180f, Weight = 80f, IdFoodPlan = 1, IdGoal = 1 });
+            await db.SaveChangesAsync();
+            var controller = new UserDataController(db);
+            
+            var result = await controller.GetUserDataById(999);
+            
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dto = Assert.IsType<UserDataDto>(okResult.Value);
+            Assert.Equal(999, dto.IdUser);
+            Assert.Equal(30, dto.Age);
+        }
+
+        [Fact]
+        public async Task GetUserDataById_DeberiaDevolverOkConFoodPlan1_SiNoExiste()
+        {
+            var db = await GetDatabaseContext();
+            var controller = new UserDataController(db);
+            
+            var result = await controller.GetUserDataById(998);
+            
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.NotNull(okResult.Value);
         }
     }
 }

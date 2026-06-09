@@ -15,3 +15,4 @@ describe('LandingPageComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 });
+

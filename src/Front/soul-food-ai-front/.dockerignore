@@ -1,0 +1,8 @@
+node_modules
+.git
+.angular
+coverage
+dist
+.vscode
+sonar-project.properties
+*.log

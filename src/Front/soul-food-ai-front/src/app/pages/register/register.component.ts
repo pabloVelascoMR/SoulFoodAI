@@ -49,7 +49,7 @@ export class RegisterComponent {
     }
 
     const pass = this.password;
-    if (pass.length < 8 || !/[A-Z]/.test(pass) || !/\\d/.test(pass)) {
+    if (pass.length < 8 || !/[A-Z]/.test(pass) || !/\d/.test(pass)) {
       this.errorMessage = 'Contraseña: mín. 8 caracteres, una mayúscula y un número.';
       return;
     }
