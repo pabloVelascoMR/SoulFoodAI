@@ -90,16 +90,16 @@
       <div *ngIf="successAi" class="alert-success">{{ successAi }}</div>
       
       <div class="input-group">
-        <div class="label-row"><label>Tipo de Comida</label></div>
-        <select [(ngModel)]="selectedMealAi" class="form-input">
+        <div class="label-row"><label for="aiMeal">Tipo de Comida</label></div>
+        <select id="aiMeal" [(ngModel)]="selectedMealAi" class="form-input">
           <option [ngValue]="null" disabled>Selecciona...</option>
           <option *ngFor="let meal of meals" [value]="meal.idMeal">{{ meal.mealName }}</option>
         </select>
       </div>
       
       <div class="input-group">
-        <div class="label-row"><label>Petición Especial</label></div>
-        <textarea [(ngModel)]="promptTextAi" rows="3" class="form-input" style="height: auto; padding-top: 12px;" placeholder="Ej: Muy picante..."></textarea>
+        <div class="label-row"><label for="aiReq">Petición Especial</label></div>
+        <textarea id="aiReq" [(ngModel)]="promptTextAi" rows="3" class="form-input" style="height: auto; padding-top: 12px;" placeholder="Ej: Muy picante..."></textarea>
       </div>
       
       <div class="modal-actions">
@@ -123,24 +123,24 @@
       <div *ngIf="successManual" class="alert-success">{{ successManual }}</div>
       
       <div class="input-group">
-        <div class="label-row"><label>Nombre</label></div>
-        <input type="text" [(ngModel)]="manualRecipe.recipeName" class="form-input">
+        <div class="label-row"><label for="manName">Nombre</label></div>
+        <input id="manName" type="text" [(ngModel)]="manualRecipe.recipeName" class="form-input">
       </div>
       
       <div class="input-group">
-        <div class="label-row"><label>Comida</label></div>
-        <select [(ngModel)]="manualRecipe.idMeal" class="form-input">
+        <div class="label-row"><label for="manMeal">Comida</label></div>
+        <select id="manMeal" [(ngModel)]="manualRecipe.idMeal" class="form-input">
           <option *ngFor="let meal of meals" [value]="meal.idMeal">{{ meal.mealName }}</option>
         </select>
       </div>
 
       <div class="input-group">
-        <div class="label-row"><label>Preparación (Opcional)</label></div>
-        <textarea [(ngModel)]="manualRecipe.recipeDescription" rows="3" class="form-input" style="height: auto; padding-top: 12px;"></textarea>
+        <div class="label-row"><label for="manDesc">Preparación (Opcional)</label></div>
+        <textarea id="manDesc" [(ngModel)]="manualRecipe.recipeDescription" rows="3" class="form-input" style="height: auto; padding-top: 12px;"></textarea>
       </div>
       
       <div class="input-group">
-        <div class="label-row"><label>Ingredientes</label></div>
+        <div class="label-row"><span style="font-weight: bold;">Ingredientes</span></div>
         <div class="ingredient-row" *ngFor="let ing of manualRecipe.ingredients; let i = index">
           <select [(ngModel)]="ing.idIngredient" class="form-input flex-3">
             <option [ngValue]="null" disabled>Elige ingrediente...</option>
