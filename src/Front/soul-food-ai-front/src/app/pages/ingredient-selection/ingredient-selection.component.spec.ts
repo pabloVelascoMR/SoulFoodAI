@@ -128,7 +128,7 @@ describe('IngredientSelectionComponent', () => {
 
   it('debería gestionar imagen de ingredientes', () => {
     expect(component.getIngredientImage({ id: 1 })).toContain('/assets/');
-    expect(component.getIngredientImage({ id: 999, imageUrl: 'http://img' })).toBe('http://img');
+    expect(component.getIngredientImage({ id: 999, imageUrl: 'https://img' })).toBe('https://img');
     
     const ingredient = { hasImageError: false };
     component.handleImageError({ target: { style: {} } }, ingredient);
