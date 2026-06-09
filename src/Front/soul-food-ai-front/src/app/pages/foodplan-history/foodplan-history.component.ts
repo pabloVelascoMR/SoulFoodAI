@@ -36,6 +36,28 @@ export class FoodplanHistoryComponent implements OnInit {
            rDate.getFullYear() === currentDate.getFullYear();
   }
 
+  private processHistoryData(data: any[]): any[] {
+    return data.map(plan => {
+      const rawRecipes = plan.recipesEaten || [];
+      const startDate = plan.startDate ? new Date(plan.startDate) : new Date();
+      
+      const calendarDays = [];
+      for(let i = 0; i < 7; i++) {
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + i); 
+        
+        const dayRecipes = rawRecipes.filter((r: any) => this.isSameDate(r, currentDate));
+
+        calendarDays.push({
+          date: currentDate,
+          dayName: `Día ${i + 1}`,
+          recipes: dayRecipes
+        });
+      }
+      return { ...plan, calendarDays };
+    });
+  }
+
   loadHistory() {
     const userId = this.userService.getUserId();
 
@@ -57,25 +79,7 @@ export class FoodplanHistoryComponent implements OnInit {
               this.historyPlans = [];
               this.errorMessage = 'No tienes historial de planes con recetas registradas.';
             } else {
-              this.historyPlans = data.map(plan => {
-                const rawRecipes = plan.recipesEaten || [];
-                const startDate = plan.startDate ? new Date(plan.startDate) : new Date();
-                
-                const calendarDays = [];
-                for(let i = 0; i < 7; i++) {
-                  const currentDate = new Date(startDate);
-                  currentDate.setDate(startDate.getDate() + i); 
-                  
-                  const dayRecipes = rawRecipes.filter((r: any) => this.isSameDate(r, currentDate));
-
-                  calendarDays.push({
-                    date: currentDate,
-                    dayName: `Día ${i + 1}`,
-                    recipes: dayRecipes
-                  });
-                }
-                return { ...plan, calendarDays };
-              });
+              this.historyPlans = this.processHistoryData(data);
             }
             this.isLoading = false;
           } catch (error: any) {
