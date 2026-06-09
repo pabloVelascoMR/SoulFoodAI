@@ -7,9 +7,9 @@ import { Observable } from 'rxjs';
 })
 export class PersonalInformationService {
   
-  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api';
+  private readonly apiUrl = 'https://api-soulfoodai.azurewebsites.net/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
  
   getAllUserDatas(): Observable<any[]> {

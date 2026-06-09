@@ -44,11 +44,11 @@ export class RecipesComponent implements OnInit {
   successManual: string = '';
 
   constructor(
-    private recipesService: RecipesService,
-    private cdr: ChangeDetectorRef,
-    private userService: UserService, 
-    private router: Router, 
-    @Inject(PLATFORM_ID) private platformId: Object 
+    private readonly recipesService: RecipesService,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly userService: UserService, 
+    private readonly router: Router, 
+    @Inject(PLATFORM_ID) private readonly platformId: Object 
   ) {}
 
   ngOnInit(): void {

@@ -21,9 +21,9 @@ export interface AddRecipeDto {
 })
 export class RecipesService {
 
-  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api'; 
+  private readonly apiUrl = 'https://api-soulfoodai.azurewebsites.net/api'; 
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   generateRecipeAI(idUser: number, dto: CreateAiRecipeDto): Observable<any> {
     return this.http.post(`${this.apiUrl}/Recipe/CreateRecipeAI/${idUser}`, dto);

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { OnboardingComponent } from './onboarding.component';
 import { UserService } from '../../services/user.service';
 import { OnboardingService } from '../../services/onboarding.service';
-import { provideRouter, Router } from '@angular/router';
+import {  Router } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('OnboardingComponent', () => {

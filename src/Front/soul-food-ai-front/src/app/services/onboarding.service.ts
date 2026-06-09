@@ -7,9 +7,9 @@ import { Observable } from 'rxjs';
 })
 export class OnboardingService {
  
-  private apiUrl = 'https://api-soulfoodai.azurewebsites.net/api';
+  private readonly apiUrl = 'https://api-soulfoodai.azurewebsites.net/api';
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   getGoals(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/Goal/GetAllGoals`);

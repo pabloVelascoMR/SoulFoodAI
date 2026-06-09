@@ -14,7 +14,7 @@
           <span style="font-weight: bold;">GÉNERO</span>
         </div>
         <div class="grid-2-cols">
-          <div class="selection-card" [class.selected]="userData.gender === 'Hombre'" (click)="selectGender('Hombre')" tabindex="0" (keydown.enter)="selectGender('Hombre')">
+          <div class="selection-card" [class.selected]="userData.gender === 'Hombre'" (click)="selectGender('Hombre')" tabindex="0" role="button" (keydown.enter)="selectGender('Hombre')">
             <div class="gender-icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="10" cy="14" r="5"></circle>
@@ -25,7 +25,7 @@
             </div>
             <h3>Hombre</h3>
           </div>
-          <div class="selection-card" [class.selected]="userData.gender === 'Mujer'" (click)="selectGender('Mujer')" tabindex="0" (keydown.enter)="selectGender('Mujer')">
+          <div class="selection-card" [class.selected]="userData.gender === 'Mujer'" (click)="selectGender('Mujer')" tabindex="0" role="button" (keydown.enter)="selectGender('Mujer')">
             <div class="gender-icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="10" r="5"></circle>
@@ -215,7 +215,7 @@
       <div class="grid-3-cols">
         <div class="selection-card" *ngFor="let goal of goals" 
           [class.selected]="userData.idGoal === goal.idGoal" 
-          (click)="selectGoal(goal.idGoal)">
+          (click)="selectGoal(goal.idGoal)" tabindex="0" role="button" (keydown.enter)="selectGoal(goal.idGoal)">
           <div class="goal-emoji">
             {{ getGoalEmoji(goal.idGoal) }}
           </div>
@@ -233,7 +233,7 @@
       <div class="grid-3-cols">
         <div class="selection-card" *ngFor="let int of intolerances" 
              [class.selected]="userData.idIntolerances.includes(int.idIntolerance)"
-             (click)="selectIntolerance(int.idIntolerance)">
+             (click)="selectIntolerance(int.idIntolerance)" tabindex="0" role="button" (keydown.enter)="selectIntolerance(int.idIntolerance)">
           <div class="intolerance-emoji">
             {{ getIntoleranceEmoji(int.idIntolerance) }}
           </div>
@@ -253,7 +253,7 @@
       <div class="grid-3-cols">
         <div class="selection-card" *ngFor="let plan of foodPlans" 
              [class.selected]="userData.idFoodPlan === plan.idFoodPlan" 
-             (click)="selectFoodPlan(plan.idFoodPlan)">
+             (click)="selectFoodPlan(plan.idFoodPlan)" tabindex="0" role="button" (keydown.enter)="selectFoodPlan(plan.idFoodPlan)">
           <div class="diet-emoji">
             {{ getDietEmoji(plan.idFoodPlan) }}
           </div>
